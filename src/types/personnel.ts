@@ -1,15 +1,34 @@
-export type UserRole = 'RESERVIST' | 'STAFF' | 'ADMIN' | 'DIRECTOR';
+export type UserRole = 'reservist' | 'enlisted' | 'staff' | 'administrator' | 'director';
 
-export type CompanyType = 'Alpha' | 'Bravo' | 'Charlie' | 'HQ' | 'Signal' | 'FAB';
+export type RankType = 
+  | 'Private'
+  | 'Private First Class'
+  | 'Corporal'
+  | 'Sergeant'
+  | 'Second Lieutenant'
+  | 'First Lieutenant'
+  | 'Captain'
+  | 'Major'
+  | 'Lieutenant Colonel'
+  | 'Colonel'
+  | 'Brigadier General';
 
-export type PersonnelStatus = 'Ready' | 'Standby' | 'Retired';
+export type CompanyType = 
+  | 'Alpha' 
+  | 'Bravo' 
+  | 'Charlie' 
+  | 'Headquarters' 
+  | 'NERRSC (NERR-Signal Company)' 
+  | 'NERRFAB (NERR-Field Artillery Battery)';
+
+export type PersonnelStatus = 'active' | 'pending' | 'inactive' | 'retired' | 'standby' | 'ready';
 
 export type SecurityClassification = 'Unclassified' | 'Confidential' | 'Secret' | 'Top Secret';
 
 export interface Personnel {
   id: number;
   name: string;
-  rank: string;
+  rank: RankType;
   company: CompanyType;
   status: PersonnelStatus;
   lastUpdated: string;
@@ -19,6 +38,7 @@ export interface Personnel {
   trainings: Training[];
   documents: Document[];
   role: UserRole;
+  serviceNumber?: string;
 }
 
 export interface Training {

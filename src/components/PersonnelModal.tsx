@@ -3,8 +3,9 @@
 import { Fragment, useState, useEffect } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
-import { Personnel, Training, Document } from '@/types/personnel';
+import { Personnel, Training, Document, RankType, CompanyType } from '@/types/personnel';
 import { z } from 'zod';
+import { getRankDisplayName, getCompanyDisplayName } from '@/utils/formatters';
 
 interface PersonnelModalProps {
   isOpen: boolean;
@@ -14,23 +15,42 @@ interface PersonnelModalProps {
   onSave?: (data: Partial<Personnel>) => Promise<void>;
 }
 
-// Add validation schema
+// Validation schema for personnel
 const personnelSchema = z.object({
-  name: z.string().min(3, "Name must be at least 3 characters").max(100),
-  rank: z.string().min(1, "Rank is required"),
-  company: z.string().min(1, "Company is required"),
-  status: z.string().min(1, "Status is required"),
-  email: z.string().email("Invalid email address"),
-  dateJoined: z.string().refine((val: string) => !isNaN(Date.parse(val)), {
-    message: "Invalid date format"
-  }),
-  role: z.string().min(1, "Role is required"),
-  // Optional fields can be added with .optional()
-  phone: z.string().optional(),
-  address: z.string().optional(),
-  emergencyContact: z.string().optional(),
-  emergencyPhone: z.string().optional()
+  name: z.string().min(1, 'Name is required'),
+  email: z.string().email('Invalid email address'),
+  rank: z.string().min(1, 'Rank is required'),
+  company: z.string().min(1, 'Company is required'),
+  status: z.string().min(1, 'Status is required'),
+  dateJoined: z.string().min(1, 'Date joined is required'),
+  // Optional fields
+  serviceNumber: z.string().optional(),
+  phone: z.string().optional().nullable(),
 });
+
+// Valid ranks and companies based on the dropdown options
+const VALID_RANKS: RankType[] = [
+  'Private',
+  'Private First Class',
+  'Corporal',
+  'Sergeant',
+  'Second Lieutenant',
+  'First Lieutenant',
+  'Captain',
+  'Major',
+  'Lieutenant Colonel', 
+  'Colonel',
+  'Brigadier General'
+];
+
+const VALID_COMPANIES: CompanyType[] = [
+  'Alpha',
+  'Bravo',
+  'Charlie',
+  'Headquarters',
+  'NERRSC (NERR-Signal Company)',
+  'NERRFAB (NERR-Field Artillery Battery)'
+];
 
 export default function PersonnelModal({
   isOpen,
@@ -45,35 +65,41 @@ export default function PersonnelModal({
 
   useEffect(() => {
     if (personnel) {
-      setFormData(personnel);
+      // Convert any abbreviated ranks or company codes to their full display names
+      setFormData({
+        ...personnel,
+        rank: getRankDisplayName(personnel.rank),
+        company: getCompanyDisplayName(personnel.company as any)
+      });
     } else {
+      // Initialize with default values for a new personnel record
       setFormData({
         name: '',
-        rank: '',
-        company: 'Alpha',
-        status: 'Ready',
         email: '',
-        dateJoined: new Date().toISOString().split('T')[0],
-        role: 'RESERVIST',
-        trainings: [],
-        documents: []
+        rank: '' as unknown as RankType,
+        company: '' as unknown as CompanyType,
+        status: '' as unknown as Personnel['status'],
+        dateJoined: new Date().toISOString().split('T')[0]
       });
     }
+    
     setErrors({});
+    setIsSubmitting(false);
   }, [personnel, isOpen]);
 
   const validateField = (name: string, value: any) => {
+    // Clear error for this field
+    setErrors(prev => ({ ...prev, [name]: '' }));
+    
+    // Validate the field
     try {
-      personnelSchema.shape[name as keyof typeof personnelSchema.shape].parse(value);
-      setErrors(prev => ({ ...prev, [name]: '' }));
-      return true;
+      if (personnelSchema.shape[name as keyof typeof personnelSchema.shape]) {
+        personnelSchema.shape[name as keyof typeof personnelSchema.shape].parse(value);
+      }
     } catch (error) {
       if (error instanceof z.ZodError) {
-        const message = error.errors[0]?.message || `Invalid ${name}`;
-        setErrors(prev => ({ ...prev, [name]: message }));
-        return false;
+        setErrors(prev => ({ ...prev, [name]: error.errors[0]?.message || `Invalid ${name}` }));
       }
-      return true;
     }
   };
 
@@ -112,6 +138,12 @@ export default function PersonnelModal({
     }
     
     try {
+      // Add animation before submitting
+      const saveButton = document.querySelector('button[type="submit"]');
+      if (saveButton) {
+        saveButton.innerHTML = '<span class="flex items-center"><svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Saving...</span>';
+      }
+      
       if (onSave) {
         await onSave(formData);
       }
@@ -123,7 +155,7 @@ export default function PersonnelModal({
     }
   };
 
-  if (!personnel) return null;
+  if (mode === 'view' && !personnel) return null;
 
   return (
     <Transition.Root show={isOpen} as={Fragment}>
@@ -166,7 +198,7 @@ export default function PersonnelModal({
                 <div className="sm:flex sm:items-start">
                   <div className="mt-3 text-center sm:mt-0 sm:text-left w-full">
                     <Dialog.Title as="h3" className="text-lg font-semibold leading-6 text-gray-900 mb-4">
-                      {mode === 'view' ? 'Personnel Details' : 'Edit Personnel'}
+                      {mode === 'view' ? 'Personnel Details' : (personnel ? 'Edit Personnel' : 'Add New Personnel')}
                     </Dialog.Title>
                     
                     <form onSubmit={handleSubmit}>
@@ -212,10 +244,125 @@ export default function PersonnelModal({
                             <p className="mt-1 text-sm text-red-600">{errors.email}</p>
                           )}
                         </div>
+
+                        <div>
+                          <label htmlFor="rank" className="block text-sm font-medium text-gray-700 mb-1">
+                            Rank*
+                          </label>
+                          <select
+                            id="rank"
+                            name="rank"
+                            value={formData.rank || ''}
+                            onChange={handleChange}
+                            className={`block w-full rounded-md border ${
+                              errors.rank ? 'border-red-300' : 'border-gray-300'
+                            } shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2`}
+                            disabled={mode === 'view'}
+                            required
+                          >
+                            <option value="">Select a rank</option>
+                            {VALID_RANKS.map((rank) => (
+                              <option key={rank} value={rank}>
+                                {rank}
+                              </option>
+                            ))}
+                          </select>
+                          {errors.rank && (
+                            <p className="mt-1 text-sm text-red-600">{errors.rank}</p>
+                          )}
+                        </div>
                         
-                        {/* Apply similar validation to other fields */}
-                        
-                        {/* ... existing fields ... */}
+                        <div>
+                          <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-1">
+                            Company*
+                          </label>
+                          <select
+                            id="company"
+                            name="company"
+                            value={formData.company || ''}
+                            onChange={handleChange}
+                            className={`block w-full rounded-md border ${
+                              errors.company ? 'border-red-300' : 'border-gray-300'
+                            } shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2`}
+                            disabled={mode === 'view'}
+                            required
+                          >
+                            <option value="">Select a company</option>
+                            {VALID_COMPANIES.map((company) => (
+                              <option key={company} value={company}>
+                                {company}
+                              </option>
+                            ))}
+                          </select>
+                          {errors.company && (
+                            <p className="mt-1 text-sm text-red-600">{errors.company}</p>
+                          )}
+                        </div>
+
+                        <div>
+                          <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
+                            Status*
+                          </label>
+                          <select
+                            id="status"
+                            name="status"
+                            value={formData.status || ''}
+                            onChange={handleChange}
+                            className={`block w-full rounded-md border ${
+                              errors.status ? 'border-red-300' : 'border-gray-300'
+                            } shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2`}
+                            disabled={mode === 'view'}
+                            required
+                          >
+                            <option value="">Select a status</option>
+                            <option value="active">Active</option>
+                            <option value="pending">Pending</option>
+                            <option value="inactive">Inactive</option>
+                            <option value="retired">Retired</option>
+                            <option value="standby">Standby</option>
+                            <option value="ready">Ready</option>
+                          </select>
+                          {errors.status && (
+                            <p className="mt-1 text-sm text-red-600">{errors.status}</p>
+                          )}
+                        </div>
+
+                        <div>
+                          <label htmlFor="serviceNumber" className="block text-sm font-medium text-gray-700 mb-1">
+                            Service Number
+                          </label>
+                          <input
+                            type="text"
+                            id="serviceNumber"
+                            name="serviceNumber"
+                            value={formData.serviceNumber || ''}
+                            onChange={handleChange}
+                            placeholder="Leave blank to auto-generate"
+                            className={`block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2`}
+                            disabled={mode === 'view'}
+                          />
+                        </div>
+
+                        <div>
+                          <label htmlFor="dateJoined" className="block text-sm font-medium text-gray-700 mb-1">
+                            Date Joined*
+                          </label>
+                          <input
+                            type="date"
+                            id="dateJoined"
+                            name="dateJoined"
+                            value={formData.dateJoined || ''}
+                            onChange={handleChange}
+                            className={`block w-full rounded-md border ${
+                              errors.dateJoined ? 'border-red-300' : 'border-gray-300'
+                            } shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2`}
+                            disabled={mode === 'view'}
+                            required
+                          />
+                          {errors.dateJoined && (
+                            <p className="mt-1 text-sm text-red-600">{errors.dateJoined}</p>
+                          )}
+                        </div>
                       </div>
                       
                       {/* Form buttons */}

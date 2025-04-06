@@ -7,6 +7,12 @@ import Button from './Button';
 export default function SessionTimeoutWarning() {
   const { sessionExpiring, extendSession, logout } = useAuth();
   const [timeLeft, setTimeLeft] = useState(5 * 60); // 5 minutes in seconds
+  const [hasMounted, setHasMounted] = useState(false);
+  
+  // Mark component as mounted after initial render
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
   
   useEffect(() => {
     if (!sessionExpiring) {
@@ -27,7 +33,8 @@ export default function SessionTimeoutWarning() {
     return () => clearInterval(timer);
   }, [sessionExpiring]);
   
-  if (!sessionExpiring) {
+  // Don't show anything on first render or if not session expiring
+  if (!hasMounted || !sessionExpiring) {
     return null;
   }
   

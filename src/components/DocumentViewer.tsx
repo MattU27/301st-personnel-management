@@ -9,306 +9,235 @@ import {
   UserIcon, 
   ShieldCheckIcon,
   DocumentDuplicateIcon,
-  ArrowUpTrayIcon
+  ArrowUpTrayIcon,
+  XMarkIcon,
+  ExclamationCircleIcon,
+  CheckCircleIcon
 } from '@heroicons/react/24/outline';
 import Button from './Button';
 import DocumentVersionHistory from './DocumentVersionHistory';
 import ConfirmationDialog from './ConfirmationDialog';
 
-interface DocumentViewerProps {
-  document: DocumentType;
-  onClose: () => void;
-  onUploadNewVersion?: (file: File, notes: string) => Promise<void>;
+type DocumentStatus = 'verified' | 'pending' | 'rejected';
+type SecurityClassification = 'Unclassified' | 'Confidential' | 'Secret' | 'Top Secret';
+
+interface Document {
+  _id: string;
+  name: string;
+  type: string;
+  uploadDate: string;
+  status: DocumentStatus;
+  verifiedBy?: string;
+  verifiedDate?: string;
+  comments?: string;
+  fileUrl: string;
+  securityClassification: SecurityClassification;
+  expirationDate?: string;
 }
 
-export default function DocumentViewer({ 
-  document, 
-  onClose,
-  onUploadNewVersion
-}: DocumentViewerProps) {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [versionNotes, setVersionNotes] = useState('');
-  const [isUploading, setIsUploading] = useState(false);
-  const [showVersionHistory, setShowVersionHistory] = useState(false);
-  const [showUploadForm, setShowUploadForm] = useState(false);
-  const [showConfirmation, setShowConfirmation] = useState(false);
-  const [selectedVersionId, setSelectedVersionId] = useState<string | null>(null);
+interface DocumentViewerProps {
+  document: Document;
+  onClose: () => void;
+}
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setSelectedFile(e.target.files[0]);
-    }
-  };
+export default function DocumentViewer({ document: docData, onClose }: DocumentViewerProps) {
+  const [showInfo, setShowInfo] = useState(true);
 
-  const handleUploadNewVersion = async () => {
-    if (!selectedFile || !onUploadNewVersion) return;
+  const handleDownload = () => {
+    // Create an anchor element and trigger download
+    const link = document.createElement('a');
+    link.href = docData.fileUrl;
+    link.download = docData.name;
     
-    setIsUploading(true);
-    try {
-      await onUploadNewVersion(selectedFile, versionNotes);
-      setSelectedFile(null);
-      setVersionNotes('');
-      setShowUploadForm(false);
-    } catch (error) {
-      console.error('Failed to upload new version:', error);
-    } finally {
-      setIsUploading(false);
-    }
-  };
-
-  const handleVersionSelect = (versionId: string) => {
-    setSelectedVersionId(versionId);
-    setShowConfirmation(true);
-  };
-
-  const handleRestoreVersion = async () => {
-    if (!selectedVersionId) return;
+    // Append to the document body
+    document.body.appendChild(link);
     
-    // In a real app, this would call an API to restore the version
-    console.log(`Restoring version ${selectedVersionId}`);
+    // Trigger the download
+    link.click();
     
-    // Reset state
-    setSelectedVersionId(null);
-    setShowConfirmation(false);
+    // Clean up
+    document.body.removeChild(link);
   };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleString();
-  };
-
-  const getSecurityClassColor = (classification?: string) => {
-    switch (classification) {
-      case 'Unclassified':
-        return 'bg-gray-100 text-gray-800';
-      case 'Confidential':
-        return 'bg-blue-100 text-blue-800';
-      case 'Secret':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'Top Secret':
-        return 'bg-red-100 text-red-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
+  const getStatusBadge = (status: DocumentStatus) => {
+    switch (status) {
+      case 'verified':
+        return (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+            <CheckCircleIcon className="h-4 w-4 mr-1" />
+            Verified
+          </span>
+        );
+      case 'pending':
+        return (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+            <ClockIcon className="h-4 w-4 mr-1" />
+            Pending
+          </span>
+        );
+      case 'rejected':
+        return (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+            <ExclamationCircleIcon className="h-4 w-4 mr-1" />
+            Rejected
+          </span>
+        );
     }
   };
 
-  // Mock versions for demo purposes
-  const mockVersions: DocumentVersion[] = document.versions || [
-    {
-      versionId: `${document.id}-1`,
-      uploadDate: document.uploadDate,
-      uploadedBy: 'Original Uploader',
-      url: document.url
+  const getFileType = (filename: string) => {
+    const extension = filename.split('.').pop()?.toLowerCase();
+    if (!extension) return 'unknown';
+    
+    if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg'].includes(extension)) {
+      return 'image';
+    } else if (['pdf'].includes(extension)) {
+      return 'pdf';
+    } else if (['doc', 'docx'].includes(extension)) {
+      return 'word';
+    } else if (['xls', 'xlsx'].includes(extension)) {
+      return 'excel';
+    } else if (['ppt', 'pptx'].includes(extension)) {
+      return 'powerpoint';
+    } else {
+      return 'unknown';
     }
-  ];
+  };
 
+  const fileType = getFileType(docData.name);
+  const isPreviewable = ['image', 'pdf'].includes(fileType);
+  
   return (
-    <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-auto overflow-hidden">
-      <div className="flex justify-between items-center border-b border-gray-200 px-6 py-4">
-        <h2 className="text-lg font-medium text-gray-900 flex items-center">
-          <DocumentTextIcon className="h-6 w-6 text-indigo-600 mr-2" />
-          {document.title}
-        </h2>
-        <button
-          type="button"
-          className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-          onClick={onClose}
-        >
-          <span className="sr-only">Close</span>
-          <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-
-      <div className="px-6 py-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <h3 className="text-sm font-medium text-gray-500 mb-2">Document Information</h3>
-            <div className="bg-gray-50 rounded-lg p-4 space-y-3">
-              <div>
-                <p className="text-xs text-gray-500">Type</p>
-                <p className="text-sm font-medium text-gray-900">{document.type}</p>
-              </div>
-              <div>
-                <p className="text-xs text-gray-500">Upload Date</p>
-                <p className="text-sm font-medium text-gray-900 flex items-center">
-                  <ClockIcon className="h-4 w-4 text-gray-400 mr-1" />
-                  {formatDate(document.uploadDate)}
-                </p>
-              </div>
-              <div>
-                <p className="text-xs text-gray-500">Status</p>
-                <p className="text-sm font-medium text-gray-900">
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                    document.status === 'verified' ? 'bg-green-100 text-green-800' :
-                    document.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                    'bg-red-100 text-red-800'
-                  }`}>
-                    {document.status.charAt(0).toUpperCase() + document.status.slice(1)}
-                  </span>
-                </p>
-              </div>
-              {document.verifiedBy && (
-                <div>
-                  <p className="text-xs text-gray-500">Verified By</p>
-                  <p className="text-sm font-medium text-gray-900 flex items-center">
-                    <UserIcon className="h-4 w-4 text-gray-400 mr-1" />
-                    {document.verifiedBy}
-                  </p>
-                </div>
-              )}
-            </div>
+    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg shadow-xl max-w-6xl w-full max-h-[90vh] flex flex-col animate-fade-in-up">
+        <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+          <div className="flex items-center">
+            <DocumentTextIcon className="h-6 w-6 text-indigo-600 mr-2" />
+            <h2 className="document-title truncate max-w-2xl">
+              {docData.name}
+            </h2>
           </div>
-
-          <div>
-            <h3 className="text-sm font-medium text-gray-500 mb-2">Security Information</h3>
-            <div className="bg-gray-50 rounded-lg p-4 space-y-3">
-              <div>
-                <p className="text-xs text-gray-500">Security Classification</p>
-                <p className="text-sm font-medium text-gray-900">
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                    getSecurityClassColor(document.securityClassification)
-                  }`}>
-                    <ShieldCheckIcon className="h-3 w-3 mr-1" />
-                    {document.securityClassification || 'Unclassified'}
-                  </span>
-                </p>
-              </div>
-              {document.expiryDate && (
-                <div>
-                  <p className="text-xs text-gray-500">Expiry Date</p>
-                  <p className="text-sm font-medium text-gray-900">{formatDate(document.expiryDate)}</p>
-                </div>
-              )}
-              <div>
-                <p className="text-xs text-gray-500">Version</p>
-                <p className="text-sm font-medium text-gray-900">
-                  {document.currentVersion || 1} of {mockVersions.length}
-                </p>
-              </div>
-              {document.notes && (
-                <div>
-                  <p className="text-xs text-gray-500">Notes</p>
-                  <p className="text-sm text-gray-900">{document.notes}</p>
-                </div>
-              )}
-            </div>
-          </div>
+          <button
+            onClick={onClose}
+            className="text-gray-700 hover:text-gray-900 hover:bg-gray-100 p-1 rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            aria-label="Close document viewer"
+          >
+            <XMarkIcon className="h-6 w-6" />
+          </button>
         </div>
-
-        <div className="mt-6">
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-sm font-medium text-gray-500">Document Preview</h3>
-            <div className="flex space-x-2">
-              <Button
-                size="sm"
-                variant="secondary"
-                className="flex items-center"
-                onClick={() => setShowVersionHistory(!showVersionHistory)}
-              >
-                <DocumentDuplicateIcon className="h-4 w-4 mr-1" />
-                {showVersionHistory ? 'Hide Version History' : 'Show Version History'}
-              </Button>
-              {onUploadNewVersion && (
-                <Button
-                  size="sm"
-                  variant="primary"
-                  className="flex items-center"
-                  onClick={() => setShowUploadForm(!showUploadForm)}
-                >
-                  <ArrowUpTrayIcon className="h-4 w-4 mr-1" />
-                  Upload New Version
-                </Button>
-              )}
-            </div>
-          </div>
-
-          <div className="bg-gray-50 rounded-lg p-4 flex items-center justify-center h-64">
-            {document.url ? (
-              document.url.endsWith('.pdf') ? (
-                <iframe 
-                  src={document.url} 
-                  className="w-full h-full" 
-                  title={document.title}
+        
+        <div className="flex-1 overflow-auto flex divide-x divide-gray-200">
+          {/* Document preview pane */}
+          <div className={`${showInfo ? 'w-3/4' : 'w-full'} h-full bg-gray-100 document-preview-container flex items-center justify-center p-4 relative`}>
+            {isPreviewable ? (
+              fileType === 'image' ? (
+                <img 
+                  src={docData.fileUrl} 
+                  alt={docData.name} 
+                  className="max-w-full max-h-[75vh] object-contain"
                 />
               ) : (
-                <div className="text-center">
-                  <DocumentTextIcon className="h-16 w-16 text-gray-400 mx-auto mb-2" />
-                  <p className="text-sm text-gray-500 mb-4">Preview not available</p>
-                  <a
-                    href={document.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                  >
-                    <ArrowDownTrayIcon className="h-4 w-4 mr-1" />
-                    Download Document
-                  </a>
-                </div>
+                <iframe 
+                  src={docData.fileUrl} 
+                  className="w-full h-[75vh] border-0"
+                  title={docData.name}
+                />
               )
             ) : (
-              <div className="text-center">
-                <DocumentTextIcon className="h-16 w-16 text-gray-400 mx-auto mb-2" />
-                <p className="text-sm text-gray-500">No document available</p>
+              <div className="text-center p-10">
+                <div className="bg-indigo-100 mx-auto rounded-full p-3 h-20 w-20 flex items-center justify-center mb-4">
+                  <DocumentTextIcon className="h-10 w-10 text-indigo-600" />
+                </div>
+                <h3 className="text-lg font-medium text-gray-900 mb-1">
+                  {docData.name}
+                </h3>
+                <p className="text-sm text-gray-500 mb-6">
+                  This file type cannot be previewed
+                </p>
+                <Button
+                  variant="primary"
+                  onClick={handleDownload}
+                  className="flex items-center mx-auto download-button py-3 px-6"
+                  aria-label={`Download ${docData.name}`}
+                >
+                  <ArrowDownTrayIcon className="h-5 w-5 mr-2" />
+                  Download File
+                </Button>
               </div>
             )}
+            
+            <button 
+              className="absolute top-2 right-2 bg-indigo-600 text-white rounded-full p-2 shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              onClick={() => setShowInfo(!showInfo)}
+              title={showInfo ? "Hide details" : "Show details"}
+              aria-label={showInfo ? "Hide document details" : "Show document details"}
+            >
+              {showInfo ? <XMarkIcon className="h-5 w-5" /> : <DocumentDuplicateIcon className="h-5 w-5" />}
+            </button>
           </div>
-
-          {showVersionHistory && (
-            <div className="mt-6">
-              <h3 className="text-sm font-medium text-gray-500 mb-2">Version History</h3>
-              <DocumentVersionHistory 
-                versions={mockVersions}
-                currentVersionId={`${document.id}-${document.currentVersion || 1}`}
-                onVersionSelect={handleVersionSelect}
-              />
-            </div>
-          )}
-
-          {showUploadForm && (
-            <div className="mt-6 bg-gray-50 rounded-lg p-4">
-              <h3 className="text-sm font-medium text-gray-900 mb-4">Upload New Version</h3>
-              <div className="space-y-4">
+          
+          {/* Document info pane */}
+          {showInfo && (
+            <div className="w-1/4 h-full overflow-y-auto p-4 document-info-panel">
+              <div className="space-y-6">
                 <div>
-                  <label htmlFor="file" className="block text-sm font-medium text-gray-700 mb-1">
-                    File*
-                  </label>
-                  <input
-                    type="file"
-                    id="file"
-                    className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
-                    onChange={handleFileChange}
-                  />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">Document Information</h3>
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div className="text-gray-500">Status</div>
+                      <div>{getStatusBadge(docData.status)}</div>
+                      
+                      <div className="text-gray-500">Type</div>
+                      <div className="font-medium text-gray-900">{docData.type}</div>
+                      
+                      <div className="text-gray-500">Upload Date</div>
+                      <div className="font-medium text-gray-900">{docData.uploadDate}</div>
+                      
+                      <div className="text-gray-500">Security</div>
+                      <div className="font-medium text-gray-900">{docData.securityClassification}</div>
+                      
+                      {docData.expirationDate && (
+                        <>
+                          <div className="text-gray-500">Expiration</div>
+                          <div className="font-medium text-gray-900">{docData.expirationDate}</div>
+                        </>
+                      )}
+                      
+                      {docData.verifiedBy && (
+                        <>
+                          <div className="text-gray-500">Verified By</div>
+                          <div className="font-medium text-gray-900">{docData.verifiedBy}</div>
+                        </>
+                      )}
+                      
+                      {docData.verifiedDate && (
+                        <>
+                          <div className="text-gray-500">Verified Date</div>
+                          <div className="font-medium text-gray-900">{docData.verifiedDate}</div>
+                        </>
+                      )}
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <label htmlFor="versionNotes" className="block text-sm font-medium text-gray-700 mb-1">
-                    Version Notes
-                  </label>
-                  <textarea
-                    id="versionNotes"
-                    rows={3}
-                    className="block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2"
-                    placeholder="Describe what changed in this version"
-                    value={versionNotes}
-                    onChange={(e) => setVersionNotes(e.target.value)}
-                  />
-                </div>
-                <div className="flex justify-end space-x-2">
+                
+                {docData.comments && (
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-500 mb-1">Comments</h4>
+                    <div className="bg-red-50 text-red-700 p-3 rounded-md text-sm">
+                      {docData.comments}
+                    </div>
+                  </div>
+                )}
+                
+                <div className="pt-4">
                   <Button
-                    size="sm"
-                    variant="secondary"
-                    onClick={() => setShowUploadForm(false)}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    size="sm"
                     variant="primary"
-                    onClick={handleUploadNewVersion}
-                    disabled={!selectedFile || isUploading}
+                    onClick={handleDownload}
+                    className="w-full flex items-center justify-center download-button font-medium py-3"
+                    aria-label={`Download ${docData.name}`}
                   >
-                    {isUploading ? 'Uploading...' : 'Upload'}
+                    <ArrowDownTrayIcon className="h-5 w-5 mr-2" />
+                    Download
                   </Button>
                 </div>
               </div>
@@ -316,17 +245,6 @@ export default function DocumentViewer({
           )}
         </div>
       </div>
-
-      <ConfirmationDialog
-        isOpen={showConfirmation}
-        onClose={() => setShowConfirmation(false)}
-        onConfirm={handleRestoreVersion}
-        title="Restore Previous Version"
-        message="Are you sure you want to restore this version? This will replace the current version of the document."
-        confirmText="Restore"
-        cancelText="Cancel"
-        type="warning"
-      />
     </div>
   );
 } 

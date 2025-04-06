@@ -1,0 +1,37 @@
+[{
+  "_id": {
+    "$oid": "67ee9b7141fcca9632096be5"
+  },
+  "title": "301stReservsit.1stWireframe.pdf",
+  "description": "",
+  "type": "other",
+  "fileUrl": "/uploads/67ee80c62d1116e08d072fef/1743690609347-301stReservsit.1stWireframe.pdf",
+  "fileName": "301stReservsit.1stWireframe.pdf",
+  "fileSize": 158672,
+  "mimeType": "application/pdf",
+  "userId": {
+    "$oid": "67ee80c62d1116e08d072fef"
+  },
+  "uploadedBy": {
+    "$oid": "67ee80c62d1116e08d072fef"
+  },
+  "status": "pending",
+  "version": 1,
+  "tags": [],
+  "expirationDate": {
+    "$date": "2025-04-18T00:00:00.000Z"
+  },
+  "name": "301stReservsit.1stWireframe.pdf",
+  "uploadDate": {
+    "$date": "2025-04-03T14:30:09.401Z"
+  },
+  "securityClassification": "Confidential",
+  "previousVersions": [],
+  "createdAt": {
+    "$date": "2025-04-03T14:30:09.406Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-03T14:30:09.406Z"
+  },
+  "__v": 0
+}]

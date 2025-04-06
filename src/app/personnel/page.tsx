@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { 
   UserGroupIcon, 
   MagnifyingGlassIcon, 
@@ -8,7 +8,10 @@ import {
   PencilSquareIcon,
   TrashIcon,
   EyeIcon,
-  UserPlusIcon
+  UserPlusIcon,
+  CheckCircleIcon,
+  XCircleIcon,
+  BuildingOfficeIcon
 } from '@heroicons/react/24/outline';
 import Card from '@/components/Card';
 import Button from '@/components/Button';
@@ -19,130 +22,144 @@ import { Personnel, PersonnelStatus, CompanyType } from '@/types/personnel';
 import ConfirmationDialog from '@/components/ConfirmationDialog';
 import PermissionGuard from '@/components/PermissionGuard';
 import { useRouter } from 'next/navigation';
+import { auditService } from '@/utils/auditService';
+import { AuditAction } from '@/models/AuditLog';
+import { getRankDisplayName, getCompanyDisplayName } from '@/utils/formatters';
 
-// Mock data for demonstration
-const MOCK_PERSONNEL: Personnel[] = [
-  {
-    id: 1,
-    name: 'John Doe',
-    rank: 'Captain',
-    company: 'Alpha',
-    status: 'Ready',
-    lastUpdated: '2024-01-15',
-    email: 'john.doe@example.com',
-    dateJoined: '2023-01-01',
-    role: 'RESERVIST',
-    trainings: [
-      { id: 1, title: 'Basic Training', date: '2023-02-15', status: 'Completed', verifiedBy: 'Maj. Smith' },
-      { id: 2, title: 'Advanced Combat', date: '2023-06-20', status: 'Completed', verifiedBy: 'Col. Johnson' },
-    ],
-    documents: [
-      { id: 1, title: 'Military ID', type: 'ID', uploadDate: '2023-01-01', status: 'Verified', verifiedBy: 'Lt. Brown', url: '/docs/id-1', currentVersion: 1 },
-      { id: 2, title: 'Medical Certificate', type: 'Medical', uploadDate: '2023-12-01', status: 'Verified', verifiedBy: 'Maj. Smith', url: '/docs/med-1', currentVersion: 1 },
-    ]
-  },
-  {
-    id: 2,
-    name: 'Jane Smith',
-    rank: 'Lieutenant',
-    company: 'Bravo',
-    status: 'Standby',
-    lastUpdated: '2024-01-10',
-    email: 'jane.smith@example.com',
-    dateJoined: '2023-02-15',
-    role: 'RESERVIST',
-    trainings: [
-      { id: 3, title: 'Basic Training', date: '2023-03-15', status: 'Completed', verifiedBy: 'Maj. Smith' }
-    ],
-    documents: [
-      { id: 3, title: 'Military ID', type: 'ID', uploadDate: '2023-02-15', status: 'Verified', verifiedBy: 'Lt. Brown', url: '/docs/id-2', currentVersion: 1 }
-    ]
-  },
-  {
-    id: 3,
-    name: 'Robert Johnson',
-    rank: 'Sergeant',
-    company: 'Charlie',
-    status: 'Ready',
-    lastUpdated: '2024-01-05',
-    email: 'robert.johnson@example.com',
-    dateJoined: '2023-03-01',
-    role: 'RESERVIST',
-    trainings: [
-      { id: 4, title: 'Basic Training', date: '2023-04-15', status: 'Completed', verifiedBy: 'Maj. Smith' }
-    ],
-    documents: [
-      { id: 4, title: 'Military ID', type: 'ID', uploadDate: '2023-03-01', status: 'Verified', verifiedBy: 'Lt. Brown', url: '/docs/id-3', currentVersion: 1 }
-    ]
-  },
-  {
-    id: 4,
-    name: 'Emily Davis',
-    rank: 'Corporal',
-    company: 'HQ',
-    status: 'Retired',
-    lastUpdated: '2023-12-20',
-    email: 'emily.davis@example.com',
-    dateJoined: '2023-01-15',
-    role: 'RESERVIST',
-    trainings: [
-      { id: 5, title: 'Basic Training', date: '2023-02-20', status: 'Completed', verifiedBy: 'Maj. Smith' }
-    ],
-    documents: [
-      { id: 5, title: 'Military ID', type: 'ID', uploadDate: '2023-01-15', status: 'Verified', verifiedBy: 'Lt. Brown', url: '/docs/id-4', currentVersion: 1 }
-    ]
-  },
-  {
-    id: 5,
-    name: 'Michael Wilson',
-    rank: 'Private',
-    company: 'Signal',
-    status: 'Ready',
-    lastUpdated: '2024-01-12',
-    email: 'michael.wilson@example.com',
-    dateJoined: '2023-06-01',
-    role: 'RESERVIST',
-    trainings: [
-      { id: 6, title: 'Basic Training', date: '2023-07-10', status: 'Completed', verifiedBy: 'Maj. Smith' }
-    ],
-    documents: [
-      { id: 6, title: 'Military ID', type: 'ID', uploadDate: '2023-06-01', status: 'Verified', verifiedBy: 'Lt. Brown', url: '/docs/id-5', currentVersion: 1 }
-    ]
-  },
-  {
-    id: 6,
-    name: 'Sarah Brown',
-    rank: 'Major',
-    company: 'HQ',
-    status: 'Ready',
-    lastUpdated: '2024-01-18',
-    email: 'sarah.brown@example.com',
-    dateJoined: '2022-11-15',
-    role: 'STAFF',
-    trainings: [
-      { id: 7, title: 'Leadership Course', date: '2023-01-10', status: 'Completed', verifiedBy: 'Col. Johnson' },
-      { id: 8, title: 'Advanced Tactics', date: '2023-05-15', status: 'Completed', verifiedBy: 'Col. Johnson' }
-    ],
-    documents: [
-      { id: 7, title: 'Military ID', type: 'ID', uploadDate: '2022-11-15', status: 'Verified', verifiedBy: 'Lt. Brown', url: '/docs/id-6', currentVersion: 1 },
-      { id: 8, title: 'Security Clearance', type: 'Clearance', uploadDate: '2023-01-05', status: 'Verified', verifiedBy: 'Col. Johnson', url: '/docs/cl-1', currentVersion: 1 },
-      { id: 9, title: 'Military ID', type: 'ID', uploadDate: '2023-02-01', status: 'Verified', verifiedBy: 'Lt. Brown', url: '/docs/id-8', currentVersion: 1 }
-    ]
-  }
-];
-
-const COMPANIES: CompanyType[] = ['Alpha', 'Bravo', 'Charlie', 'HQ', 'Signal', 'FAB'];
-const STATUS_OPTIONS: PersonnelStatus[] = ['Ready', 'Standby', 'Retired'];
+const COMPANIES: CompanyType[] = ['Alpha', 'Bravo', 'Charlie', 'Headquarters', 'NERRSC (NERR-Signal Company)', 'NERRFAB (NERR-Field Artillery Battery)'];
+const STATUS_OPTIONS: PersonnelStatus[] = ['ready', 'standby', 'retired'];
 
 const ITEMS_PER_PAGE = 10;
+
+// Toast notification component
+interface ToastProps {
+  message: string;
+  type: 'success' | 'error';
+  onClose: () => void;
+}
+
+const Toast = ({ message, type, onClose }: ToastProps) => {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onClose();
+    }, 3000);
+    
+    return () => clearTimeout(timer);
+  }, [onClose]);
+  
+  return (
+    <div className="fixed bottom-4 right-4 z-50 animate-fade-in-up">
+      <div className={`flex items-center p-4 rounded-lg shadow-lg ${
+        type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+      }`}>
+        {type === 'success' ? (
+          <CheckCircleIcon className="h-5 w-5 mr-2" />
+        ) : (
+          <XCircleIcon className="h-5 w-5 mr-2" />
+        )}
+        <span>{message}</span>
+        <button 
+          onClick={onClose}
+          className="ml-4 text-gray-500 hover:text-gray-700"
+        >
+          <XCircleIcon className="h-4 w-4" />
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// SearchInput component separated for better focus management
+const SearchInput = ({ value, onChange }: { value: string, onChange: (value: string) => void }) => {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const inputId = "personnel-search";
+  
+  // Handle change with direct value manipulation
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault(); // Prevent default behavior
+    e.stopPropagation(); // Stop event propagation
+    onChange(e.target.value);
+  };
+
+  // Focus input on mount
+  useEffect(() => {
+    if (inputRef.current) {
+      // Focus the input element when component mounts
+      setTimeout(() => {
+        if (inputRef.current) {
+          inputRef.current.focus();
+        }
+      }, 100);
+    }
+  }, []);
+
+  return (
+    <div className="relative w-full md:w-64">
+      <label htmlFor={inputId} className="sr-only">Search personnel</label>
+      <input
+        ref={inputRef}
+        id={inputId}
+        type="text"
+        placeholder="Search personnel..."
+        className="pl-4 pr-4 py-2 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+        value={value}
+        onChange={handleChange}
+        autoComplete="off"
+        spellCheck="false"
+        aria-label="Search personnel by name, rank, email or service number"
+      />
+    </div>
+  );
+};
+
+// FilterDropdown component for consistent styling
+const FilterDropdown = ({ 
+  value, 
+  onChange, 
+  options, 
+  label 
+}: { 
+  value: string, 
+  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void, 
+  options: {value: string, label: string}[],
+  label: string
+}) => {
+  const id = `filter-${label.toLowerCase().replace(/\s/g, '-')}`;
+  
+  return (
+    <div className="relative w-full md:w-auto">
+      <label htmlFor={id} className="sr-only">{label}</label>
+      <select
+        id={id}
+        className="pl-3 pr-8 py-2 border border-gray-300 rounded-lg appearance-none w-full md:w-40 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+        value={value}
+        onChange={onChange}
+        aria-label={label}
+      >
+        {options.map(option => (
+          <option key={option.value} value={option.value}>{option.label}</option>
+        ))}
+      </select>
+      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+        <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+          <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" />
+        </svg>
+      </div>
+    </div>
+  );
+};
 
 export default function PersonnelPage() {
   const { user, hasPermission, hasSpecificPermission } = useAuth();
   const router = useRouter();
-  const [personnel, setPersonnel] = useState<Personnel[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [allPersonnel, setAllPersonnel] = useState<Personnel[]>([]);
+  const [filteredPersonnel, setFilteredPersonnel] = useState<Personnel[]>([]);
+  
+  // Create separate state variables for input and filters
+  const [searchValue, setSearchValue] = useState("");
   const [filterStatus, setFilterStatus] = useState<PersonnelStatus | 'All'>('All');
   const [filterCompany, setFilterCompany] = useState<CompanyType | 'All'>('All');
+  
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedPersonnel, setSelectedPersonnel] = useState<Personnel | null>(null);
   const [modalMode, setModalMode] = useState<'view' | 'edit'>('view');
@@ -150,18 +167,87 @@ export default function PersonnelPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] = useState(false);
   const [personnelToDelete, setPersonnelToDelete] = useState<Personnel | null>(null);
+  const [totalPages, setTotalPages] = useState(1);
+  const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+  
+  // Toast notification state
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  // Track recently modified personnel for animations
+  const [recentlyModified, setRecentlyModified] = useState<string | null>(null);
+  
+  // Function to apply filters to personnel data
+  const applyFilters = (personnelData: Personnel[]) => {
+    const filtered = personnelData.filter(person => {
+      // Search filter
+      const searchTerm = searchValue.toLowerCase();
+      const searchMatch = searchValue === '' || 
+        (person.name?.toLowerCase().includes(searchTerm)) ||
+        (person.rank?.toLowerCase().includes(searchTerm)) ||
+        (person.email?.toLowerCase().includes(searchTerm)) ||
+        (typeof person.serviceNumber === 'string' && person.serviceNumber.toLowerCase().includes(searchTerm));
+      
+      // Company & status filters
+      const companyMatch = filterCompany === 'All' || person.company === filterCompany;
+      const statusMatch = filterStatus === 'All' || person.status === filterStatus;
+      
+      return searchMatch && companyMatch && statusMatch;
+    });
+    
+    setFilteredPersonnel(filtered);
+  };
 
   // Check if user has permission to view personnel
   const hasViewPermission = hasSpecificPermission('view_company_personnel') || 
                            hasSpecificPermission('view_all_personnel');
 
-  // Fetch personnel data
+  // Load all personnel data once
   useEffect(() => {
-    const fetchPersonnel = async () => {
+    const fetchAllPersonnel = async () => {
       setIsLoading(true);
       try {
-        // In a real app, this would be an API call
-        setPersonnel(MOCK_PERSONNEL);
+        // Only fetch once at the beginning
+        console.log('Fetching all personnel data...');
+        
+        // Increase pageSize to ensure we get all personnel
+        const response = await fetch(`/api/personnel?pageSize=1000`);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        
+        if (data.success) {
+          // Process the data
+          let personnelData = data.data.personnel || [];
+          
+          console.log(`Loaded ${personnelData.length} personnel records from API`);
+          
+          // Map MongoDB _id to id for frontend compatibility and normalize status values
+          personnelData = personnelData.map((person: any) => {
+            // Normalize status to match our allowed values
+            const normalizedStatus = normalizeStatus(person.status);
+            
+            return {
+              ...person,
+              id: person._id || person.id,
+              status: normalizedStatus,
+              lastUpdated: person.lastUpdated ? new Date(person.lastUpdated).toLocaleDateString() : new Date().toLocaleDateString()
+            };
+          });
+          
+          setAllPersonnel(personnelData);
+          setFilteredPersonnel(personnelData);
+          
+          // Set pagination data
+          const totalPagesCount = Math.ceil(personnelData.length / ITEMS_PER_PAGE);
+          setTotalPages(totalPagesCount);
+          console.log(`Setting total pages to ${totalPagesCount} (${personnelData.length} items at ${ITEMS_PER_PAGE} per page)`);
+          setInitialLoadComplete(true);
+        } else {
+          throw new Error(data.error || 'Failed to fetch personnel');
+        }
       } catch (error) {
         console.error('Failed to fetch personnel:', error);
       } finally {
@@ -169,81 +255,320 @@ export default function PersonnelPage() {
       }
     };
 
-    // Only fetch data if user has permission
-    if (hasViewPermission) {
-      fetchPersonnel();
-    } else {
-      setIsLoading(false);
+    fetchAllPersonnel();
+  }, []);
+
+  // Helper function to normalize status values
+  const normalizeStatus = (status: string): PersonnelStatus => {
+    const validStatuses: PersonnelStatus[] = ['active', 'pending', 'inactive', 'retired', 'standby', 'ready'];
+    
+    // Return the status if it's already valid
+    if (validStatuses.includes(status?.toLowerCase() as PersonnelStatus)) {
+      return status.toLowerCase() as PersonnelStatus;
     }
-  }, [hasViewPermission]);
+    
+    // Map specific legacy statuses
+    if (status?.toLowerCase() === 'medical' || status?.toLowerCase() === 'leave') {
+      return 'inactive';
+    }
+    
+    // Default fallback
+    return 'inactive';
+  };
 
-  // Filter personnel based on search term and filters
-  const filteredPersonnel = useMemo(() => {
-    return personnel.filter(person => {
-      const matchesSearch = searchTerm === '' || 
-        person.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        person.rank.toLowerCase().includes(searchTerm.toLowerCase());
+  // Client-side filtering effect
+  useEffect(() => {
+    if (!initialLoadComplete) return;
+    
+    // Filter personnel
+    const filtered = allPersonnel.filter(person => {
+      // Search filter
+      const searchTerm = searchValue.toLowerCase();
+      const searchMatch = searchValue === '' || 
+        (person.name?.toLowerCase().includes(searchTerm)) ||
+        (person.rank?.toLowerCase().includes(searchTerm)) ||
+        (person.email?.toLowerCase().includes(searchTerm)) ||
+        (typeof person.serviceNumber === 'string' && person.serviceNumber.toLowerCase().includes(searchTerm));
       
-      const matchesCompany = filterCompany === 'All' || person.company === filterCompany;
-      const matchesStatus = filterStatus === 'All' || person.status === filterStatus;
+      // Company & status filters
+      const companyMatch = filterCompany === 'All' || person.company === filterCompany;
+      const statusMatch = filterStatus === 'All' || person.status === filterStatus;
       
-      return matchesSearch && matchesCompany && matchesStatus;
+      return searchMatch && companyMatch && statusMatch;
     });
-  }, [personnel, searchTerm, filterCompany, filterStatus]);
+    
+    setFilteredPersonnel(filtered);
+    setTotalPages(Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE)));
+    
+    // Reset to first page when filters change
+    setCurrentPage(1);
+  }, [searchValue, filterCompany, filterStatus, allPersonnel, initialLoadComplete]);
 
-  // Pagination
-  const totalPages = Math.ceil(filteredPersonnel.length / ITEMS_PER_PAGE);
-  const paginatedPersonnel = filteredPersonnel.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
-  );
+  // Handle search input change separately to avoid rendering issues
+  const handleSearchChange = (value: string) => {
+    setSearchValue(value);
+  };
+
+  // Get current page data
+  const currentPersonnel = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    
+    // Log pagination information for debugging
+    console.log(`Pagination: Page ${currentPage}, showing items ${startIndex+1}-${Math.min(endIndex, filteredPersonnel.length)} of ${filteredPersonnel.length}`);
+    
+    return filteredPersonnel.slice(startIndex, endIndex);
+  }, [filteredPersonnel, currentPage, ITEMS_PER_PAGE]);
+
+  // Company filter options
+  const companyOptions = [
+    { value: 'All', label: 'All Companies' },
+    ...COMPANIES.map(company => ({ 
+      value: company, 
+      label: company 
+    }))
+  ];
+
+  // Status filter options
+  const statusOptions = [
+    { value: 'All', label: 'All Status' },
+    { value: 'active', label: 'Active' },
+    { value: 'pending', label: 'Pending' },
+    { value: 'inactive', label: 'Inactive' },
+    { value: 'retired', label: 'Retired' },
+    { value: 'standby', label: 'Standby' },
+    { value: 'ready', label: 'Ready' }
+  ];
 
   // Modal handlers
   const handleView = (person: Personnel) => {
     setSelectedPersonnel(person);
     setModalMode('view');
     setIsModalOpen(true);
+    
+    // Log this view action to the audit system
+    if (user && user._id) {
+      auditService.logPersonnelAction(
+        user._id,
+        `${user.firstName || ''} ${user.lastName || ''}`.trim(),
+        user.role,
+        'view' as AuditAction,
+        person.id,
+        person.name
+      ).catch(error => console.error('Failed to log personnel view:', error));
+    }
   };
 
   const handleEdit = (person: Personnel) => {
     setSelectedPersonnel(person);
     setModalMode('edit');
     setIsModalOpen(true);
+    
+    // Log this edit action to the audit system
+    if (user && user._id) {
+      auditService.logPersonnelAction(
+        user._id,
+        `${user.firstName || ''} ${user.lastName || ''}`.trim(),
+        user.role,
+        'update' as AuditAction,
+        person.id,
+        person.name
+      ).catch(error => console.error('Failed to log personnel edit initiation:', error));
+    }
   };
 
   const handleDeleteClick = (person: Personnel) => {
     setPersonnelToDelete(person);
     setIsDeleteConfirmationOpen(true);
+    
+    // Log this delete attempt to the audit system
+    if (user && user._id) {
+      auditService.logPersonnelAction(
+        user._id,
+        `${user.firstName || ''} ${user.lastName || ''}`.trim(),
+        user.role,
+        'delete' as AuditAction,
+        person.id,
+        person.name
+      ).catch(error => console.error('Failed to log personnel delete attempt:', error));
+    }
   };
 
   const handleDelete = async () => {
-    if (!personnelToDelete) return;
+    if (!personnelToDelete || !user || !user._id) return;
     
+    setIsLoading(true);
     try {
-      // In a real app, this would be an API call
-      setPersonnel(prev => prev.filter(p => p.id !== personnelToDelete.id));
-      setPersonnelToDelete(null);
-      setIsDeleteConfirmationOpen(false);
+      const token = localStorage.getItem('token');
+      const response = await fetch(`/api/personnel?id=${personnelToDelete.id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        // Update local state
+        setAllPersonnel(prev => prev.filter(p => p.id !== personnelToDelete.id));
+        setFilteredPersonnel(prev => prev.filter(p => p.id !== personnelToDelete.id));
+        
+        // Show success message
+        setToast({
+          message: `${personnelToDelete.name} has been deleted successfully`,
+          type: 'success'
+        });
+        
+        // Log successful delete to audit system
+        auditService.logPersonnelAction(
+          user._id,
+          `${user.firstName || ''} ${user.lastName || ''}`.trim(),
+          user.role,
+          'delete' as AuditAction,
+          personnelToDelete.id,
+          personnelToDelete.name
+        ).catch(error => console.error('Failed to log personnel deletion:', error));
+      } else {
+        throw new Error(result.error || 'Failed to delete personnel');
+      }
     } catch (error) {
-      console.error('Failed to delete personnel:', error);
+      console.error('Error deleting personnel:', error);
+      setToast({
+        message: 'Failed to delete personnel. Please try again.',
+        type: 'error'
+      });
+    } finally {
+      setIsLoading(false);
+      setIsDeleteConfirmationOpen(false);
+      setPersonnelToDelete(null);
     }
   };
 
   const handleSave = async (updatedData: Partial<Personnel>) => {
-    if (!selectedPersonnel) return;
+    if (!selectedPersonnel || !user || !user._id) return;
     
+    setIsLoading(true);
     try {
-      // In a real app, this would be an API call
-      setPersonnel(prev => 
-        prev.map(p => 
-          p.id === selectedPersonnel.id ? { ...p, ...updatedData } : p
-        )
-      );
-      setIsModalOpen(false);
+      const token = localStorage.getItem('token');
+      // Check for a string 'new' not a numerical comparison
+      const isNewPersonnel = selectedPersonnel.id.toString() === 'new';
+      const url = `/api/personnel${isNewPersonnel ? '' : `?id=${selectedPersonnel.id}`}`;
+      const method = isNewPersonnel ? 'POST' : 'PUT';
+      
+      // Prepare the data
+      const personnelData = isNewPersonnel
+        ? { ...updatedData }
+        : { ...selectedPersonnel, ...updatedData };
+      
+      // Set last updated timestamp as string
+      personnelData.lastUpdated = new Date().toISOString();
+      
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(personnelData)
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        // Update was successful
+        setIsModalOpen(false);
+        
+        // Show success message
+        setToast({
+          message: `${personnelData.name} has been ${isNewPersonnel ? 'created' : 'updated'} successfully`,
+          type: 'success'
+        });
+        
+        // Mark as recently modified for animation
+        const newId = isNewPersonnel && result.data?.id ? result.data.id : selectedPersonnel.id;
+        if (newId) setRecentlyModified(newId);
+        
+        // Log to audit system
+        const action = isNewPersonnel ? 'create' as AuditAction : 'update' as AuditAction;
+        auditService.logPersonnelAction(
+          user._id,
+          `${user.firstName || ''} ${user.lastName || ''}`.trim(),
+          user.role,
+          action,
+          isNewPersonnel && result.data?.id ? result.data.id : selectedPersonnel.id,
+          personnelData.name || ''
+        ).catch(error => console.error(`Failed to log personnel ${action}:`, error));
+        
+        // Refresh the personnel list
+        const refreshPersonnel = async () => {
+          try {
+            const response = await fetch(`/api/personnel?pageSize=100`);
+            
+            if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            
+            if (data.success) {
+              // Process the data
+              let personnelData = data.data.personnel || [];
+              
+              // Map MongoDB _id to id for frontend compatibility and normalize statuses
+              personnelData = personnelData.map((person: any) => ({
+                ...person,
+                id: person._id || person.id,
+                status: normalizeStatus(person.status),
+                lastUpdated: person.lastUpdated ? new Date(person.lastUpdated).toLocaleDateString() : new Date().toLocaleDateString()
+              }));
+              
+              setAllPersonnel(personnelData);
+              
+              // Apply existing filters
+              applyFilters(personnelData);
+            } else {
+              throw new Error(data.error || 'Failed to fetch personnel');
+            }
+          } catch (error) {
+            console.error('Failed to fetch personnel:', error);
+          }
+        };
+        
+        refreshPersonnel();
+      } else {
+        throw new Error(result.error || 'Failed to save personnel');
+      }
     } catch (error) {
-      console.error('Failed to update personnel:', error);
+      console.error('Failed to save personnel:', error);
+      setToast({
+        message: 'Failed to save personnel. Please try again.',
+        type: 'error'
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
+
+  // Force re-render when current page changes to ensure pagination works correctly
+  useEffect(() => {
+    // Calculate current items for this page
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    
+    // Force data refresh by setting a new array (even though it's the same data)
+    const currentItems = filteredPersonnel.slice(startIndex, endIndex);
+    console.log(`Page changed to ${currentPage}: showing items ${startIndex+1}-${Math.min(endIndex, filteredPersonnel.length)}`);
+    
+    // This will trigger a re-render even if filteredPersonnel hasn't changed
+    if (currentPage > 1 && currentItems.length === 0 && filteredPersonnel.length > 0) {
+      // If we ended up on a page with no items but there are items available,
+      // reset to page 1 (this can happen if filtering changed)
+      console.log("Reset to page 1 because current page has no items");
+      setCurrentPage(1);
+    }
+  }, [currentPage, filteredPersonnel]);
 
   // Content for users without permission
   const LimitedAccessContent = () => (
@@ -313,76 +638,32 @@ export default function PersonnelPage() {
   // Main content for users with permission
   const PersonnelContent = () => (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-        <div className="flex items-center mb-4 md:mb-0">
-          <div className="bg-indigo-100 rounded-full p-3 mr-4">
-            <UserGroupIcon className="h-6 w-6 text-indigo-600" />
+      <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold mb-4 md:mb-0 text-white bg-indigo-600 py-2 px-4 rounded-lg shadow-md">Personnel Management</h1>
+        <div className="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
+          <div className="text-sm font-medium text-gray-600 mb-3">Filter Personnel</div>
+          <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+            <SearchInput 
+              value={searchValue} 
+              onChange={handleSearchChange} 
+            />
+            
+            <FilterDropdown 
+              value={filterCompany} 
+              onChange={(e) => setFilterCompany(e.target.value as CompanyType | 'All')} 
+              options={companyOptions}
+              label="Filter by company"
+            />
+            
+            <FilterDropdown 
+              value={filterStatus} 
+              onChange={(e) => setFilterStatus(e.target.value as PersonnelStatus | 'All')} 
+              options={statusOptions}
+              label="Filter by status"
+            />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Personnel Management</h1>
         </div>
       </div>
-
-      {/* Search and filters */}
-      <Card className="mb-6">
-        <div className="p-4">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="w-full md:w-1/3">
-              <label htmlFor="search" className="sr-only">Search</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  id="search"
-                  type="text"
-                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                  placeholder="Search by name or rank"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
-            </div>
-            <div className="w-full md:w-48">
-              <label htmlFor="company" className="sr-only">Company</label>
-              <div className="relative">
-                <select
-                  id="company"
-                  className="block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
-                  value={filterCompany}
-                  onChange={(e) => setFilterCompany(e.target.value as 'All' | CompanyType)}
-                >
-                  <option value="All">All Companies</option>
-                  {COMPANIES.map((company) => (
-                    <option key={company} value={company}>{company}</option>
-                  ))}
-                </select>
-                <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                  <FunnelIcon className="h-4 w-4 text-gray-400" />
-                </div>
-              </div>
-            </div>
-            <div className="w-full md:w-48">
-              <label htmlFor="status" className="sr-only">Status</label>
-              <div className="relative">
-                <select
-                  id="status"
-                  className="block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
-                  value={filterStatus}
-                  onChange={(e) => setFilterStatus(e.target.value as 'All' | PersonnelStatus)}
-                >
-                  <option value="All">All Status</option>
-                  {STATUS_OPTIONS.map((status) => (
-                    <option key={status} value={status}>{status}</option>
-                  ))}
-                </select>
-                <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-                  <FunnelIcon className="h-4 w-4 text-gray-400" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </Card>
       
       {/* Personnel table */}
       <div className="bg-white shadow overflow-hidden sm:rounded-lg">
@@ -417,27 +698,45 @@ export default function PersonnelPage() {
                     Loading...
                   </td>
                 </tr>
-              ) : paginatedPersonnel.length > 0 ? (
-                paginatedPersonnel.map((person) => (
-                  <tr key={person.id}>
+              ) : currentPersonnel.length > 0 ? (
+                currentPersonnel.map((person, index) => (
+                  <tr 
+                    key={person.id}
+                    className={`${recentlyModified === person.id.toString() 
+                      ? 'animate-highlight' 
+                      : index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}
+                  >
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">{person.name}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-500">{person.rank}</div>
+                      <div className="text-sm text-gray-500">{getRankDisplayName(person.rank)}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-500">{person.company}</div>
+                      <div className="text-sm text-gray-500">{getCompanyDisplayName(person.company)}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        person.status === 'Ready' 
-                          ? 'bg-green-100 text-green-800' 
-                          : person.status === 'Standby' 
-                            ? 'bg-yellow-100 text-yellow-800' 
-                            : 'bg-gray-100 text-gray-800'
+                      <span className={`status-badge ${
+                        // Map any statuses not in our official list to "inactive"
+                        ['ready', 'standby', 'active', 'pending', 'inactive', 'retired'].includes(person.status?.toLowerCase()) ?
+                          person.status?.toLowerCase() === 'ready' 
+                            ? 'status-badge-ready' 
+                            : person.status?.toLowerCase() === 'standby' 
+                              ? 'status-badge-standby' 
+                              : person.status?.toLowerCase() === 'active'
+                                ? 'status-badge-active'
+                                : person.status?.toLowerCase() === 'pending'
+                                  ? 'status-badge-pending'
+                                  : person.status?.toLowerCase() === 'inactive'
+                                    ? 'status-badge-inactive'
+                                    : person.status?.toLowerCase() === 'retired'
+                                      ? 'status-badge-retired'
+                                      : 'status-badge-inactive'
+                        : 'status-badge-inactive'
                       }`}>
-                        {person.status}
+                        {['ready', 'standby', 'active', 'pending', 'inactive', 'retired'].includes(person.status?.toLowerCase()) ?
+                          person.status?.charAt(0).toUpperCase() + person.status?.slice(1).toLowerCase() :
+                          'Inactive'}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -452,7 +751,7 @@ export default function PersonnelPage() {
                         >
                           <EyeIcon className="h-5 w-5" />
                         </button>
-                        {hasPermission('STAFF') && (
+                        {hasPermission('staff') && (
                           <>
                             <button
                               className="text-blue-600 hover:text-blue-900"
@@ -461,7 +760,7 @@ export default function PersonnelPage() {
                             >
                               <PencilSquareIcon className="h-5 w-5" />
                             </button>
-                            {hasPermission('ADMIN') && (
+                            {hasPermission('admin') && (
                               <button
                                 className="text-red-600 hover:text-red-900"
                                 title="Delete"
@@ -491,20 +790,76 @@ export default function PersonnelPage() {
       {/* Pagination */}
       <div className="flex justify-between items-center mt-4">
         <div className="text-sm text-gray-700">
-          Showing <span className="font-medium">{paginatedPersonnel.length}</span> of{' '}
+          Showing <span className="font-medium">
+            {currentPage === 1 ? "1" : `${(currentPage - 1) * ITEMS_PER_PAGE + 1}`} to {Math.min(currentPage * ITEMS_PER_PAGE, filteredPersonnel.length)}
+          </span> of{' '}
           <span className="font-medium">{filteredPersonnel.length}</span> personnel
         </div>
-        <div className="flex space-x-2">
+        <div className="flex items-center space-x-2">
           <button
             className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+            onClick={() => {
+              setCurrentPage(prev => Math.max(1, prev - 1));
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
             disabled={currentPage === 1}
           >
             Previous
           </button>
+          
+          {/* Page numbers */}
+          <div className="flex items-center">
+            <span className="px-3 py-2 text-sm font-medium text-gray-700">
+              Page {currentPage} of {totalPages}
+            </span>
+            
+            {/* Only show page number buttons if there are multiple pages */}
+            {totalPages > 1 && (
+              <div className="hidden sm:flex space-x-1">
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  // Calculate which page numbers to show
+                  let pageNum;
+                  if (totalPages <= 5) {
+                    // If 5 or fewer pages, show all
+                    pageNum = i + 1;
+                  } else if (currentPage <= 3) {
+                    // If near beginning, show first 5 pages
+                    pageNum = i + 1;
+                  } else if (currentPage >= totalPages - 2) {
+                    // If near end, show last 5 pages
+                    pageNum = totalPages - 4 + i;
+                  } else {
+                    // Otherwise show current page and 2 on each side
+                    pageNum = currentPage - 2 + i;
+                  }
+                  
+                  return (
+                    <button
+                      key={pageNum}
+                      onClick={() => {
+                        setCurrentPage(pageNum);
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }}
+                      className={`inline-flex items-center px-3 py-2 border text-sm font-medium rounded-md ${
+                        currentPage === pageNum
+                          ? 'bg-indigo-50 border-indigo-500 text-indigo-600'
+                          : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
+                      }`}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+          
           <button
             className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-            onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+            onClick={() => {
+              setCurrentPage(prev => Math.min(totalPages, prev + 1));
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
             disabled={currentPage === totalPages}
           >
             Next
@@ -513,16 +868,22 @@ export default function PersonnelPage() {
       </div>
 
       {/* Add Personnel button (only for Staff and above) */}
-      {hasPermission('STAFF') && (
+      {hasPermission('staff') && (
         <div className="mt-6">
           <Button
             variant="primary"
             onClick={() => {
+              // Reset the selected personnel to null for creating a new record
               setSelectedPersonnel(null);
               setModalMode('edit');
               setIsModalOpen(true);
+              
+              // Small delay to ensure state is updated before modal opens
+              setTimeout(() => {
+                console.log("Opening modal for new personnel");
+              }, 100);
             }}
-            className="flex items-center"
+            className="flex items-center shadow-md hover:shadow-lg transition-shadow duration-300"
           >
             <UserPlusIcon className="h-5 w-5 mr-2" />
             Add Personnel
@@ -543,8 +904,8 @@ export default function PersonnelPage() {
         isOpen={isDeleteConfirmationOpen}
         onClose={() => setIsDeleteConfirmationOpen(false)}
         onConfirm={handleDelete}
-        title="Confirm Deletion"
-        message={`Are you sure you want to delete ${personnelToDelete?.name}'s record? This action cannot be undone.`}
+        title="Delete Personnel Record"
+        message={`Are you sure you want to delete the record for ${personnelToDelete?.name}? This action cannot be undone.`}
         confirmText="Delete"
         cancelText="Cancel"
         type="danger"
@@ -552,6 +913,49 @@ export default function PersonnelPage() {
     </div>
   );
 
-  // Render the appropriate content based on permissions
-  return hasViewPermission ? <PersonnelContent /> : <LimitedAccessContent />;
+  // Main render
+  return (
+    <div className="min-h-screen bg-gray-100 pb-10">
+      {isLoading ? (
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+        </div>
+      ) : (
+        // Always show the PersonnelContent for now
+        <PersonnelContent />
+      )}
+
+      {/* Personnel modal */}
+      {isModalOpen && selectedPersonnel && (
+        <PersonnelModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          personnel={selectedPersonnel}
+          mode={modalMode}
+          onSave={handleSave}
+        />
+      )}
+
+      {/* Delete confirmation */}
+      <ConfirmationDialog
+        isOpen={isDeleteConfirmationOpen}
+        onClose={() => setIsDeleteConfirmationOpen(false)}
+        onConfirm={handleDelete}
+        title="Delete Personnel Record"
+        message={`Are you sure you want to delete the record for ${personnelToDelete?.name}? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        type="danger"
+      />
+      
+      {/* Toast notification */}
+      {toast && (
+        <Toast 
+          message={toast.message} 
+          type={toast.type} 
+          onClose={() => setToast(null)} 
+        />
+      )}
+    </div>
+  );
 }

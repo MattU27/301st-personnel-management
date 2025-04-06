@@ -6,25 +6,62 @@ interface CardProps {
   title?: string;
   children: React.ReactNode;
   className?: string;
-  footer?: React.ReactNode;
+  headingLevel?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
+  interactive?: boolean;
+  onClick?: () => void;
+  id?: string;
 }
 
-const Card: React.FC<CardProps> = ({ title, children, className = '', footer }) => {
+const Card: React.FC<CardProps> = ({
+  title,
+  children,
+  className = '',
+  headingLevel = 'h2',
+  interactive = false,
+  onClick,
+  id,
+}) => {
+  // Dynamically create the heading based on the level prop
+  const Heading = headingLevel;
+  
+  // Base classes
+  const baseClasses = 'rounded-lg shadow-md overflow-hidden bg-white';
+  const hoverClasses = interactive ? 'hover:shadow-lg transition-shadow cursor-pointer' : '';
+  const focusClasses = interactive ? 'focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2' : '';
+  
+  // If card is interactive, wrap in a button for better accessibility
+  if (interactive) {
+    return (
+      <button
+        className={`${baseClasses} ${hoverClasses} ${focusClasses} w-full text-left ${className}`}
+        onClick={onClick}
+        id={id}
+        tabIndex={0}
+        aria-labelledby={title ? `${id}-title` : undefined}
+      >
+        <div className="p-4">
+          {title && (
+            <Heading id={`${id}-title`} className="text-lg font-medium text-gray-900 mb-2">
+              {title}
+            </Heading>
+          )}
+          <div>{children}</div>
+        </div>
+      </button>
+    );
+  }
+  
+  // Otherwise render as a standard div
   return (
-    <div className={`bg-white rounded-lg shadow-md overflow-hidden ${className}`}>
-      {title && (
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-lg font-medium text-gray-900">{title}</h3>
-        </div>
-      )}
-      <div className="px-6 py-4">
-        {children}
+    <div className={`${baseClasses} ${className}`} id={id}>
+      <div className="p-4">
+        {title && (
+          <Heading className="text-lg font-medium text-gray-900 mb-2">
+            {title}
+          </Heading>
+        )}
+        <div>{children}</div>
       </div>
-      {footer && (
-        <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
-          {footer}
-        </div>
-      )}
     </div>
   );
 };

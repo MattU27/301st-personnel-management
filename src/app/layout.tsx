@@ -2,34 +2,37 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
+import SkipToContent from "@/components/SkipToContent";
 import Footer from "@/components/Footer";
 import { AuthProvider } from "@/contexts/AuthContext";
 import SessionTimeoutWarning from '@/components/SessionTimeoutWarning';
+import StateResetWrapper from '@/components/StateResetWrapper';
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "AFP Personnel Management System",
-  description: "A comprehensive personnel management system for military reservists",
+  title: "Armed Forces of the Philippines Personnel Management System",
+  description: "Personnel management system for the Armed Forces of the Philippines",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className} suppressHydrationWarning>
         <AuthProvider>
-          <div className="flex flex-col min-h-screen">
+          <StateResetWrapper>
+            <SkipToContent />
             <Navbar />
-            <main className="flex-grow bg-gray-50">
+            <main id="main-content" tabIndex={-1} className="flex-grow bg-gray-50 min-h-screen">
               {children}
             </main>
             <Footer />
             <SessionTimeoutWarning />
-          </div>
+          </StateResetWrapper>
         </AuthProvider>
       </body>
     </html>

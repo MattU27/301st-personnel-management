@@ -2,7 +2,11 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { UserRole, PersonnelStatus, CompanyType } from '@/types/personnel';
+import { User, UserRole, UserStatus } from '@/types/auth';
+import axios from 'axios';
+import Cookies from 'js-cookie';
+import { hasPermission as checkRolePermission } from '@/utils/rolePermissions';
+import { auditService } from '@/utils/auditService';
 
 // Cookie helper functions
 const setCookie = (name: string, value: string, days = 7) => {
@@ -17,65 +21,6 @@ const getCookie = (name: string) => {
   return null;
 };
 
-// Define user interface
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  role: UserRole;
-  company?: CompanyType;
-  rank?: string;
-  status?: PersonnelStatus;
-  serialNumber?: string;
-  branch?: string;
-}
-
-// Mock user data for 301st Infantry Brigade
-const MOCK_USERS = [
-  {
-    id: 1,
-    name: 'CPT Santos, Juan C.',
-    email: 'juan.santos@army.mil.ph',
-    password: 'password123', // In a real app, this would be hashed
-    role: 'RESERVIST' as UserRole,
-    company: 'Alpha' as CompanyType,
-    rank: 'Captain',
-    status: 'Ready' as PersonnelStatus,
-    serialNumber: '301-12345',
-    branch: '301st Infantry Brigade'
-  },
-  {
-    id: 2,
-    name: 'MAJ Cruz, Maria L.',
-    email: 'maria.cruz@army.mil.ph',
-    password: 'password123',
-    role: 'STAFF' as UserRole,
-    rank: 'Major',
-    serialNumber: '301-23456',
-    branch: '301st Infantry Brigade'
-  },
-  {
-    id: 3,
-    name: 'COL Reyes, Antonio D.',
-    email: 'antonio.reyes@army.mil.ph',
-    password: 'password123',
-    role: 'ADMIN' as UserRole,
-    rank: 'Colonel',
-    serialNumber: '301-34567',
-    branch: '301st Infantry Brigade'
-  },
-  {
-    id: 4,
-    name: 'BGEN De La Cruz, Roberto M.',
-    email: 'roberto.delacruz@army.mil.ph',
-    password: 'password123',
-    role: 'DIRECTOR' as UserRole,
-    rank: 'Brigadier General',
-    serialNumber: '301-45678',
-    branch: '301st Infantry Brigade'
-  }
-];
-
 // Add a more comprehensive permission system
 interface Permission {
   id: string;
@@ -83,97 +28,33 @@ interface Permission {
   description: string;
 }
 
-// Define permissions by role
-const ROLE_PERMISSIONS: Record<UserRole, string[]> = {
-  'RESERVIST': [
-    'view_own_profile',
-    'edit_own_profile',
-    'view_own_documents',
-    'upload_own_documents',
-    'view_trainings',
-    'register_trainings',
-    'view_announcements',
-    'view_calendar',
-    'view_attended_trainings',
-    'view_policy'
-  ],
-  'STAFF': [
-    'view_own_profile',
-    'edit_own_profile',
-    'view_own_documents',
-    'upload_own_documents',
-    'view_trainings',
-    'register_trainings',
-    'view_announcements',
-    'manage_company_personnel',
-    'add_personnel_records',
-    'update_personnel_records',
-    'view_company_personnel',
-    'update_reservist_status',
-    'approve_reservist_accounts',
-    'post_announcements',
-    'manage_trainings',
-    'validate_documents',
-    'upload_policy',
-    'manage_policy'
-  ],
-  'ADMIN': [
-    'view_own_profile',
-    'edit_own_profile',
-    'view_own_documents',
-    'upload_own_documents',
-    'view_trainings',
-    'register_trainings',
-    'view_announcements',
-    'manage_staff_accounts',
-    'deactivate_staff_accounts',
-    'add_personnel_records',
-    'update_personnel_records',
-    'delete_personnel_records',
-    'view_all_personnel',
-    'approve_reservist_accounts',
-    'deactivate_reservist_accounts',
-    'manage_system',
-    'manage_policy'
-  ],
-  'DIRECTOR': [
-    'view_own_profile',
-    'edit_own_profile',
-    'view_own_documents',
-    'upload_own_documents',
-    'view_trainings',
-    'register_trainings',
-    'view_announcements',
-    'create_admin_accounts',
-    'review_admin_registrations',
-    'approve_admin_accounts',
-    'reject_admin_accounts',
-    'deactivate_admin_accounts',
-    'reactivate_admin_accounts',
-    'manage_admin_roles',
-    'view_system_analytics',
-    'view_prescriptive_analytics',
-    'manage_system_configuration',
-    'view_reports',
-    'manage_reports',
-    'export_reports',
-    'manage_resources',
-    'manage_trainings_schedule'
-  ]
-};
+// Add RegisterData interface
+interface RegisterData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  role?: string;
+  rank?: string;
+  company?: string;
+}
 
 // Define auth context interface
 interface AuthContextType {
   user: User | null;
-  isLoading: boolean;
   isAuthenticated: boolean;
+  isLoading: boolean;
+  mounted: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
-  hasPermission: (requiredRole: UserRole) => boolean;
+  hasPermission: (permission: string) => boolean;
   hasSpecificPermission: (permission: string) => boolean;
   sessionExpiring: boolean;
   extendSession: () => void;
   simulateRole: (role: UserRole) => void;
+  isRedirecting: boolean;
+  register: (userData: RegisterData) => Promise<void>;
+  getToken: () => Promise<string | null>;
 }
 
 // Create the auth context
@@ -181,6 +62,8 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Session timeout in milliseconds (30 minutes)
 const SESSION_TIMEOUT = 30 * 60 * 1000;
+// Warning timeout (2 minutes before session expiry)
+const WARNING_TIMEOUT = SESSION_TIMEOUT - (2 * 60 * 1000);
 
 // Auth provider component
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -192,6 +75,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const sessionTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const sessionWarningRef = useRef<NodeJS.Timeout | null>(null);
   const [simulatedRole, setSimulatedRole] = useState<UserRole | null>(null);
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   // Handle client-side mounting
   useEffect(() => {
@@ -207,35 +91,43 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [mounted]);
 
+  // Log the current auth context state
+  useEffect(() => {
+    console.log('AuthContext state:', { user, isLoading, isAuthenticated: !!user, mounted });
+  }, [user, isLoading, mounted]);
+
   const checkAuth = async () => {
     console.log('Running checkAuth...');
     try {
-      // Check cookie first
-      const userCookie = getCookie('user');
-      console.log('User cookie:', userCookie);
+      // Check for token in cookies or localStorage
+      const token = Cookies.get('token') || localStorage.getItem('token');
       
-      if (userCookie) {
-        const parsedUser = JSON.parse(userCookie);
-        console.log('Parsed user from cookie:', parsedUser);
-        setUser(parsedUser);
-        // Ensure localStorage is in sync
-        localStorage.setItem('user', userCookie);
+      if (!token) {
+        setUser(null);
+        setIsLoading(false);
         return;
       }
-
-      // Fallback to localStorage
-      const storedUser = localStorage.getItem('user');
-      console.log('Stored user from localStorage:', storedUser);
       
-      if (storedUser) {
-        const parsedUser = JSON.parse(storedUser);
-        console.log('Parsed user from localStorage:', parsedUser);
-        setUser(parsedUser);
-        // Sync cookie with localStorage
-        setCookie('user', storedUser);
+      // If token exists, verify with the API
+      const response = await axios.get('/api/auth/me', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      
+      if (response.data.success) {
+        setUser(response.data.data.user);
+        startSessionTimer();
+      } else {
+        setUser(null);
+        Cookies.remove('token');
+        localStorage.removeItem('token');
       }
     } catch (error) {
       console.error('Auth check failed:', error);
+      setUser(null);
+      Cookies.remove('token');
+      localStorage.removeItem('token');
     } finally {
       setIsLoading(false);
     }
@@ -243,122 +135,199 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Reset session timeout
   const resetSessionTimeout = useCallback(() => {
+    console.log('Resetting session timeout');
+    
     // Clear existing timeouts
     if (sessionTimeoutRef.current) {
       clearTimeout(sessionTimeoutRef.current);
       sessionTimeoutRef.current = null;
     }
-    
+
     if (sessionWarningRef.current) {
       clearTimeout(sessionWarningRef.current);
       sessionWarningRef.current = null;
     }
-    
-    // Only set new timeouts if user is logged in
+
+    // Set new timeouts only if user is logged in
     if (user) {
-      // Set warning timeout (5 minutes before expiry)
-      sessionWarningRef.current = setTimeout(() => {
-        setSessionExpiring(true);
-      }, SESSION_TIMEOUT - 5 * 60 * 1000);
+      console.log('Setting new session timeouts');
       
-      // Set session timeout
+      sessionWarningRef.current = setTimeout(() => {
+        console.log('Session warning triggered');
+        setSessionExpiring(true);
+      }, WARNING_TIMEOUT);
+
       sessionTimeoutRef.current = setTimeout(() => {
+        console.log('Session timeout triggered, logging out');
         logout();
       }, SESSION_TIMEOUT);
     }
   }, [user]);
 
-  // Extend session
-  const extendSession = useCallback(() => {
-    setSessionExpiring(false);
+  // Start session timer
+  const startSessionTimer = useCallback(() => {
+    console.log('Starting session timer');
     resetSessionTimeout();
-  }, [resetSessionTimeout]);
 
-  // Setup event listeners for user activity
-  useEffect(() => {
-    if (!user) return;
+    // Add activity listeners
+    const activityEvents = ['mousedown', 'keydown', 'touchstart', 'click'];
     
-    // Reset timeout on initial login
-    resetSessionTimeout();
-    
-    // Events to track for user activity
-    const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
-    
-    // Throttled event handler to prevent excessive calls
-    let lastActivityTime = Date.now();
     const activityHandler = () => {
-      const now = Date.now();
-      if (now - lastActivityTime > 60000) { // Only reset if more than a minute has passed
-        lastActivityTime = now;
+      if (user) {
         resetSessionTimeout();
+        if (sessionExpiring) {
+          setSessionExpiring(false);
+        }
       }
     };
-    
-    // Add event listeners
-    events.forEach(event => {
+
+    activityEvents.forEach(event => {
       window.addEventListener(event, activityHandler);
     });
-    
-    // Cleanup
+
     return () => {
-      events.forEach(event => {
+      console.log('Cleaning up session timer');
+      activityEvents.forEach(event => {
         window.removeEventListener(event, activityHandler);
       });
       
       if (sessionTimeoutRef.current) {
         clearTimeout(sessionTimeoutRef.current);
+        sessionTimeoutRef.current = null;
       }
       
       if (sessionWarningRef.current) {
         clearTimeout(sessionWarningRef.current);
+        sessionWarningRef.current = null;
       }
     };
-  }, [user, resetSessionTimeout]);
+  }, [user, resetSessionTimeout, sessionExpiring]);
 
+  // Setup session timeout when user changes
+  useEffect(() => {
+    const cleanupFunction = startSessionTimer();
+    return cleanupFunction;
+  }, [user, startSessionTimer]);
+
+  // Extend session
+  const extendSession = useCallback(() => {
+    if (sessionExpiring) {
+      setSessionExpiring(false);
+      resetSessionTimeout();
+    }
+  }, [sessionExpiring, resetSessionTimeout]);
+
+  // Login function
   const login = async (email: string, password: string) => {
-    console.log('Login attempt with:', { email });
     setIsLoading(true);
     try {
-      // Mock authentication
-      const mockUser = MOCK_USERS.find(u => u.email === email && u.password === password);
-      console.log('Found user:', mockUser);
+      console.log('AuthContext: Sending login request');
+      const response = await axios.post('/api/auth/login', { email, password });
       
-      if (!mockUser) {
-        throw new Error('Invalid credentials');
+      console.log('AuthContext: Login response:', response.data);
+      
+      if (response.data.success) {
+        const { token, user } = response.data.data;
+        
+        console.log('AuthContext: Login successful, storing token and user data');
+        
+        // Save token to both localStorage and cookies for redundancy
+        localStorage.setItem('token', token);
+        Cookies.set('token', token, { expires: 1, secure: process.env.NODE_ENV === 'production' });
+        
+        // Clear any existing session timeouts before setting user
+        if (sessionTimeoutRef.current) {
+          clearTimeout(sessionTimeoutRef.current);
+          sessionTimeoutRef.current = null;
+        }
+        
+        if (sessionWarningRef.current) {
+          clearTimeout(sessionWarningRef.current);
+          sessionWarningRef.current = null;
+        }
+        
+        // Make sure session expiring flag is turned off
+        setSessionExpiring(false);
+        
+        // Reset any simulated role
+        setSimulatedRole(null);
+        
+        setUser(user);
+        
+        // Reset redirection flag to false first, then set it to true
+        // This helps prevent issues with stale state
+        setIsRedirecting(false);
+        
+        // Initialize session timer with a delay to avoid immediate triggers
+        setTimeout(() => {
+          resetSessionTimeout();
+          // Now that everything is set up, redirect
+          setIsRedirecting(true);
+          router.push('/dashboard');
+        }, 100);
+      } else {
+        console.error('AuthContext: Login failed with error from server:', response.data.error);
+        throw new Error(response.data.error || 'Login failed');
       }
-      
-      // Remove password from user object before storing
-      const { password: _, ...userWithoutPassword } = mockUser;
-      console.log('Setting user in state:', userWithoutPassword);
-      setUser(userWithoutPassword);
-      
-      const userJson = JSON.stringify(userWithoutPassword);
-      console.log('Storing user data...');
-      localStorage.setItem('user', userJson);
-      setCookie('user', userJson);
-      
-      // After successful login, reset session timeout
-      resetSessionTimeout();
-      
-      return Promise.resolve();
-    } catch (error) {
-      console.error('Login failed:', error);
-      throw error;
+    } catch (error: any) {
+      console.error('AuthContext: Login failed with exception:', error);
+      if (error.response) {
+        console.error('AuthContext: Error response data:', error.response.data);
+        console.error('AuthContext: Error response status:', error.response.status);
+      }
+      throw new Error(error.response?.data?.error || error.message || 'Login failed');
     } finally {
       setIsLoading(false);
     }
   };
 
+  // Logout function
   const logout = async () => {
-    console.log('Logging out...');
     setIsLoading(true);
     try {
-      setUser(null);
-      localStorage.removeItem('user');
-      document.cookie = 'user=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-      router.push('/login');
+      const token = Cookies.get('token') || localStorage.getItem('token');
       
-      // Clear session timeouts
+      // Log the logout action to the audit system
+      if (user) {
+        try {
+          const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim();
+          const userRank = user.rank ? `${user.rank} ` : '';
+          const userCompany = user.company ? ` (${user.company})` : '';
+          
+          await auditService.logUserAction(
+            user._id,
+            fullName,
+            user.role,
+            'logout',
+            'user',
+            user._id,
+            `${userRank}${fullName}${userCompany} logged out`
+          );
+        } catch (auditError) {
+          console.error('Error logging logout to audit system:', auditError);
+          // Don't fail the logout if audit logging fails
+        }
+      }
+      
+      // Clear cookies and local storage
+      Cookies.remove('token');
+      localStorage.removeItem('token');
+      sessionStorage.removeItem('token');
+      
+      // Notify server about logout
+      if (token) {
+        await fetch('/api/auth/logout', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        }).catch(err => console.error('Error during logout:', err));
+      }
+      
+      // Reset the state
+      setUser(null);
+      
+      // Clear timeouts
       if (sessionTimeoutRef.current) {
         clearTimeout(sessionTimeoutRef.current);
         sessionTimeoutRef.current = null;
@@ -370,64 +339,137 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       
       setSessionExpiring(false);
+      router.push('/login');
+    } catch (error) {
+      console.error('Logout error:', error);
+      
+      // Still clear local state even if server request fails
+      setUser(null);
+      Cookies.remove('token');
+      localStorage.removeItem('token');
+      router.push('/login');
     } finally {
       setIsLoading(false);
     }
   };
 
-  const hasPermission = (requiredRole: UserRole): boolean => {
+  // Check if user has required role or higher
+  const hasPermission = (permission: string): boolean => {
     if (!user) return false;
-    
-    const roleHierarchy: Record<UserRole, number> = {
-      'RESERVIST': 0,
-      'STAFF': 1,
-      'ADMIN': 2,
-      'DIRECTOR': 3
+
+    // Define role-based permissions
+    const rolePermissions: Record<UserRole, string[]> = {
+      [UserRole.DIRECTOR]: [
+        'view_personnel',
+        'manage_company_personnel',
+        'approve_reservist_accounts',
+        'create_admin_accounts',
+        'manage_admin_accounts',
+        'post_announcements',
+        'manage_announcements',
+        'manage_trainings',
+        'manage_documents',
+        'upload_policy',
+        'edit_policy',
+        'delete_policy',
+        'access_system_settings',
+        'view_audit_logs',
+        'run_reports',
+        'export_data'
+      ],
+      [UserRole.ADMIN]: [
+        'view_personnel',
+        'manage_company_personnel',
+        'approve_reservist_accounts',
+        'post_announcements',
+        'manage_announcements',
+        'manage_trainings',
+        'manage_documents',
+        'upload_policy',
+        'edit_policy',
+        'delete_policy',
+        'run_reports',
+        'export_data'
+      ],
+      [UserRole.STAFF]: [
+        'view_personnel',
+        'manage_company_personnel',
+        'post_announcements',
+        'manage_trainings',
+        'manage_documents'
+      ],
+      [UserRole.ENLISTED]: [
+        'view_personnel'
+      ],
+      [UserRole.RESERVIST]: [
+        'view_personnel'
+      ]
     };
 
-    return roleHierarchy[user.role] >= roleHierarchy[requiredRole];
+    const userPermissions = rolePermissions[user.role] || [];
+    return userPermissions.includes(permission);
   };
 
-  // Function to simulate a different role for testing
+  // Simulate a role for testing purposes
   const simulateRole = (role: UserRole) => {
     setSimulatedRole(role);
-    console.log(`Simulating role: ${role}`);
   };
 
-  // Update hasSpecificPermission to use simulatedRole if available
+  // Check if user has a specific permission
   const hasSpecificPermission = (permission: string): boolean => {
     if (!user) return false;
     
-    // Use simulatedRole if available, otherwise use user's actual role
-    const userRole = simulatedRole || user.role;
-    const permissions = ROLE_PERMISSIONS[userRole] || [];
+    // Use simulated role if set
+    const roleToCheck = simulatedRole || user.role;
     
-    return permissions.includes(permission);
+    // Use the imported checkPermission function
+    return checkRolePermission(roleToCheck, permission as any);
   };
 
+  const getToken = async (): Promise<string | null> => {
+    try {
+      return Cookies.get('token') || localStorage.getItem('token');
+    } catch (error) {
+      console.error('Error getting token:', error);
+      return null;
+    }
+  };
+
+  // Add register function
+  const register = async (userData: RegisterData): Promise<void> => {
+    try {
+      const response = await axios.post('/api/auth/register', userData);
+      
+      if (!response.data.success) {
+        throw new Error(response.data.error || 'Registration failed');
+      }
+    } catch (error: any) {
+      console.error('Registration failed:', error);
+      throw new Error(error.response?.data?.error || error.message || 'Registration failed');
+    }
+  };
+
+  // Provide auth context value
   const contextValue: AuthContextType = {
     user,
-    isLoading: !mounted || isLoading,
     isAuthenticated: !!user,
+    isLoading,
+    mounted,
     login,
     logout,
     hasPermission,
     hasSpecificPermission,
     sessionExpiring,
     extendSession,
-    simulateRole
+    simulateRole,
+    isRedirecting,
+    getToken,
+    register,
   };
-
-  console.log('AuthContext state:', {
-    user,
-    isLoading: !mounted || isLoading,
-    isAuthenticated: !!user,
-    mounted
-  });
 
   return (
     <AuthContext.Provider value={contextValue}>
-      {mounted ? children : null}
+      {children}
     </AuthContext.Provider>
   );
 }

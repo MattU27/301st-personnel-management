@@ -1,0 +1,613 @@
+[{
+  "_id": {
+    "$oid": "67f0ba7dcb285c3f71b9123c"
+  },
+  "title": "KAMANDAG 2023 Joint Military Exercise",
+  "description": "Annual military exercise between the Armed Forces of the Philippines and the United States Marine Corps focusing on disaster response, humanitarian assistance, and counter-terrorism operations.",
+  "type": "field_exercise",
+  "startDate": {
+    "$date": "2025-05-09T16:00:00.000Z"
+  },
+  "endDate": {
+    "$date": "2025-05-19T16:00:00.000Z"
+  },
+  "location": {
+    "name": "Naval Base Subic Bay",
+    "address": "Subic Bay Freeport Zone, Zambales, Philippines"
+  },
+  "instructor": {
+    "name": "Lt. Col. Jose Rizal",
+    "rank": "Lieutenant Colonel",
+    "specialization": "Tactical Operations",
+    "contactInfo": "jrizal@mail.afp.mil.ph"
+  },
+  "status": "upcoming",
+  "capacity": 50,
+  "eligibleRanks": [
+    "Captain",
+    "Major",
+    "Lieutenant Colonel",
+    "Colonel"
+  ],
+  "eligibleCompanies": [
+    "Alpha",
+    "Bravo",
+    "Charlie"
+  ],
+  "mandatory": true,
+  "attendees": [
+    {
+      "userId": {
+        "$oid": "67f01770e659b9597fe6648f"
+      },
+      "status": "completed",
+      "registrationDate": {
+        "$date": "2025-04-02T05:07:09.362Z"
+      },
+      "_id": {
+        "$oid": "67f0ba7dcb285c3f71b9123d"
+      }
+    },
+    {
+      "userId": {
+        "$oid": "67f011f547a45741ecca05d9"
+      },
+      "status": "completed",
+      "registrationDate": {
+        "$date": "2025-03-20T05:07:09.362Z"
+      },
+      "_id": {
+        "$oid": "67f0ba7dcb285c3f71b9123e"
+      }
+    },
+    {
+      "userId": {
+        "$oid": "67f01c1ee659b9597fe66680"
+      },
+      "status": "registered",
+      "registrationDate": {
+        "$date": "2025-04-04T05:07:09.362Z"
+      },
+      "_id": {
+        "$oid": "67f0ba7dcb285c3f71b9123f"
+      }
+    },
+    {
+      "userId": {
+        "$oid": "67eff3b1e659b9597fe65e59"
+      },
+      "status": "completed",
+      "registrationDate": {
+        "$date": "2025-03-19T05:07:09.362Z"
+      },
+      "_id": {
+        "$oid": "67f0ba7dcb285c3f71b91240"
+      }
+    },
+    {
+      "userId": {
+        "$oid": "67efcc8ea338560e8f45e7a5"
+      },
+      "status": "completed",
+      "registrationDate": {
+        "$date": "2025-04-03T05:07:09.362Z"
+      },
+      "_id": {
+        "$oid": "67f0ba7dcb285c3f71b91241"
+      }
+    }
+  ],
+  "createdBy": {
+    "$oid": "67f01770e659b9597fe6648f"
+  },
+  "tags": [
+    "joint exercise",
+    "amphibious",
+    "disaster response"
+  ],
+  "certificationOffered": true,
+  "certificationValidityPeriod": 24,
+  "materials": [],
+  "createdAt": {
+    "$date": "2025-04-05T05:07:09.364Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-05T05:07:09.364Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f0ba7dcb285c3f71b91242"
+  },
+  "title": "Cyber Defense and Information Security Workshop",
+  "description": "Advanced training on protecting military networks, detecting intrusions, and responding to cyber threats.",
+  "type": "workshop",
+  "startDate": {
+    "$date": "2025-04-09T16:00:00.000Z"
+  },
+  "endDate": {
+    "$date": "2025-04-11T16:00:00.000Z"
+  },
+  "location": {
+    "name": "AFP Communications, Electronics and Information Systems Service",
+    "address": "Camp Aguinaldo, Quezon City, Metro Manila, Philippines"
+  },
+  "instructor": {
+    "name": "Maj. Maria Clara",
+    "rank": "Major",
+    "specialization": "Cybersecurity",
+    "contactInfo": "mclara@mail.afp.mil.ph"
+  },
+  "status": "upcoming",
+  "capacity": 30,
+  "eligibleRanks": [
+    "Captain",
+    "Major",
+    "Lieutenant Colonel"
+  ],
+  "eligibleCompanies": [
+    "Headquarters",
+    "NERRSC"
+  ],
+  "mandatory": false,
+  "virtualMeetingUrl": "https://meeting.afp.mil.ph/cyber-defense-2023",
+  "attendees": [
+    {
+      "userId": {
+        "$oid": "67f01cebe659b9597fe666c9"
+      },
+      "status": "completed",
+      "registrationDate": {
+        "$date": "2025-03-27T05:07:09.362Z"
+      },
+      "_id": {
+        "$oid": "67f0ba7dcb285c3f71b91243"
+      }
+    },
+    {
+      "userId": {
+        "$oid": "67f01c1ee659b9597fe66680"
+      },
+      "status": "registered",
+      "registrationDate": {
+        "$date": "2025-03-30T05:07:09.362Z"
+      },
+      "_id": {
+        "$oid": "67f0ba7dcb285c3f71b91244"
+      }
+    },
+    {
+      "userId": {
+        "$oid": "67f01770e659b9597fe6648f"
+      },
+      "status": "registered",
+      "registrationDate": {
+        "$date": "2025-04-01T05:07:09.362Z"
+      },
+      "_id": {
+        "$oid": "67f0ba7dcb285c3f71b91245"
+      }
+    },
+    {
+      "userId": {
+        "$oid": "67f011f547a45741ecca05d9"
+      },
+      "status": "registered",
+      "registrationDate": {
+        "$date": "2025-03-13T05:07:09.362Z"
+      },
+      "_id": {
+        "$oid": "67f0ba7dcb285c3f71b91246"
+      }
+    },
+    {
+      "userId": {
+        "$oid": "67eff3b1e659b9597fe65e59"
+      },
+      "status": "registered",
+      "registrationDate": {
+        "$date": "2025-03-10T05:07:09.362Z"
+      },
+      "_id": {
+        "$oid": "67f0ba7dcb285c3f71b91247"
+      }
+    },
+    {
+      "userId": {
+        "$oid": "67efcc8ea338560e8f45e7a5"
+      },
+      "status": "completed",
+      "registrationDate": {
+        "$date": "2025-03-20T05:07:09.362Z"
+      },
+      "_id": {
+        "$oid": "67f0ba7dcb285c3f71b91248"
+      }
+    }
+  ],
+  "createdBy": {
+    "$oid": "67f01770e659b9597fe6648f"
+  },
+  "tags": [
+    "cyber",
+    "information security",
+    "network defense"
+  ],
+  "certificationOffered": true,
+  "certificationValidityPeriod": 12,
+  "materials": [],
+  "createdAt": {
+    "$date": "2025-04-05T05:07:09.365Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-05T05:07:09.365Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f0ba7dcb285c3f71b91249"
+  },
+  "title": "Humanitarian Assistance and Disaster Response (HADR) Training",
+  "description": "Comprehensive training on disaster response protocols, search and rescue operations, and humanitarian aid delivery during calamities.",
+  "type": "field_exercise",
+  "startDate": {
+    "$date": "2025-03-05T16:00:00.000Z"
+  },
+  "endDate": {
+    "$date": "2025-03-10T16:00:00.000Z"
+  },
+  "location": {
+    "name": "AFP Education, Training and Doctrine Command",
+    "address": "Camp Aguinaldo, Quezon City, Metro Manila, Philippines"
+  },
+  "instructor": {
+    "name": "Col. Manuel Quezon",
+    "rank": "Colonel",
+    "specialization": "Disaster Response",
+    "contactInfo": "mquezon@mail.afp.mil.ph"
+  },
+  "status": "completed",
+  "capacity": 40,
+  "eligibleRanks": [
+    "Private First Class",
+    "Corporal",
+    "Sergeant",
+    "Second Lieutenant",
+    "First Lieutenant"
+  ],
+  "eligibleCompanies": [
+    "Alpha",
+    "Bravo",
+    "Charlie",
+    "Headquarters"
+  ],
+  "mandatory": false,
+  "attendees": [
+    {
+      "userId": {
+        "$oid": "67efcc8ea338560e8f45e7a5"
+      },
+      "status": "registered",
+      "registrationDate": {
+        "$date": "2025-03-15T05:07:09.362Z"
+      },
+      "_id": {
+        "$oid": "67f0ba7dcb285c3f71b9124a"
+      }
+    },
+    {
+      "userId": {
+        "$oid": "67eff3b1e659b9597fe65e59"
+      },
+      "status": "registered",
+      "registrationDate": {
+        "$date": "2025-04-03T05:07:09.362Z"
+      },
+      "_id": {
+        "$oid": "67f0ba7dcb285c3f71b9124b"
+      }
+    },
+    {
+      "userId": {
+        "$oid": "67f01c1ee659b9597fe66680"
+      },
+      "status": "registered",
+      "registrationDate": {
+        "$date": "2025-03-23T05:07:09.362Z"
+      },
+      "_id": {
+        "$oid": "67f0ba7dcb285c3f71b9124c"
+      }
+    },
+    {
+      "userId": {
+        "$oid": "67f01cebe659b9597fe666c9"
+      },
+      "status": "registered",
+      "registrationDate": {
+        "$date": "2025-03-20T05:07:09.362Z"
+      },
+      "_id": {
+        "$oid": "67f0ba7dcb285c3f71b9124d"
+      }
+    },
+    {
+      "userId": {
+        "$oid": "67f011f547a45741ecca05d9"
+      },
+      "status": "completed",
+      "registrationDate": {
+        "$date": "2025-03-12T05:07:09.362Z"
+      },
+      "_id": {
+        "$oid": "67f0ba7dcb285c3f71b9124e"
+      }
+    },
+    {
+      "userId": {
+        "$oid": "67f01770e659b9597fe6648f"
+      },
+      "status": "registered",
+      "registrationDate": {
+        "$date": "2025-03-19T05:07:09.362Z"
+      },
+      "_id": {
+        "$oid": "67f0ba7dcb285c3f71b9124f"
+      }
+    }
+  ],
+  "createdBy": {
+    "$oid": "67f01770e659b9597fe6648f"
+  },
+  "tags": [
+    "disaster response",
+    "humanitarian",
+    "search and rescue"
+  ],
+  "certificationOffered": true,
+  "certificationValidityPeriod": 36,
+  "materials": [],
+  "createdAt": {
+    "$date": "2025-04-05T05:07:09.365Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-05T05:07:09.365Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f0ba7dcb285c3f71b91250"
+  },
+  "title": "Combat Medic Certification Course",
+  "description": "Intensive training for military personnel to provide medical support in combat scenarios, including triage, field treatments, and evacuation procedures.",
+  "type": "medical",
+  "startDate": {
+    "$date": "2025-02-14T16:00:00.000Z"
+  },
+  "endDate": {
+    "$date": "2025-03-14T16:00:00.000Z"
+  },
+  "location": {
+    "name": "AFP Medical Center (V. Luna General Hospital)",
+    "address": "V. Luna Road, Quezon City, Metro Manila, Philippines"
+  },
+  "instructor": {
+    "name": "Maj. Rosa Alvarez",
+    "rank": "Major",
+    "specialization": "Combat Medicine",
+    "contactInfo": "ralvarez@mail.afp.mil.ph"
+  },
+  "status": "completed",
+  "capacity": 25,
+  "eligibleRanks": [
+    "Private",
+    "Private First Class",
+    "Corporal",
+    "Sergeant"
+  ],
+  "eligibleCompanies": [
+    "Alpha",
+    "Bravo",
+    "Charlie"
+  ],
+  "mandatory": false,
+  "attendees": [
+    {
+      "userId": {
+        "$oid": "67efcc8ea338560e8f45e7a5"
+      },
+      "status": "registered",
+      "registrationDate": {
+        "$date": "2025-03-31T05:07:09.362Z"
+      },
+      "_id": {
+        "$oid": "67f0ba7dcb285c3f71b91251"
+      }
+    },
+    {
+      "userId": {
+        "$oid": "67f01c1ee659b9597fe66680"
+      },
+      "status": "registered",
+      "registrationDate": {
+        "$date": "2025-03-30T05:07:09.362Z"
+      },
+      "_id": {
+        "$oid": "67f0ba7dcb285c3f71b91252"
+      }
+    },
+    {
+      "userId": {
+        "$oid": "67eff3b1e659b9597fe65e59"
+      },
+      "status": "registered",
+      "registrationDate": {
+        "$date": "2025-04-04T05:07:09.362Z"
+      },
+      "_id": {
+        "$oid": "67f0ba7dcb285c3f71b91253"
+      }
+    },
+    {
+      "userId": {
+        "$oid": "67f011f547a45741ecca05d9"
+      },
+      "status": "registered",
+      "registrationDate": {
+        "$date": "2025-03-07T05:07:09.362Z"
+      },
+      "_id": {
+        "$oid": "67f0ba7dcb285c3f71b91254"
+      }
+    },
+    {
+      "userId": {
+        "$oid": "67f01cebe659b9597fe666c9"
+      },
+      "status": "completed",
+      "registrationDate": {
+        "$date": "2025-04-05T05:07:09.362Z"
+      },
+      "_id": {
+        "$oid": "67f0ba7dcb285c3f71b91255"
+      }
+    },
+    {
+      "userId": {
+        "$oid": "67f01770e659b9597fe6648f"
+      },
+      "status": "completed",
+      "registrationDate": {
+        "$date": "2025-03-24T05:07:09.362Z"
+      },
+      "_id": {
+        "$oid": "67f0ba7dcb285c3f71b91256"
+      }
+    }
+  ],
+  "createdBy": {
+    "$oid": "67f01770e659b9597fe6648f"
+  },
+  "tags": [
+    "medical",
+    "combat",
+    "first aid",
+    "triage"
+  ],
+  "certificationOffered": true,
+  "certificationValidityPeriod": 24,
+  "materials": [],
+  "createdAt": {
+    "$date": "2025-04-05T05:07:09.366Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-05T05:07:09.366Z"
+  },
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f0ba7dcb285c3f71b91257"
+  },
+  "title": "Leadership and Strategic Management Seminar",
+  "description": "Advanced leadership training for senior officers focusing on strategic planning, organizational management, and effective decision making.",
+  "type": "seminar",
+  "startDate": {
+    "$date": "2025-04-19T16:00:00.000Z"
+  },
+  "endDate": {
+    "$date": "2025-04-21T16:00:00.000Z"
+  },
+  "location": {
+    "name": "AFP Officers Club",
+    "address": "Camp General Emilio Aguinaldo, Quezon City, Metro Manila, Philippines"
+  },
+  "instructor": {
+    "name": "Gen. Antonio Luna",
+    "rank": "General",
+    "specialization": "Leadership and Strategy",
+    "contactInfo": "aluna@mail.afp.mil.ph"
+  },
+  "status": "upcoming",
+  "capacity": 20,
+  "eligibleRanks": [
+    "Major",
+    "Lieutenant Colonel",
+    "Colonel",
+    "Brigadier General"
+  ],
+  "eligibleCompanies": [
+    "Headquarters"
+  ],
+  "mandatory": false,
+  "attendees": [
+    {
+      "userId": {
+        "$oid": "67f01c1ee659b9597fe66680"
+      },
+      "status": "registered",
+      "registrationDate": {
+        "$date": "2025-03-17T05:07:09.362Z"
+      },
+      "_id": {
+        "$oid": "67f0ba7dcb285c3f71b91258"
+      }
+    },
+    {
+      "userId": {
+        "$oid": "67efcc8ea338560e8f45e7a5"
+      },
+      "status": "completed",
+      "registrationDate": {
+        "$date": "2025-03-08T05:07:09.362Z"
+      },
+      "_id": {
+        "$oid": "67f0ba7dcb285c3f71b91259"
+      }
+    },
+    {
+      "userId": {
+        "$oid": "67f01770e659b9597fe6648f"
+      },
+      "status": "registered",
+      "registrationDate": {
+        "$date": "2025-04-05T05:15:21.509Z"
+      },
+      "_id": {
+        "$oid": "67f0bc69cb285c3f71b9138f"
+      }
+    },
+    {
+      "userId": {
+        "$oid": "67f011f547a45741ecca05d9"
+      },
+      "status": "registered",
+      "registrationDate": {
+        "$date": "2025-04-05T05:19:44.741Z"
+      },
+      "_id": {
+        "$oid": "67f0bd70cb285c3f71b91573"
+      }
+    }
+  ],
+  "createdBy": {
+    "$oid": "67f01770e659b9597fe6648f"
+  },
+  "tags": [
+    "leadership",
+    "strategic planning",
+    "management"
+  ],
+  "certificationOffered": false,
+  "materials": [],
+  "createdAt": {
+    "$date": "2025-04-05T05:07:09.366Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-05T05:19:44.742Z"
+  },
+  "__v": 4
+}]

@@ -3,6 +3,9 @@
 
 This document outlines the development timeline and goals for our system, ensuring completion by week 10 for final presentation.
 
+## Current Implementation Status (Week 2)
+**Note:** The current implementation uses mock data for visualization and UI demonstration purposes only. All user accounts, dashboard statistics, and displayed information are simulated. Real data integration with database connectivity is scheduled for Weeks 3-4 and is in progress. The current focus has been on establishing the UI framework and interaction patterns that will be used throughout the system.
+
 ## Week 1-2 (Completed)
 ### Web Application
 - ✅ Login UI and functionality with mock data

@@ -7,22 +7,25 @@ import Card from '@/components/Card';
 import Button from '@/components/Button';
 import { 
   DocumentTextIcon, 
-  DocumentPlusIcon, 
   DocumentCheckIcon,
   DocumentMagnifyingGlassIcon,
-  ArrowUpTrayIcon,
   TrashIcon,
   CheckCircleIcon,
   ExclamationCircleIcon,
-  ClockIcon
+  ClockIcon,
+  XMarkIcon,
+  ShieldExclamationIcon
 } from '@heroicons/react/24/outline';
 import ConfirmationDialog from '@/components/ConfirmationDialog';
+import axios from 'axios';
+import { toast } from 'react-hot-toast';
+import DocumentViewer from '@/components/DocumentViewer';
 
 type DocumentStatus = 'verified' | 'pending' | 'rejected';
 type SecurityClassification = 'Unclassified' | 'Confidential' | 'Secret' | 'Top Secret';
 
 interface Document {
-  id: string;
+  _id: string;
   name: string;
   type: string;
   uploadDate: string;
@@ -32,154 +35,151 @@ interface Document {
   comments?: string;
   fileUrl: string;
   securityClassification: SecurityClassification;
-  expiryDate?: string;
+  expirationDate?: string;
 }
 
 export default function DocumentsPage() {
   const { user, isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
   const [documents, setDocuments] = useState<Document[]>([]);
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [documentType, setDocumentType] = useState('');
-  const [showUploadModal, setShowUploadModal] = useState(false);
   const [activeTab, setActiveTab] = useState<'all' | 'verified' | 'pending' | 'rejected'>('all');
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [documentToDelete, setDocumentToDelete] = useState<string | null>(null);
-  const [securityClassification, setSecurityClassification] = useState<SecurityClassification>('Unclassified');
-  const [expiryDate, setExpiryDate] = useState('');
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [showDocumentViewer, setShowDocumentViewer] = useState(false);
+  const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
+  const [showVerifyModal, setShowVerifyModal] = useState(false);
+  const [documentToVerify, setDocumentToVerify] = useState<Document | null>(null);
+  const [rejectReason, setRejectReason] = useState('');
+  const [isVerifying, setIsVerifying] = useState(false);
+
+  // Fetch documents from API
+  const fetchDocuments = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      const response = await axios.get('/api/documents', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (response.data.success) {
+        setDocuments(response.data.data.documents);
+      }
+    } catch (error) {
+      console.error('Error fetching documents:', error);
+      toast.error('Failed to load documents');
+    } finally {
+      setIsLoaded(true);
+    }
+  };
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       router.push('/login');
+      return;
     }
 
-    // Mock data for documents
-    if (user) {
-      const mockDocuments: Document[] = [
-        {
-          id: '1',
-          name: 'Personal Information Form.pdf',
-          type: 'Personal Information',
-          uploadDate: '2024-01-15',
-          status: 'verified',
-          verifiedBy: 'Jane Smith',
-          verifiedDate: '2024-01-20',
-          fileUrl: '#',
-          securityClassification: 'Unclassified',
-          expiryDate: '2024-12-31'
-        },
-        {
-          id: '2',
-          name: 'Medical Certificate.pdf',
-          type: 'Medical Certificate',
-          uploadDate: '2024-02-10',
-          status: 'pending',
-          fileUrl: '#',
-          securityClassification: 'Unclassified',
-          expiryDate: '2024-12-31'
-        },
-        {
-          id: '3',
-          name: 'Training Completion.pdf',
-          type: 'Training Certificate',
-          uploadDate: '2024-02-25',
-          status: 'rejected',
-          comments: 'Document is not legible. Please upload a clearer copy.',
-          fileUrl: '#',
-          securityClassification: 'Unclassified',
-          expiryDate: '2024-12-31'
-        },
-        {
-          id: '4',
-          name: 'ID Card.jpg',
-          type: 'Identification',
-          uploadDate: '2024-03-01',
-          status: 'verified',
-          verifiedBy: 'John Admin',
-          verifiedDate: '2024-03-05',
-          fileUrl: '#',
-          securityClassification: 'Unclassified',
-          expiryDate: '2024-12-31'
-        }
-      ];
-      setDocuments(mockDocuments);
+    if (isAuthenticated) {
+      fetchDocuments();
     }
-  }, [isLoading, isAuthenticated, router, user]);
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setSelectedFile(e.target.files[0]);
-    }
-  };
-
-  const handleUpload = () => {
-    if (!selectedFile || !documentType) return;
-    
-    setIsUploading(true);
-    setUploadProgress(0);
-    
-    // Simulate upload progress
-    const interval = setInterval(() => {
-      setUploadProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          return 100;
-        }
-        return prev + 10;
-      });
-    }, 300);
-    
-    // Simulate upload completion
-    setTimeout(() => {
-      const newDocument: Document = {
-        id: `doc-${Date.now()}`,
-        name: selectedFile.name,
-        type: documentType,
-        uploadDate: new Date().toISOString().split('T')[0],
-        status: 'pending',
-        fileUrl: URL.createObjectURL(selectedFile),
-        securityClassification,
-        expiryDate: expiryDate || undefined
-      };
-      
-      setDocuments([newDocument, ...documents]);
-      setIsUploading(false);
-      setUploadProgress(0);
-      setSelectedFile(null);
-      setDocumentType('');
-      setSecurityClassification('Unclassified');
-      setExpiryDate('');
-      setShowUploadModal(false);
-    }, 3000);
-  };
+  }, [isLoading, isAuthenticated, router]);
 
   const handleDeleteDocumentClick = (id: string) => {
     setDocumentToDelete(id);
     setShowDeleteConfirmation(true);
   };
 
-  const handleDeleteDocument = () => {
+  const handleDeleteDocument = async () => {
     if (!documentToDelete) return;
     
-    setDocuments(documents.filter(doc => doc.id !== documentToDelete));
-    setDocumentToDelete(null);
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast.error('Authentication required');
+        return;
+      }
+      
+      const response = await axios.delete(`/api/documents?id=${documentToDelete}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      
+      if (response.data.success) {
+        setDocuments(documents.filter(doc => doc._id !== documentToDelete));
+        toast.success('Document deleted successfully');
+      } else {
+        throw new Error(response.data.error || 'Failed to delete document');
+      }
+    } catch (error: any) {
+      console.error('Delete error:', error);
+      toast.error(error.message || 'Failed to delete document');
+    } finally {
+      setDocumentToDelete(null);
+      setShowDeleteConfirmation(false);
+    }
+  };
+
+  const handleViewDocument = (document: Document) => {
+    setSelectedDocument(document);
+    setShowDocumentViewer(true);
+  };
+
+  const handleVerifyDocumentClick = (document: Document) => {
+    setDocumentToVerify(document);
+    setShowVerifyModal(true);
+    setRejectReason('');
+  };
+
+  const handleVerifyDocument = async (approved: boolean) => {
+    if (!documentToVerify) return;
+    
+    setIsVerifying(true);
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        toast.error('Authentication required');
+        return;
+      }
+      
+      const response = await axios.put('/api/documents', {
+        id: documentToVerify._id,
+        status: approved ? 'verified' : 'rejected',
+        comments: !approved ? rejectReason : undefined
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      
+      if (response.data.success) {
+        // Update document in the list
+        setDocuments(prevDocs => 
+          prevDocs.map(doc => 
+            doc._id === documentToVerify._id ? response.data.data.document : doc
+          )
+        );
+        
+        toast.success(`Document ${approved ? 'verified' : 'rejected'} successfully`);
+        setShowVerifyModal(false);
+        setDocumentToVerify(null);
+      } else {
+        throw new Error(response.data.error || 'Failed to update document status');
+      }
+    } catch (error: any) {
+      console.error('Document verification error:', error);
+      toast.error(error.message || 'Failed to update document status');
+    } finally {
+      setIsVerifying(false);
+    }
   };
 
   const filteredDocuments = activeTab === 'all' 
     ? documents 
     : documents.filter(doc => doc.status === activeTab);
-
-  const documentTypes = [
-    'Personal Information',
-    'Medical Certificate',
-    'Training Certificate',
-    'Identification',
-    'Educational Background',
-    'Military Training',
-    'Other'
-  ];
 
   const getStatusBadge = (status: DocumentStatus) => {
     switch (status) {
@@ -207,6 +207,9 @@ export default function DocumentsPage() {
     }
   };
 
+  // Determine if the user can verify documents
+  const canVerifyDocuments = user && ['admin', 'director', 'staff'].includes(user.role);
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
@@ -219,6 +222,9 @@ export default function DocumentsPage() {
     return null;
   }
 
+  // Count of pending documents
+  const pendingCount = documents.filter(doc => doc.status === 'pending').length;
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="space-y-6">
@@ -229,20 +235,26 @@ export default function DocumentsPage() {
                 <DocumentTextIcon className="h-8 w-8 text-indigo-600" />
               </div>
               <div className="ml-4">
-                <h2 className="text-lg font-medium text-gray-900">Documents</h2>
+                <h2 className="text-lg font-medium text-gray-900">Document Verification</h2>
                 <p className="text-sm text-gray-500">
-                  Upload, manage, and track your document verification status
+                  Review, verify, and manage documents for the 301st
                 </p>
               </div>
             </div>
-            <Button 
-              variant="primary" 
-              onClick={() => setShowUploadModal(true)}
-              className="flex items-center"
-            >
-              <DocumentPlusIcon className="h-5 w-5 mr-2" />
-              Upload Document
-            </Button>
+            {canVerifyDocuments && pendingCount > 0 && (
+              <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
+                <div className="flex">
+                  <div className="flex-shrink-0">
+                    <ShieldExclamationIcon className="h-5 w-5 text-yellow-400" aria-hidden="true" />
+                  </div>
+                  <div className="ml-3">
+                    <p className="text-sm text-yellow-700">
+                      <span className="font-medium">{pendingCount} document{pendingCount !== 1 ? 's' : ''}</span> pending verification
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -274,10 +286,15 @@ export default function DocumentsPage() {
                   activeTab === 'pending'
                     ? 'border-indigo-500 text-indigo-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                } whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm`}
+                } whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm relative`}
                 onClick={() => setActiveTab('pending')}
               >
                 Pending
+                {pendingCount > 0 && (
+                  <span className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center bg-indigo-600 text-white rounded-full text-xs">
+                    {pendingCount}
+                  </span>
+                )}
               </button>
               <button
                 className={`${
@@ -299,19 +316,9 @@ export default function DocumentsPage() {
                 <h3 className="mt-2 text-sm font-medium text-gray-900">No documents found</h3>
                 <p className="mt-1 text-sm text-gray-500">
                   {activeTab === 'all' 
-                    ? 'Get started by uploading a document.' 
+                    ? 'There are no documents to manage.' 
                     : `You don't have any ${activeTab} documents.`}
                 </p>
-                <div className="mt-6">
-                  <Button 
-                    variant="primary" 
-                    onClick={() => setShowUploadModal(true)}
-                    className="flex items-center mx-auto"
-                  >
-                    <DocumentPlusIcon className="h-5 w-5 mr-2" />
-                    Upload Document
-                  </Button>
-                </div>
               </div>
             ) : (
               <div className="overflow-x-auto">
@@ -331,7 +338,7 @@ export default function DocumentsPage() {
                         Status
                       </th>
                       <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Expiry Date
+                        Upload Date
                       </th>
                       <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         Actions
@@ -340,7 +347,7 @@ export default function DocumentsPage() {
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                     {filteredDocuments.map((document) => (
-                      <tr key={document.id}>
+                      <tr key={document._id} className={document.status === 'pending' ? 'bg-yellow-50' : ''}>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center">
                             <DocumentTextIcon className="h-5 w-5 text-gray-400 mr-3" />
@@ -369,19 +376,37 @@ export default function DocumentsPage() {
                           )}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-500">{document.expiryDate}</div>
+                          <div className="text-sm text-gray-500">{document.uploadDate}</div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <div className="flex space-x-2">
-                            <button className="text-indigo-600 hover:text-indigo-900">
-                              <DocumentMagnifyingGlassIcon className="h-5 w-5" />
-                            </button>
                             <button 
-                              className="text-red-600 hover:text-red-900"
-                              onClick={() => handleDeleteDocumentClick(document.id)}
+                              className="text-indigo-600 hover:text-indigo-900 tooltip"
+                              onClick={() => handleViewDocument(document)}
                             >
-                              <TrashIcon className="h-5 w-5" />
+                              <DocumentMagnifyingGlassIcon className="h-5 w-5" />
+                              <span className="tooltiptext">View</span>
                             </button>
+                            
+                            {canVerifyDocuments && document.status === 'pending' && (
+                              <button 
+                                className="text-green-600 hover:text-green-900 tooltip"
+                                onClick={() => handleVerifyDocumentClick(document)}
+                              >
+                                <DocumentCheckIcon className="h-5 w-5" />
+                                <span className="tooltiptext">Verify</span>
+                              </button>
+                            )}
+
+                            {canVerifyDocuments && (
+                              <button 
+                                className="text-red-600 hover:text-red-900 tooltip"
+                                onClick={() => handleDeleteDocumentClick(document._id)}
+                              >
+                                <TrashIcon className="h-5 w-5" />
+                                <span className="tooltiptext">Delete</span>
+                              </button>
+                            )}
                           </div>
                         </td>
                       </tr>
@@ -394,8 +419,16 @@ export default function DocumentsPage() {
         </Card>
       </div>
 
-      {/* Upload Modal */}
-      {showUploadModal && (
+      {/* Document Viewer Modal */}
+      {showDocumentViewer && selectedDocument && (
+        <DocumentViewer 
+          document={selectedDocument} 
+          onClose={() => setShowDocumentViewer(false)} 
+        />
+      )}
+
+      {/* Verification Modal */}
+      {showVerifyModal && documentToVerify && (
         <div className="fixed inset-0 overflow-y-auto z-50">
           <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             <div className="fixed inset-0 transition-opacity" aria-hidden="true">
@@ -406,109 +439,32 @@ export default function DocumentsPage() {
               <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                 <div className="sm:flex sm:items-start">
                   <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-indigo-100 sm:mx-0 sm:h-10 sm:w-10">
-                    <DocumentPlusIcon className="h-6 w-6 text-indigo-600" aria-hidden="true" />
+                    <DocumentCheckIcon className="h-6 w-6 text-indigo-600" aria-hidden="true" />
                   </div>
-                  <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                    <h3 className="text-lg leading-6 font-medium text-gray-900">Upload Document</h3>
-                    <div className="mt-4 space-y-4">
-                      <div>
-                        <label htmlFor="document-type" className="block text-sm font-medium text-gray-700">
-                          Document Type
-                        </label>
-                        <select
-                          id="document-type"
-                          name="document-type"
-                          className="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
-                          value={documentType}
-                          onChange={(e) => setDocumentType(e.target.value)}
-                        >
-                          <option value="">Select Document Type</option>
-                          {documentTypes.map((type) => (
-                            <option key={type} value={type}>
-                              {type}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                      <div>
-                        <label htmlFor="securityClassification" className="block text-sm font-medium text-gray-700">
-                          Security Classification
-                        </label>
-                        <select
-                          id="securityClassification"
-                          name="securityClassification"
-                          className="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
-                          value={securityClassification}
-                          onChange={(e) => setSecurityClassification(e.target.value as SecurityClassification)}
-                        >
-                          <option value="Unclassified">Unclassified</option>
-                          <option value="Confidential">Confidential</option>
-                          <option value="Secret">Secret</option>
-                          <option value="Top Secret">Top Secret</option>
-                        </select>
-                      </div>
-                      <div>
-                        <label htmlFor="expiryDate" className="block text-sm font-medium text-gray-700">
-                          Expiry Date (if applicable)
-                        </label>
-                        <input
-                          type="date"
-                          id="expiryDate"
-                          name="expiryDate"
-                          className="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
-                          value={expiryDate}
-                          onChange={(e) => setExpiryDate(e.target.value)}
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700">File</label>
-                        <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
-                          <div className="space-y-1 text-center">
-                            <ArrowUpTrayIcon className="mx-auto h-12 w-12 text-gray-400" />
-                            <div className="flex text-sm text-gray-600">
-                              <label
-                                htmlFor="file-upload"
-                                className="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500"
-                              >
-                                <span>Upload a file</span>
-                                <input
-                                  id="file-upload"
-                                  name="file-upload"
-                                  type="file"
-                                  className="sr-only"
-                                  onChange={handleFileChange}
-                                />
-                              </label>
-                              <p className="pl-1">or drag and drop</p>
-                            </div>
-                            <p className="text-xs text-gray-500">PDF, PNG, JPG, GIF up to 10MB</p>
-                          </div>
-                        </div>
-                        {selectedFile && (
-                          <p className="mt-2 text-sm text-gray-500">
-                            Selected file: {selectedFile.name}
-                          </p>
-                        )}
-                      </div>
-                      {isUploading && (
+                  <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                    <h3 className="text-lg leading-6 font-medium text-gray-900">
+                      Verify Document
+                    </h3>
+                    <div className="mt-2">
+                      <p className="text-sm text-gray-500">
+                        Please verify or reject the document "{documentToVerify.name}"
+                      </p>
+                      
+                      <div className="mt-4 space-y-4">
                         <div>
-                          <div className="relative pt-1">
-                            <div className="flex mb-2 items-center justify-between">
-                              <div>
-                                <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-indigo-600 bg-indigo-200">
-                                  {uploadProgress}%
-                                </span>
-                              </div>
-                            </div>
-                            <div className="overflow-hidden h-2 mb-4 text-xs flex rounded bg-indigo-200">
-                              <div
-                                style={{ width: `${uploadProgress}%` }}
-                                className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-indigo-500"
-                              ></div>
-                            </div>
-                          </div>
+                          <label htmlFor="rejectReason" className="block text-sm font-medium text-gray-700">
+                            Reason for rejection (optional)
+                          </label>
+                          <textarea
+                            id="rejectReason"
+                            placeholder="Enter reason for rejection"
+                            className="mt-1 block w-full px-3 py-2 text-gray-700 border rounded-lg focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            rows={4}
+                            value={rejectReason}
+                            onChange={(e) => setRejectReason(e.target.value)}
+                          />
                         </div>
-                      )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -516,18 +472,31 @@ export default function DocumentsPage() {
               <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                 <Button
                   variant="primary"
-                  onClick={handleUpload}
-                  disabled={!selectedFile || !documentType || isUploading}
-                  isLoading={isUploading}
+                  onClick={() => handleVerifyDocument(true)}
+                  disabled={isVerifying}
+                  isLoading={isVerifying}
                   className="w-full sm:w-auto sm:ml-3"
                 >
-                  Upload
+                  Verify
+                </Button>
+                <Button
+                  variant="danger"
+                  onClick={() => handleVerifyDocument(false)}
+                  disabled={isVerifying}
+                  isLoading={isVerifying}
+                  className="w-full sm:w-auto mt-3 sm:mt-0 sm:ml-3"
+                >
+                  Reject
                 </Button>
                 <Button
                   variant="secondary"
-                  onClick={() => setShowUploadModal(false)}
-                  disabled={isUploading}
-                  className="mt-3 w-full sm:mt-0 sm:w-auto"
+                  onClick={() => {
+                    setShowVerifyModal(false);
+                    setDocumentToVerify(null);
+                    setRejectReason('');
+                  }}
+                  disabled={isVerifying}
+                  className="w-full sm:w-auto mt-3 sm:mt-0"
                 >
                   Cancel
                 </Button>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import Card from '@/components/Card';
@@ -15,27 +15,48 @@ import {
   XCircleIcon
 } from '@heroicons/react/24/outline';
 import ConfirmationDialog from '@/components/ConfirmationDialog';
+import { toast } from 'react-hot-toast';
+import { auditService } from '@/utils/auditService';
 
 type TrainingStatus = 'upcoming' | 'ongoing' | 'completed';
 type RegistrationStatus = 'registered' | 'not_registered' | 'completed' | 'cancelled';
 
 interface Training {
-  id: string;
+  id?: string;
+  _id?: string;
   title: string;
   description: string;
+  type?: string;
   startDate: string;
   endDate: string;
-  location: string;
+  location: string | { 
+    name?: string;
+    address?: string;
+    coordinates?: {
+      latitude: number;
+      longitude: number;
+    }
+  };
+  locationDisplay?: string;
   status: TrainingStatus;
   capacity: number;
   registered: number;
   registrationStatus?: RegistrationStatus;
-  instructor?: string;
-  category: string;
+  instructor?: string | {
+    name?: string;
+    rank?: string;
+    specialization?: string;
+    contactInfo?: string;
+  };
+  instructorDisplay?: string;
+  category?: string;
+  mandatory?: boolean;
+  attendees?: Array<any>;
+  tags?: string[];
 }
 
 export default function TrainingsPage() {
-  const { user, isAuthenticated, isLoading } = useAuth();
+  const { user, isAuthenticated, isLoading, hasSpecificPermission } = useAuth();
   const router = useRouter();
   const [trainings, setTrainings] = useState<Training[]>([]);
   const [activeTab, setActiveTab] = useState<'all' | 'upcoming' | 'registered' | 'completed'>('all');
@@ -43,113 +64,210 @@ export default function TrainingsPage() {
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showCancelConfirmation, setShowCancelConfirmation] = useState(false);
   const [trainingToCancel, setTrainingToCancel] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  
+  // Add a ref to track if we've already logged the page view
+  const hasLoggedPageView = useRef(false);
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       router.push('/login');
     }
 
-    // Mock data for trainings
-    if (user) {
-      const mockTrainings: Training[] = [
-        {
-          id: '1',
-          title: 'Basic Combat Training',
-          description: 'Fundamental combat skills training for all reservists.',
-          startDate: '2024-03-15',
-          endDate: '2024-03-20',
-          location: 'Camp Aguinaldo, Quezon City',
-          status: 'upcoming',
-          capacity: 50,
-          registered: 32,
-          registrationStatus: 'not_registered',
-          instructor: 'Col. James Rodriguez',
-          category: 'Combat'
-        },
-        {
-          id: '2',
-          title: 'First Aid Seminar',
-          description: 'Basic first aid and emergency response training.',
-          startDate: '2024-04-02',
-          endDate: '2024-04-03',
-          location: 'AFP Medical Center, Quezon City',
-          status: 'upcoming',
-          capacity: 30,
-          registered: 25,
-          registrationStatus: 'registered',
-          instructor: 'Maj. Sarah Johnson',
-          category: 'Medical'
-        },
-        {
-          id: '3',
-          title: 'Leadership Development',
-          description: 'Leadership skills and team management training for officers.',
-          startDate: '2024-04-10',
-          endDate: '2024-04-12',
-          location: 'Camp Aguinaldo, Quezon City',
-          status: 'upcoming',
-          capacity: 25,
-          registered: 15,
-          registrationStatus: 'not_registered',
-          instructor: 'Gen. Robert Smith',
-          category: 'Leadership'
-        },
-        {
-          id: '4',
-          title: 'Tactical Communications',
-          description: 'Training on military communications and protocols.',
-          startDate: '2024-01-10',
-          endDate: '2024-01-12',
-          location: 'Signal Battalion HQ, Taguig City',
-          status: 'completed',
-          capacity: 40,
-          registered: 38,
-          registrationStatus: 'completed',
-          instructor: 'Lt. Col. David Chen',
-          category: 'Communications'
-        },
-        {
-          id: '5',
-          title: 'Physical Fitness Assessment',
-          description: 'Annual physical fitness test and evaluation.',
-          startDate: '2024-02-05',
-          endDate: '2024-02-05',
-          location: 'Camp Aguinaldo, Quezon City',
-          status: 'completed',
-          capacity: 100,
-          registered: 95,
-          registrationStatus: 'completed',
-          instructor: 'Maj. Michael Torres',
-          category: 'Fitness'
+    const fetchTrainings = async () => {
+      if (!user) return;
+      
+      setLoading(true);
+      try {
+        // Get the auth token from localStorage
+        const token = localStorage.getItem('token');
+        if (!token) {
+          throw new Error('Authentication token not found');
         }
-      ];
-      setTrainings(mockTrainings);
+        
+        // Call the API to get trainings with authorization header
+        const response = await fetch('/api/trainings', {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch trainings');
+        }
+        
+        const data = await response.json();
+        if (data.success) {
+          // Process the trainings to match our interface
+          const processedTrainings = data.data.trainings.map((training: any) => {
+            // Create display strings for complex objects
+            const locationDisplay = typeof training.location === 'object' 
+              ? (training.location?.name || training.location?.address || 'No location specified') 
+              : training.location || 'No location specified';
+            
+            const instructorDisplay = typeof training.instructor === 'object'
+              ? (training.instructor?.name || 'TBD')
+              : training.instructor || 'TBD';
+            
+            return {
+              id: training._id,
+              _id: training._id,
+              title: training.title,
+              description: training.description || '',
+              type: training.type,
+              startDate: training.startDate || new Date().toISOString(),
+              endDate: training.endDate || new Date().toISOString(),
+              location: training.location,
+              locationDisplay,
+              status: training.status,
+              capacity: training.capacity || 0,
+              registered: training.attendees?.length || 0,
+              registrationStatus: training.registrationStatus || 'not_registered',
+              instructor: training.instructor,
+              instructorDisplay,
+              category: training.type || 'Other', // Use type as category, default to 'Other'
+              mandatory: training.mandatory || false,
+              attendees: training.attendees || [],
+              tags: training.tags || []
+            };
+          });
+          
+          setTrainings(processedTrainings);
+        } else {
+          throw new Error(data.error || 'Failed to load trainings');
+        }
+      } catch (error) {
+        console.error('Error fetching trainings:', error);
+        toast.error('Failed to load trainings. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTrainings();
+    
+    // Log page view to audit log - only once per session
+    if (user && !hasLoggedPageView.current) {
+      auditService.logPageView(
+        user._id,
+        `${user.firstName} ${user.lastName}`,
+        user.role,
+        '/trainings'
+      );
+      hasLoggedPageView.current = true;
     }
   }, [isLoading, isAuthenticated, router, user]);
 
-  const handleRegister = (trainingId: string) => {
-    setTrainings(trainings.map(training => 
-      training.id === trainingId 
-        ? { ...training, registrationStatus: 'registered', registered: training.registered + 1 } 
-        : training
-    ));
+  const handleRegister = async (trainingId: string | undefined) => {
+    if (!user) {
+      toast.error('You must be logged in to register for trainings.');
+      return;
+    }
+    
+    if (!trainingId) {
+      toast.error('Training ID is required');
+      return;
+    }
+
+    try {
+      // Get the auth token from localStorage
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('Authentication token not found');
+      }
+      
+      const response = await fetch('/api/trainings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          trainingId,
+          action: 'register',
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to register for training');
+      }
+
+      const data = await response.json();
+      
+      // Update local state with the updated training
+      setTrainings(prevTrainings => 
+        prevTrainings.map(training => 
+          training.id === trainingId ? { 
+            ...data.data.training,
+            id: trainingId  // Ensure ID is preserved
+          } : training
+        )
+      );
+
+      toast.success('You have been registered for the training.');
+    } catch (error) {
+      console.error('Error registering for training:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to register for training');
+    }
   };
 
-  const handleCancelRegistrationClick = (trainingId: string) => {
+  const handleCancelRegistrationClick = (trainingId: string | undefined) => {
+    if (!trainingId) {
+      toast.error('Training ID is required');
+      return;
+    }
     setTrainingToCancel(trainingId);
     setShowCancelConfirmation(true);
   };
 
-  const handleCancelRegistration = () => {
-    if (!trainingToCancel) return;
-    
-    setTrainings(trainings.map(training => 
-      training.id === trainingToCancel 
-        ? { ...training, registrationStatus: 'not_registered', registered: training.registered - 1 } 
-        : training
-    ));
-    
-    setTrainingToCancel(null);
+  const handleCancelRegistration = async () => {
+    if (!user || !trainingToCancel) return;
+
+    try {
+      // Get the auth token from localStorage
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('Authentication token not found');
+      }
+      
+      const response = await fetch('/api/trainings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          trainingId: trainingToCancel,
+          action: 'cancel',
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to cancel registration');
+      }
+
+      const data = await response.json();
+      
+      // Update local state with the updated training
+      setTrainings(prevTrainings => 
+        prevTrainings.map(training => 
+          training.id === trainingToCancel ? {
+            ...data.data.training,
+            id: trainingToCancel  // Ensure ID is preserved
+          } : training
+        )
+      );
+
+      setTrainingToCancel(null);
+      setShowCancelConfirmation(false);
+
+      toast.success('Your registration has been cancelled.');
+    } catch (error) {
+      console.error('Error cancelling registration:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to cancel registration');
+    }
   };
 
   const handleViewDetails = (training: Training) => {
@@ -170,12 +288,19 @@ export default function TrainingsPage() {
     }
   };
 
-  const formatDate = (dateString: string) => {
-    const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString(undefined, options);
+  const formatDate = (dateString: string | undefined) => {
+    if (!dateString) return 'Date not specified';
+    
+    try {
+      const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+      return new Date(dateString).toLocaleDateString(undefined, options);
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return 'Invalid date';
+    }
   };
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
@@ -188,7 +313,14 @@ export default function TrainingsPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="container mx-auto px-4 py-8">
+      <div className="flex flex-col md:flex-row justify-between items-center mb-6">
+        <div className="flex items-center mb-4 md:mb-0">
+          <AcademicCapIcon className="h-10 w-10 text-indigo-600 mr-3" />
+          <h1 className="text-2xl font-bold text-gray-900">Trainings & Seminars</h1>
+        </div>
+      </div>
+
       <div className="space-y-6">
         <div className="bg-white shadow rounded-lg p-6">
           <div className="flex items-center">
@@ -290,7 +422,7 @@ export default function TrainingsPage() {
                         </div>
                         <div className="flex items-center text-sm text-gray-500">
                           <MapPinIcon className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" />
-                          <span>{training.location}</span>
+                          <span>{training.locationDisplay}</span>
                         </div>
                         <div className="flex items-center text-sm text-gray-500">
                           <UserGroupIcon className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" />
@@ -328,7 +460,7 @@ export default function TrainingsPage() {
                               variant="primary" 
                               size="sm" 
                               className="w-full"
-                              onClick={() => handleRegister(training.id)}
+                              onClick={() => handleRegister(training.id || '')}
                               disabled={training.registered >= training.capacity}
                             >
                               Register
@@ -353,13 +485,13 @@ export default function TrainingsPage() {
               <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
             </div>
             <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-            <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-3xl sm:w-full">
               <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                 <div className="sm:flex sm:items-start">
                   <div className="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-indigo-100 sm:mx-0 sm:h-10 sm:w-10">
                     <AcademicCapIcon className="h-6 w-6 text-indigo-600" aria-hidden="true" />
                   </div>
-                  <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                  <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
                     <h3 className="text-lg leading-6 font-medium text-gray-900">{selectedTraining.title}</h3>
                     <div className="mt-4 space-y-4">
                       <div>
@@ -377,11 +509,11 @@ export default function TrainingsPage() {
                         </div>
                         <div>
                           <h4 className="text-sm font-medium text-gray-500">Location</h4>
-                          <p className="mt-1 text-sm text-gray-900">{selectedTraining.location}</p>
+                          <p className="mt-1 text-sm text-gray-900">{selectedTraining.locationDisplay}</p>
                         </div>
                         <div>
                           <h4 className="text-sm font-medium text-gray-500">Instructor</h4>
-                          <p className="mt-1 text-sm text-gray-900">{selectedTraining.instructor || 'TBD'}</p>
+                          <p className="mt-1 text-sm text-gray-900">{selectedTraining.instructorDisplay}</p>
                         </div>
                         <div>
                           <h4 className="text-sm font-medium text-gray-500">Category</h4>
@@ -435,6 +567,62 @@ export default function TrainingsPage() {
                           </div>
                         </div>
                       </div>
+                      
+                      {/* Registered Personnel List */}
+                      <div>
+                        <h4 className="text-sm font-medium text-gray-500 mb-2">Registered Personnel</h4>
+                        {selectedTraining.attendees && selectedTraining.attendees.length > 0 ? (
+                          <div className="mt-1 border border-gray-200 rounded-md overflow-hidden">
+                            <table className="min-w-full divide-y divide-gray-200">
+                              <thead className="bg-gray-50">
+                                <tr>
+                                  <th scope="col" className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Rank
+                                  </th>
+                                  <th scope="col" className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Name
+                                  </th>
+                                  <th scope="col" className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Company
+                                  </th>
+                                  <th scope="col" className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Status
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody className="bg-white divide-y divide-gray-200">
+                                {selectedTraining.attendees.map((attendee, index) => (
+                                  <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
+                                    <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">
+                                      {attendee.userData?.rank || 'N/A'}
+                                    </td>
+                                    <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">
+                                      {attendee.userData?.firstName && attendee.userData?.lastName 
+                                        ? `${attendee.userData.firstName} ${attendee.userData.lastName}`
+                                        : 'N/A'}
+                                    </td>
+                                    <td className="px-3 py-2 whitespace-nowrap text-xs text-gray-900">
+                                      {attendee.userData?.company || 'N/A'}
+                                    </td>
+                                    <td className="px-3 py-2 whitespace-nowrap text-xs">
+                                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium 
+                                        ${attendee.status === 'registered' ? 'bg-green-100 text-green-800' : 
+                                          attendee.status === 'completed' ? 'bg-blue-100 text-blue-800' : 
+                                          attendee.status === 'absent' ? 'bg-red-100 text-red-800' : 
+                                          attendee.status === 'excused' ? 'bg-yellow-100 text-yellow-800' : 
+                                          'bg-gray-100 text-gray-800'}`}>
+                                        {attendee.status.charAt(0).toUpperCase() + attendee.status.slice(1)}
+                                      </span>
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        ) : (
+                          <p className="text-sm text-gray-500">No personnel registered yet.</p>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -456,7 +644,7 @@ export default function TrainingsPage() {
                     <Button
                       variant="primary"
                       onClick={() => {
-                        handleRegister(selectedTraining.id);
+                        handleRegister(selectedTraining.id || '');
                         setShowDetailsModal(false);
                       }}
                       disabled={selectedTraining.registered >= selectedTraining.capacity}

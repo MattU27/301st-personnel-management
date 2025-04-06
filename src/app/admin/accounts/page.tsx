@@ -1,214 +1,575 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
-import Card from '@/components/Card';
-import Button from '@/components/Button';
-import { UserIcon, ShieldCheckIcon, ShieldExclamationIcon } from '@heroicons/react/24/outline';
+import Card from '@/components/ui/Card';
+import Link from 'next/link';
+import { 
+  UserGroupIcon, 
+  CheckCircleIcon, 
+  XCircleIcon,
+  TrashIcon,
+  BriefcaseIcon,
+  ExclamationTriangleIcon
+} from '@heroicons/react/24/outline';
+import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
+import axios from 'axios';
+import { UserStatus } from '@/types/auth';
 
-interface AdminAccount {
-  id: string;
-  name: string;
+interface User {
+  _id: string;
+  firstName: string;
+  lastName: string;
   email: string;
-  rank: string;
-  serialNumber: string;
-  branch: string;
-  status: 'active' | 'inactive';
-  lastActive: string;
+  role: string;
+  status: UserStatus;
+  rank?: string;
+  company?: string;
+  lastLogin?: string;
+  createdAt: string;
 }
 
-const MOCK_ADMIN_ACCOUNTS: AdminAccount[] = [
-  {
-    id: '1',
-    name: 'COL Antonio Reyes',
-    email: 'antonio.reyes@army.mil.ph',
-    rank: 'Colonel',
-    serialNumber: '301-34567',
-    branch: '301st Infantry Brigade',
-    status: 'active',
-    lastActive: '2024-03-15T10:30:00Z'
-  },
-  {
-    id: '2',
-    name: 'LTC Maria Santos',
-    email: 'maria.santos@army.mil.ph',
-    rank: 'Lieutenant Colonel',
-    serialNumber: '301-45678',
-    branch: '301st Infantry Brigade',
-    status: 'active',
-    lastActive: '2024-03-14T16:45:00Z'
-  },
-  {
-    id: '3',
-    name: 'MAJ David Lim',
-    email: 'david.lim@army.mil.ph',
-    rank: 'Major',
-    serialNumber: '301-56789',
-    branch: '301st Infantry Brigade',
-    status: 'inactive',
-    lastActive: '2024-02-28T09:15:00Z'
-  }
-];
-
-export default function AdminAccountsPage() {
+export default function AdministratorAccountsPage() {
   const router = useRouter();
-  const { hasSpecificPermission } = useAuth();
-  const [adminAccounts] = useState<AdminAccount[]>(MOCK_ADMIN_ACCOUNTS);
+  const { user, isAuthenticated, isLoading, getToken } = useAuth();
+  const [loading, setLoading] = useState(true);
+  const [loadingMessage, setLoadingMessage] = useState('Loading user accounts...');
+  const [users, setUsers] = useState<User[]>([]);
+  const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [roleFilter, setRoleFilter] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [usersPerPage] = useState(8);
 
-  if (!hasSpecificPermission('manage_admin_roles')) {
+  // Separate useEffect for authentication checking
+  useEffect(() => {
+    if (!isLoading) {
+      if (!isAuthenticated) {
+        router.push('/login');
+        return;
+      }
+
+      if (user?.role !== 'director') {
+        router.push('/dashboard');
+        return;
+      }
+
+      // Only fetch users initially
+      fetchUsers();
+    }
+  }, [isLoading, isAuthenticated, router, user]);
+
+  // Separate useEffect for filter changes
+  useEffect(() => {
+    if (isAuthenticated && user?.role === 'director' && !isLoading) {
+      // Only execute if filters have changed and it's not from a search query
+      if (!searchTimeoutRef.current) {
+        fetchUsers();
+      }
+    }
+  }, [statusFilter, roleFilter]);
+
+  // Separate useEffect for search query with debouncing
+  useEffect(() => {
+    if (!isAuthenticated || !user || isLoading) return;
+    
+    // Clear existing timeout
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+    
+    // Set new timeout
+    searchTimeoutRef.current = setTimeout(() => {
+      fetchUsers();
+      searchTimeoutRef.current = null;
+    }, 500);
+    
+    // Cleanup
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, [searchQuery]);
+
+  const fetchUsers = async () => {
+    try {
+      setLoading(true);
+      setLoadingMessage('Loading user accounts...');
+      
+      const token = await getToken();
+      if (!token) {
+        throw new Error('Authentication token not found');
+      }
+      
+      // Build URL with filters
+      let url = '/api/admin/users?';
+      if (statusFilter !== 'all') url += `status=${statusFilter}&`;
+      if (roleFilter !== 'all') url += `role=${roleFilter}&`;
+      if (searchQuery) url += `search=${encodeURIComponent(searchQuery)}`;
+      
+      const response = await axios.get(url, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      
+      if (response.data.success) {
+        setUsers(response.data.data.users);
+        setError(null);
+      } else {
+        setError(response.data.error || 'Failed to fetch user accounts');
+      }
+    } catch (err: any) {
+      console.error('Error fetching users:', err);
+      setError(err.response?.data?.error || err.message || 'An error occurred while fetching users');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleStatusChange = async (userId: string, newStatus: UserStatus) => {
+    try {
+      setLoading(true);
+      setLoadingMessage(`Updating user status...`);
+      
+      const token = await getToken();
+      if (!token) {
+        throw new Error('Authentication token not found');
+      }
+      
+      const response = await axios.patch('/api/admin/users', 
+        { userId, status: newStatus },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+      
+      if (response.data.success) {
+        // Update the user in the local state
+        setUsers(prevUsers => 
+          prevUsers.map(u => 
+            u._id === userId ? { ...u, status: newStatus } : u
+          )
+        );
+        setError(null);
+      } else {
+        setError(response.data.error || 'Failed to update user status');
+      }
+    } catch (err: any) {
+      console.error('Error updating user status:', err);
+      setError(err.response?.data?.error || err.message || 'An error occurred while updating user status');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = (id: string) => {
+    setConfirmDelete(id);
+  };
+
+  const confirmDeleteAccount = async () => {
+    if (confirmDelete) {
+      try {
+        setLoading(true);
+        setLoadingMessage('Deleting user account...');
+        
+        const token = await getToken();
+        if (!token) {
+          throw new Error('Authentication token not found');
+        }
+        
+        const response = await axios.delete(`/api/admin/users?id=${confirmDelete}`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        
+        if (response.data.success) {
+          setUsers(users.filter(user => user._id !== confirmDelete));
+          setError(null);
+        } else {
+          setError(response.data.error || 'Failed to delete user account');
+        }
+      } catch (err: any) {
+        console.error('Error deleting user:', err);
+        setError(err.response?.data?.error || err.message || 'An error occurred while deleting user');
+      } finally {
+        setConfirmDelete(null);
+        setLoading(false);
+      }
+    }
+  };
+
+  const cancelDelete = () => {
+    setConfirmDelete(null);
+  };
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+  };
+
+  const clearFilters = () => {
+    // Clear any pending search timeouts
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+      searchTimeoutRef.current = null;
+    }
+    
+    setStatusFilter('all');
+    setRoleFilter('all');
+    setSearchQuery('');
+    fetchUsers();
+  };
+
+  const getStatusBadgeColor = (status: UserStatus) => {
+    switch (status) {
+      case UserStatus.ACTIVE:
+        return 'bg-green-100 text-green-800';
+      case UserStatus.PENDING:
+        return 'bg-yellow-100 text-yellow-800';
+      case UserStatus.INACTIVE:
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50">
-        <Card className="w-full max-w-lg">
-          <div className="text-center">
-            <UserIcon className="mx-auto h-12 w-12 text-gray-400" />
-            <h2 className="mt-2 text-lg font-medium text-gray-900">Access Denied</h2>
-            <p className="mt-1 text-sm text-gray-500">
-              You do not have permission to manage admin accounts.
-            </p>
-            <div className="mt-6">
-              <Button
-                variant="primary"
-                onClick={() => router.push('/dashboard')}
-              >
-                Return to Dashboard
-              </Button>
-            </div>
-          </div>
-        </Card>
+      <div className="flex flex-col justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500 mb-4"></div>
+        <p className="text-gray-600">{loadingMessage}</p>
       </div>
     );
   }
 
-  const handleToggleStatus = (id: string, currentStatus: 'active' | 'inactive') => {
-    // Here you would typically make an API call to update the admin account status
-    const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
-    const action = currentStatus === 'active' ? 'deactivated' : 'reactivated';
-    alert(`Admin account ${id} ${action} successfully`);
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return 'Never';
+    return new Date(dateString).toLocaleString();
+  };
+
+  const getFullName = (user: User) => {
+    return `${user.firstName} ${user.lastName}`;
+  };
+
+  // Get current users for pagination
+  const indexOfLastUser = currentPage * usersPerPage;
+  const indexOfFirstUser = indexOfLastUser - usersPerPage;
+  const currentUsers = users.slice(indexOfFirstUser, indexOfLastUser);
+  const totalPages = Math.ceil(users.length / usersPerPage);
+
+  const paginate = (pageNumber: number) => {
+    if (pageNumber > 0 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <Card>
-          <div className="space-y-8">
-            <div className="flex justify-between items-center">
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900">Admin Accounts</h2>
-                <p className="mt-1 text-sm text-gray-500">
-                  Manage system administrator accounts and their access levels.
-                </p>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold text-gray-900">Manage Administrator Accounts</h1>
+        <Link
+          href="/admin/create"
+          className="px-4 py-2 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        >
+          Create New Account
+        </Link>
+      </div>
+
+      <Card>
+        <div className="p-6">
+          <div className="flex items-center mb-4">
+            <UserGroupIcon className="h-8 w-8 text-indigo-600" />
+            <h2 className="ml-3 text-lg font-medium text-gray-900">Administrator Accounts</h2>
+          </div>
+          <p className="text-gray-600 mb-6">Manage system administrator accounts, approve new registrations, and set permissions.</p>
+
+          {/* Error message */}
+          {error && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-md flex items-start">
+              <ExclamationTriangleIcon className="h-5 w-5 text-red-500 mr-2 flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-red-600">{error}</p>
+            </div>
+          )}
+
+          {/* Filters and Search */}
+          <div className="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div>
+              <label htmlFor="statusFilter" className="block text-sm font-medium text-gray-700 mb-1">
+                Status
+              </label>
+              <select
+                id="statusFilter"
+                name="statusFilter"
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              >
+                <option value="all">All Statuses</option>
+                <option value="active">Active</option>
+                <option value="pending">Pending</option>
+                <option value="inactive">Inactive</option>
+              </select>
+            </div>
+            <div>
+              <label htmlFor="roleFilter" className="block text-sm font-medium text-gray-700 mb-1">
+                Role
+              </label>
+              <select
+                id="roleFilter"
+                name="roleFilter"
+                value={roleFilter}
+                onChange={(e) => setRoleFilter(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+              >
+                <option value="all">All Roles</option>
+                <option value="administrator">Administrator</option>
+                <option value="staff">Staff</option>
+              </select>
+            </div>
+            <div className="md:col-span-2">
+              <label htmlFor="search" className="block text-sm font-medium text-gray-700 mb-1">
+                Search
+              </label>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  id="search"
+                  name="search"
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  placeholder="Search by name, rank, email"
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  autoComplete="off"
+                />
+                <button
+                  type="button"
+                  onClick={clearFilters}
+                  className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
+                >
+                  Clear
+                </button>
               </div>
-              <Button
-                variant="primary"
-                onClick={() => router.push('/admin/create')}
-              >
-                Create New Admin
-              </Button>
-            </div>
-
-            <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 rounded-lg">
-              <table className="min-w-full divide-y divide-gray-300">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900">
-                      Name & Rank
-                    </th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                      Contact
-                    </th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                      Serial Number
-                    </th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                      Status
-                    </th>
-                    <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                      Last Active
-                    </th>
-                    <th scope="col" className="relative py-3.5 pl-3 pr-4">
-                      <span className="sr-only">Actions</span>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200 bg-white">
-                  {adminAccounts.map((admin) => (
-                    <tr key={admin.id}>
-                      <td className="whitespace-nowrap py-4 pl-4 pr-3">
-                        <div>
-                          <div className="font-medium text-gray-900">{admin.name}</div>
-                          <div className="text-gray-500">{admin.rank}</div>
-                        </div>
-                      </td>
-                      <td className="whitespace-nowrap px-3 py-4">
-                        <div>
-                          <div className="text-gray-900">{admin.email}</div>
-                          <div className="text-gray-500">{admin.branch}</div>
-                        </div>
-                      </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-gray-900">
-                        {admin.serialNumber}
-                      </td>
-                      <td className="whitespace-nowrap px-3 py-4">
-                        <span
-                          className={`inline-flex rounded-full px-2 text-xs font-semibold leading-5 ${
-                            admin.status === 'active'
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-red-100 text-red-800'
-                          }`}
-                        >
-                          {admin.status.charAt(0).toUpperCase() + admin.status.slice(1)}
-                        </span>
-                      </td>
-                      <td className="whitespace-nowrap px-3 py-4 text-gray-900">
-                        {new Date(admin.lastActive).toLocaleDateString()}
-                      </td>
-                      <td className="whitespace-nowrap py-4 pl-3 pr-4 text-right">
-                        <div className="flex justify-end space-x-2">
-                          <Button
-                            variant={admin.status === 'active' ? 'danger' : 'success'}
-                            size="sm"
-                            onClick={() => handleToggleStatus(admin.id, admin.status)}
-                            className="flex items-center"
-                          >
-                            {admin.status === 'active' ? (
-                              <>
-                                <ShieldExclamationIcon className="h-5 w-5 mr-1" />
-                                Deactivate
-                              </>
-                            ) : (
-                              <>
-                                <ShieldCheckIcon className="h-5 w-5 mr-1" />
-                                Reactivate
-                              </>
-                            )}
-                          </Button>
-                          <Button
-                            variant="secondary"
-                            size="sm"
-                            onClick={() => router.push(`/admin/manage/${admin.id}`)}
-                          >
-                            Edit Access
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            <div className="flex justify-end">
-              <Button
-                variant="secondary"
-                onClick={() => router.back()}
-              >
-                Return to Dashboard
-              </Button>
             </div>
           </div>
-        </Card>
-      </div>
+
+          {/* Confirmation Dialog */}
+          {confirmDelete && (
+            <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white rounded-lg p-6 max-w-md mx-auto">
+                <h3 className="text-lg font-medium text-gray-900 mb-4">Confirm Deletion</h3>
+                <p className="text-gray-600 mb-6">
+                  Are you sure you want to delete this user account? This action cannot be undone.
+                </p>
+                <div className="flex justify-end space-x-3">
+                  <button 
+                    onClick={cancelDelete}
+                    className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    onClick={confirmDeleteAccount}
+                    className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {users.length === 0 ? (
+            <div className="flex flex-col items-center justify-center p-6 bg-gray-50 rounded-md">
+              <BriefcaseIcon className="h-12 w-12 text-gray-400 mb-2" />
+              <h3 className="text-lg font-medium text-gray-900">No user accounts found</h3>
+              <p className="text-gray-500 text-center mt-1">
+                {statusFilter !== 'all' || roleFilter !== 'all' || searchQuery 
+                  ? 'Try changing your filters or search criteria'
+                  : 'Start by creating a new user account'
+                }
+              </p>
+            </div>
+          ) : (
+            <div className="overflow-hidden rounded-md border border-gray-200">
+              <div className="w-full" style={{ overflowX: 'hidden' }}>
+                <table className="w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[22%]">
+                        Name
+                      </th>
+                      <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[22%]">
+                        Rank & Company
+                      </th>
+                      <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[16%]">
+                        Role
+                      </th>
+                      <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[12%]">
+                        Status
+                      </th>
+                      <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[16%]">
+                        Last Login
+                      </th>
+                      <th scope="col" className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-[12%]">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {currentUsers.map((user) => (
+                      <tr key={user._id}>
+                        <td className="px-4 py-4">
+                          <div className="text-sm font-medium text-gray-900 truncate max-w-[200px]">{getFullName(user)}</div>
+                          <div className="text-sm text-gray-500 truncate max-w-[200px]">{user.email}</div>
+                        </td>
+                        <td className="px-4 py-4">
+                          <div className="text-sm text-gray-900 truncate max-w-[200px]">{user.rank || 'N/A'}</div>
+                          <div className="text-sm text-gray-500 truncate max-w-[200px]">{user.company || 'N/A'}</div>
+                        </td>
+                        <td className="px-4 py-4">
+                          <div className="text-sm text-gray-900 capitalize truncate max-w-[150px]">
+                            {user.role === 'administrator' ? 'Administrator' : user.role}
+                          </div>
+                        </td>
+                        <td className="px-4 py-4">
+                          <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeColor(user.status)}`}>
+                            {user.status.charAt(0).toUpperCase() + user.status.slice(1)}
+                          </span>
+                        </td>
+                        <td className="px-4 py-4 text-sm text-gray-500 truncate max-w-[150px]">
+                          {formatDate(user.lastLogin)}
+                        </td>
+                        <td className="px-4 py-4 text-right text-sm font-medium">
+                          <div className="flex justify-end">
+                            {user.status === UserStatus.PENDING && (
+                              <button 
+                                onClick={() => handleStatusChange(user._id, UserStatus.ACTIVE)}
+                                className="text-green-600 hover:text-green-900 mx-1"
+                                title="Approve Account"
+                              >
+                                <CheckCircleIcon className="h-5 w-5" />
+                              </button>
+                            )}
+                            
+                            {user.status === UserStatus.ACTIVE && (
+                              <button 
+                                onClick={() => handleStatusChange(user._id, UserStatus.INACTIVE)}
+                                className="text-yellow-600 hover:text-yellow-900 mx-1"
+                                title="Deactivate Account"
+                              >
+                                <XCircleIcon className="h-5 w-5" />
+                              </button>
+                            )}
+                            
+                            {user.status === UserStatus.INACTIVE && (
+                              <button 
+                                onClick={() => handleStatusChange(user._id, UserStatus.ACTIVE)}
+                                className="text-green-600 hover:text-green-900 mx-1"
+                                title="Reactivate Account"
+                              >
+                                <CheckCircleIcon className="h-5 w-5" />
+                              </button>
+                            )}
+                            
+                            <button 
+                              onClick={() => handleDelete(user._id)}
+                              className="text-red-600 hover:text-red-900 mx-1"
+                              title="Delete Account"
+                            >
+                              <TrashIcon className="h-5 w-5" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              {users.length > usersPerPage && (
+                <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+                  <div className="flex-1 flex justify-between sm:hidden">
+                    <button
+                      onClick={() => paginate(currentPage - 1)}
+                      disabled={currentPage === 1}
+                      className={`relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md ${
+                        currentPage === 1 ? 'bg-gray-100 text-gray-400' : 'bg-white text-gray-700 hover:bg-gray-50'
+                      }`}
+                    >
+                      Previous
+                    </button>
+                    <button
+                      onClick={() => paginate(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                      className={`ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md ${
+                        currentPage === totalPages ? 'bg-gray-100 text-gray-400' : 'bg-white text-gray-700 hover:bg-gray-50'
+                      }`}
+                    >
+                      Next
+                    </button>
+                  </div>
+                  <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                    <div>
+                      <p className="text-sm text-gray-700">
+                        Showing <span className="font-medium">{indexOfFirstUser + 1}</span> to{' '}
+                        <span className="font-medium">
+                          {Math.min(indexOfLastUser, users.length)}
+                        </span>{' '}
+                        of <span className="font-medium">{users.length}</span> results
+                      </p>
+                    </div>
+                    <div>
+                      <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                        <button
+                          onClick={() => paginate(currentPage - 1)}
+                          disabled={currentPage === 1}
+                          className={`relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium ${
+                            currentPage === 1 ? 'text-gray-300' : 'text-gray-500 hover:bg-gray-50'
+                          }`}
+                        >
+                          <span className="sr-only">Previous</span>
+                          <ChevronLeftIcon className="h-5 w-5" aria-hidden="true" />
+                        </button>
+                        {[...Array(totalPages)].map((_, i) => (
+                          <button
+                            key={i + 1}
+                            onClick={() => paginate(i + 1)}
+                            className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
+                              currentPage === i + 1
+                                ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600'
+                                : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+                            }`}
+                          >
+                            {i + 1}
+                          </button>
+                        ))}
+                        <button
+                          onClick={() => paginate(currentPage + 1)}
+                          disabled={currentPage === totalPages}
+                          className={`relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium ${
+                            currentPage === totalPages ? 'text-gray-300' : 'text-gray-500 hover:bg-gray-50'
+                          }`}
+                        >
+                          <span className="sr-only">Next</span>
+                          <ChevronRightIcon className="h-5 w-5" aria-hidden="true" />
+                        </button>
+                      </nav>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </Card>
     </div>
   );
 } 

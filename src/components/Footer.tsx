@@ -1,8 +1,16 @@
 'use client';
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 const Footer = () => {
+  const pathname = usePathname();
+
+  // Always hide footer on homepage since it has its own footer
+  if (pathname === '/') {
+    return null;
+  }
+
   return (
     <footer className="bg-gray-800 text-white">
       <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">

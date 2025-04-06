@@ -1,0 +1,2067 @@
+[{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf2825f"
+  },
+  "name": "Cristina Co",
+  "rank": "Sergeant",
+  "serviceNumber": "498178",
+  "company": "NERRFAB (NERR-Field Artillery Battery)",
+  "status": "inactive",
+  "email": "cristina.co@afp.mil.ph",
+  "password": {
+    "hash": "1598be807cdbe8fc9fb92396ec527c396f67954f03a418420df1ed3245d24920a6744b92dcbc192f5823bc98ae384e1dfb82f9428fe8799726aa4cc893c539fb",
+    "salt": "b5cb96c1957aec4429b22fe0d9a8542d"
+  },
+  "role": "user",
+  "phone": "+63577234749",
+  "address": "456 EDSA, Pasig, Philippines",
+  "dateJoined": {
+    "$date": "2019-11-24T13:08:58.572Z"
+  },
+  "emergencyContact": "Rodrigo Domingo",
+  "emergencyPhone": "+63298254030",
+  "documents": {
+    "id": true,
+    "medicalRecord": true,
+    "training": false,
+    "security": true
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.506Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.506Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:25.460Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf28260"
+  },
+  "name": "Luis Bautista",
+  "rank": "Private",
+  "serviceNumber": "213361",
+  "company": "Alpha",
+  "status": "Standby",
+  "email": "luis.bautista@afp.mil.ph",
+  "password": {
+    "hash": "53e4b395dedeec669d3502564247a17e892e985ab2201fc271e95115aee7396a26aac9df3517279d432d07cb6ee80b1650a836ef0f5820b6c88fb208a8650b17",
+    "salt": "d30cd0e16edd45668b942b45cc4b6fa2"
+  },
+  "role": "user",
+  "phone": "+63224985218",
+  "address": "755 Rizal Avenue, Zamboanga City, Philippines",
+  "dateJoined": {
+    "$date": "2023-01-04T12:29:35.135Z"
+  },
+  "emergencyContact": "Eduardo Aquino",
+  "emergencyPhone": "+63104714395",
+  "documents": {
+    "id": true,
+    "medicalRecord": true,
+    "training": true,
+    "security": true
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.506Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.506Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:25.472Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf28261"
+  },
+  "name": "Carmen Galang",
+  "rank": "Colonel",
+  "serviceNumber": "755971",
+  "company": "Headquarters",
+  "status": "Active",
+  "email": "carmen.galang@afp.mil.ph",
+  "password": {
+    "hash": "793bf3743174d286624e696e7d0ecfb087af2181a5184b86b0942e9a8b66a10c471b67c6891736925a75ad5cd28cf5013460cfa6a278ebb2c2504c25f78b695e",
+    "salt": "8a430ea818faa6ee56942c71bec0cafc"
+  },
+  "role": "staff",
+  "phone": "+63646717646",
+  "address": "671 Taft Avenue, Zamboanga City, Philippines",
+  "dateJoined": {
+    "$date": "2014-03-27T15:20:32.872Z"
+  },
+  "emergencyContact": "Francisco Tan",
+  "emergencyPhone": "+63551325617",
+  "documents": {
+    "id": true,
+    "medicalRecord": false,
+    "training": true,
+    "security": true
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.507Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.507Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:25.484Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf28262"
+  },
+  "name": "Elena Salazar",
+  "rank": "Private",
+  "serviceNumber": "755572",
+  "company": "Alpha",
+  "status": "Active",
+  "email": "elena.salazar@afp.mil.ph",
+  "password": {
+    "hash": "e24eb99c5d5b5dbfeab9e3199ac0c99959399ede7df7add9c700b5aba2b4b84e739e601ec4d52a012f5c2ed9fe6b9c6233a6da58c41a603c0f0da08f94cb4e1c",
+    "salt": "f2831fbbf8562c88500199895e5759a6"
+  },
+  "role": "user",
+  "phone": "+63272389420",
+  "address": "341 Quezon Avenue, Iloilo City, Philippines",
+  "dateJoined": {
+    "$date": "2024-07-29T23:09:03.993Z"
+  },
+  "emergencyContact": "Victoria Ang",
+  "emergencyPhone": "+63589923141",
+  "documents": {
+    "id": true,
+    "medicalRecord": true,
+    "training": false,
+    "security": false
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.507Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.507Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:25.492Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf28263"
+  },
+  "name": "Josefina Cruz",
+  "rank": "Private",
+  "serviceNumber": "398423",
+  "company": "Alpha",
+  "status": "Standby",
+  "email": "josefina.cruz@afp.mil.ph",
+  "password": {
+    "hash": "5be8fc8e39c719c4f9241da04afadd38a6fb945e603639deda15095474c815597b69f71d643f462daec6ec9af1e8db8ac601a2dc9ab19c8790a6dfd5a5f1629d",
+    "salt": "fbe47b8f0fb128dfd3c0c9c0dab6a05f"
+  },
+  "role": "user",
+  "phone": "+63696299484",
+  "address": "721 Quezon Avenue, Manila, Philippines",
+  "dateJoined": {
+    "$date": "2021-06-22T21:33:54.062Z"
+  },
+  "emergencyContact": "Patricia Castro",
+  "emergencyPhone": "+63565631481",
+  "documents": {
+    "id": false,
+    "medicalRecord": true,
+    "training": false,
+    "security": true
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.507Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.507Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:25.501Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf28264"
+  },
+  "name": "Sofia Co",
+  "rank": "Major",
+  "serviceNumber": "161248",
+  "company": "Alpha",
+  "status": "inactive",
+  "email": "sofia.co@afp.mil.ph",
+  "password": {
+    "hash": "167b8bc23bbdb2607f69aa280a30c8d8b37a446a1056e705c21420ff2bb6629e9423a9ea26e6c76994577cd394c4f9fcc9534965169a8e4a361cf22cf82e1fb1",
+    "salt": "992f9ae1aaf4bf2f58ebd834f8542c89"
+  },
+  "role": "staff",
+  "phone": "+63005764460",
+  "address": "473 EDSA, Davao City, Philippines",
+  "dateJoined": {
+    "$date": "2019-12-05T11:08:48.759Z"
+  },
+  "emergencyContact": "Rosario Villanueva",
+  "emergencyPhone": "+63161845645",
+  "documents": {
+    "id": true,
+    "medicalRecord": true,
+    "training": true,
+    "security": true
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.507Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.507Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:25.509Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf28265"
+  },
+  "name": "Fernando Ramos",
+  "rank": "Colonel",
+  "serviceNumber": "025165",
+  "company": "Headquarters",
+  "status": "Active",
+  "email": "fernando.ramos@afp.mil.ph",
+  "password": {
+    "hash": "ca54c4742d2e80ba68f529d554f9874f4d312d47ae1c706b1118e450da65215a3ac05cba6afe7586859f4e8ab7759f988c8564423df68d0ffb6edc700c5523fa",
+    "salt": "f7359521ca3686bb19c61657ff4111e6"
+  },
+  "role": "staff",
+  "phone": "+63445611186",
+  "address": "192 Rizal Avenue, Manila, Philippines",
+  "dateJoined": {
+    "$date": "2015-04-22T11:51:19.385Z"
+  },
+  "emergencyContact": "Rodrigo Reyes",
+  "emergencyPhone": "+63236645314",
+  "documents": {
+    "id": true,
+    "medicalRecord": false,
+    "training": true,
+    "security": false
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.508Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.508Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:25.520Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf28266"
+  },
+  "name": "Josefina Fernandez",
+  "rank": "Sergeant",
+  "serviceNumber": "352322",
+  "company": "Alpha",
+  "status": "Active",
+  "email": "josefina.fernandez@afp.mil.ph",
+  "password": {
+    "hash": "97deaf537debd41646315a888834169938fb78039322a772fb3e44cfa3e084b577c1f24508aa96b71190e0bee83ad2abf2a425de851c06e95e166a5073f62477",
+    "salt": "09e5868be791deed77632b1e003cfb43"
+  },
+  "role": "user",
+  "phone": "+63555970865",
+  "address": "702 Marcos Highway, Zamboanga City, Philippines",
+  "dateJoined": {
+    "$date": "2011-04-30T03:04:33.404Z"
+  },
+  "emergencyContact": "Ricardo Torres",
+  "emergencyPhone": "+63521782147",
+  "documents": {
+    "id": true,
+    "medicalRecord": false,
+    "training": true,
+    "security": false
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.508Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.508Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:25.531Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf28267"
+  },
+  "name": "Miguel Navarro",
+  "rank": "Private",
+  "serviceNumber": "804092",
+  "company": "Alpha",
+  "status": "Active",
+  "email": "miguel.navarro@afp.mil.ph",
+  "password": {
+    "hash": "5bd8c9a23c1254cd76baa75fd3f685b2bbfc96968b1c41accb83c3942a968d997955607590f0c4436143f232d223aa270b245b0685a261bfb51457f96b53391b",
+    "salt": "5721ae0128e2725fc43f523f3be25295"
+  },
+  "role": "user",
+  "phone": "+63174731719",
+  "address": "285 Roxas Boulevard, Quezon City, Philippines",
+  "dateJoined": {
+    "$date": "2010-09-05T03:54:04.095Z"
+  },
+  "emergencyContact": "Beatriz Villanueva",
+  "emergencyPhone": "+63258423269",
+  "documents": {
+    "id": false,
+    "medicalRecord": true,
+    "training": true,
+    "security": true
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.508Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.508Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:25.539Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf28268"
+  },
+  "name": "Pedro Cruz",
+  "rank": "Sergeant",
+  "serviceNumber": "440950",
+  "company": "Headquarters",
+  "status": "inactive",
+  "email": "pedro.cruz@afp.mil.ph",
+  "password": {
+    "hash": "0985199d6f2b20d2f0ff458bb615546e39e61b7562f0a74763fa6df495954d0239f8ebb6ec82b0497e9b5d4d7c2d4c83bfbf66b015a703ac3e74c97e84d7b091",
+    "salt": "614b64f7268d04aa07c969f135faf455"
+  },
+  "role": "user",
+  "phone": "+63098321536",
+  "address": "400 EDSA, Makati, Philippines",
+  "dateJoined": {
+    "$date": "2017-10-28T15:45:58.795Z"
+  },
+  "emergencyContact": "Rosario Tan",
+  "emergencyPhone": "+63750207492",
+  "documents": {
+    "id": true,
+    "medicalRecord": true,
+    "training": true,
+    "security": false
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.508Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.508Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:25.550Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf28269"
+  },
+  "name": "Rosa Lopez",
+  "rank": "Private",
+  "serviceNumber": "810430",
+  "company": "Headquarters",
+  "status": "Active",
+  "email": "rosa.lopez@afp.mil.ph",
+  "password": {
+    "hash": "0d516e5feef78ae2243866f1ed9ec0d3d92e5d3ffc8908920189b828e7b9a6372d40e6776d13559cc09e6a5e68dd18fceb3359c775a77d607764d587045e16e1",
+    "salt": "78813cd37fe87d53d416312586c96c22"
+  },
+  "role": "staff",
+  "phone": "+63334905531",
+  "address": "748 Aguinaldo Highway, Taguig, Philippines",
+  "dateJoined": {
+    "$date": "2010-06-09T07:48:49.954Z"
+  },
+  "emergencyContact": "Roberto Fernandez",
+  "emergencyPhone": "+63885074418",
+  "documents": {
+    "id": true,
+    "medicalRecord": false,
+    "training": false,
+    "security": true
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.508Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.508Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:25.557Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf2826a"
+  },
+  "name": "Carmen Aquino",
+  "rank": "Corporal",
+  "serviceNumber": "413453",
+  "company": "Alpha",
+  "status": "Active",
+  "email": "carmen.aquino@afp.mil.ph",
+  "password": {
+    "hash": "e0543ada28a881ee870644930a09af7233c628511c6aa33af7b691d9a22fdeab0d28cacc026f9a84cfd86114aa3955d5acd87f52a5e4a874612a58f9f235971b",
+    "salt": "2801f6a4b4c95c4df137093953ea8841"
+  },
+  "role": "user",
+  "phone": "+63627029379",
+  "address": "473 Taft Avenue, Cebu City, Philippines",
+  "dateJoined": {
+    "$date": "2012-08-07T18:53:29.214Z"
+  },
+  "emergencyContact": "Fernando Sy",
+  "emergencyPhone": "+63513019519",
+  "documents": {
+    "id": true,
+    "medicalRecord": true,
+    "training": true,
+    "security": true
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.509Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.509Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:25.568Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf2826b"
+  },
+  "name": "Ricardo Villanueva",
+  "rank": "Second Lieutenant",
+  "serviceNumber": "847327",
+  "company": "Alpha",
+  "status": "inactive",
+  "email": "ricardo.villanueva@afp.mil.ph",
+  "password": {
+    "hash": "b3b4ceaddad5952a43d5dc3d2d08419d7e32144e83c754c54703ba8022da4322a45516bcbb4ed4c9ae99631dd26e17dd12527c99957d0c7ac6de5ac002a49f01",
+    "salt": "bb0a433ea4b5a7b2b71ce1ecdfc5dd3a"
+  },
+  "role": "staff",
+  "phone": "+63805081415",
+  "address": "257 Mabini Street, Manila, Philippines",
+  "dateJoined": {
+    "$date": "2013-12-24T23:04:17.929Z"
+  },
+  "emergencyContact": "Juan Marquez",
+  "emergencyPhone": "+63257451271",
+  "documents": {
+    "id": true,
+    "medicalRecord": false,
+    "training": true,
+    "security": false
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.509Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.509Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:25.575Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf2826c"
+  },
+  "name": "Victoria Diaz",
+  "rank": "Private",
+  "serviceNumber": "232577",
+  "company": "Headquarters",
+  "status": "Active",
+  "email": "victoria.diaz@afp.mil.ph",
+  "password": {
+    "hash": "b975d3cb7a6c50eeaec331b17cb5735b624ab2fc7f6358ebd4922618ea9cd470e4799fc8ca91a91f0e211b48cdf52cf8dfd0a9371b999100d1736e788c70af3a",
+    "salt": "026752ddc57413df42b541b13fe6b53f"
+  },
+  "role": "user",
+  "phone": "+63264783070",
+  "address": "288 Marcos Highway, Cebu City, Philippines",
+  "dateJoined": {
+    "$date": "2016-08-09T09:20:15.669Z"
+  },
+  "emergencyContact": "Rodrigo Fernandez",
+  "emergencyPhone": "+63442849867",
+  "documents": {
+    "id": true,
+    "medicalRecord": false,
+    "training": false,
+    "security": true
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.509Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.509Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:25.587Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf2826d"
+  },
+  "name": "Maria Lopez",
+  "rank": "Private",
+  "serviceNumber": "423189",
+  "company": "Alpha",
+  "status": "Active",
+  "email": "maria.lopez@afp.mil.ph",
+  "password": {
+    "hash": "44362f1ba97c8f911e43a9ed9f501e82e11d14fdb182bcd1a84393a00b4f5552ba97f8ebdb977cb4951108d23e50433475abc13274588d3f2d6689d4db8bfd6c",
+    "salt": "f295e1cae8624ac690298b721a88d27d"
+  },
+  "role": "user",
+  "phone": "+63866952195",
+  "address": "943 Mabini Street, Taguig, Philippines",
+  "dateJoined": {
+    "$date": "2024-11-15T18:52:36.802Z"
+  },
+  "emergencyContact": "Josefina Santos",
+  "emergencyPhone": "+63169428635",
+  "documents": {
+    "id": true,
+    "medicalRecord": true,
+    "training": false,
+    "security": true
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.509Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.509Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:25.600Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf2826e"
+  },
+  "name": "Maria Cruz",
+  "rank": "Private",
+  "serviceNumber": "527862",
+  "company": "NERRFAB (NERR-Field Artillery Battery)",
+  "status": "Active",
+  "email": "maria.cruz@afp.mil.ph",
+  "password": {
+    "hash": "2dd2727cf76c2d5034eaba9872b0e348f6610af4f276969630580cdc23489a4e4fbca6bdd491316370245ef90e7c4c39a99abdaa4b21768dbbf687db1b2d21e5",
+    "salt": "a09b77f813a5a841801f44b23104c13a"
+  },
+  "role": "user",
+  "phone": "+63562123223",
+  "address": "317 Marcos Highway, Cebu City, Philippines",
+  "dateJoined": {
+    "$date": "2012-01-17T23:44:19.846Z"
+  },
+  "emergencyContact": "Eduardo Domingo",
+  "emergencyPhone": "+63820444727",
+  "documents": {
+    "id": false,
+    "medicalRecord": true,
+    "training": false,
+    "security": true
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.509Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.509Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:25.611Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf2826f"
+  },
+  "name": "Roberto Ramos",
+  "rank": "Sergeant",
+  "serviceNumber": "090144",
+  "company": "Alpha",
+  "status": "inactive",
+  "email": "roberto.ramos@afp.mil.ph",
+  "password": {
+    "hash": "973fd8075ba40dcffe9eebbcf3d4fd01715e4f6ef85b5b7aca27bde853b0dbaf1a8bfbd8afacbac8f39dc3448e70dcb5927502bc733bae41274923d1183e5d69",
+    "salt": "94038110f4ce87b03fe5ddb31288757a"
+  },
+  "role": "user",
+  "phone": "+63957875317",
+  "address": "402 Bonifacio Street, Cebu City, Philippines",
+  "dateJoined": {
+    "$date": "2014-07-25T09:41:52.900Z"
+  },
+  "emergencyContact": "Lourdes Santos",
+  "emergencyPhone": "+63497124208",
+  "documents": {
+    "id": true,
+    "medicalRecord": true,
+    "training": false,
+    "security": true
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.509Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.509Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:25.623Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf28270"
+  },
+  "name": "Ana Pascual",
+  "rank": "Private",
+  "serviceNumber": "218342",
+  "company": "NERRSC (NERR-Signal Company)",
+  "status": "inactive",
+  "email": "ana.pascual@afp.mil.ph",
+  "password": {
+    "hash": "0a54021630353b6a2aead15e1a98e7dee8c695aed8933826773e783f0ff85fadb309c22c54d9574b90485c31e1853c032bccdaf802f8d476e50747bdba827c10",
+    "salt": "59d4fa6017ccf61fe1d97182a6e3e8dd"
+  },
+  "role": "user",
+  "phone": "+63570137655",
+  "address": "160 Rizal Avenue, Iloilo City, Philippines",
+  "dateJoined": {
+    "$date": "2024-07-02T14:23:53.310Z"
+  },
+  "emergencyContact": "Luis Marquez",
+  "emergencyPhone": "+63658819426",
+  "documents": {
+    "id": true,
+    "medicalRecord": true,
+    "training": true,
+    "security": true
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.510Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.510Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:25.631Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf28271"
+  },
+  "name": "Carlos Lopez",
+  "rank": "Lieutenant Colonel",
+  "serviceNumber": "033449",
+  "company": "Headquarters",
+  "status": "Active",
+  "email": "carlos.lopez@afp.mil.ph",
+  "password": {
+    "hash": "3c432c6eb174ca22d9b47bf7b36ad809586c3e2df19e9716ae31ee6006912551c49705b29f5f7a810c38baa4c11471abe143b851b520112622577b5a2b94d20e",
+    "salt": "e9a883a9c70038cda2b06c41d9639fe7"
+  },
+  "role": "staff",
+  "phone": "+63380100158",
+  "address": "357 Quezon Avenue, Manila, Philippines",
+  "dateJoined": {
+    "$date": "2015-04-24T12:52:08.634Z"
+  },
+  "emergencyContact": "Pedro Ramos",
+  "emergencyPhone": "+63001413755",
+  "documents": {
+    "id": true,
+    "medicalRecord": true,
+    "training": false,
+    "security": false
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.510Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.510Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:25.642Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf28272"
+  },
+  "name": "Carmen Dela Cruz",
+  "rank": "Sergeant",
+  "serviceNumber": "534615",
+  "company": "Alpha",
+  "status": "inactive",
+  "email": "carmen.dela cruz@afp.mil.ph",
+  "password": {
+    "hash": "84d1a2ae5ead51635ae7653c277c6de02163d01f96a33ed0cf7986d0728d6dfb672444c6c51f8c98cf02d066098f73be5c73509a10bcc4ebeafe132b5056944c",
+    "salt": "013cd8a6d073c8b6d892b1bd81e757d8"
+  },
+  "role": "user",
+  "phone": "+63440496848",
+  "address": "312 Quezon Avenue, Makati, Philippines",
+  "dateJoined": {
+    "$date": "2010-09-15T17:52:08.091Z"
+  },
+  "emergencyContact": "Manuel Villanueva",
+  "emergencyPhone": "+63183546279",
+  "documents": {
+    "id": true,
+    "medicalRecord": true,
+    "training": false,
+    "security": true
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.510Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.510Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:25.653Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf28273"
+  },
+  "name": "Josefina Ramos",
+  "rank": "Sergeant",
+  "serviceNumber": "675884",
+  "company": "Charlie",
+  "status": "Standby",
+  "email": "josefina.ramos@afp.mil.ph",
+  "password": {
+    "hash": "e4a88acd20ace941b73c6207784cd25ba26df7628e7b3280ce5f7ebd908618300191b2e6db9037bf63a42d30ffc6d3000c440b6a64b1940e40bee8a88ff73d42",
+    "salt": "3d8abff4d0c1b4e66f0ac658c0347cf2"
+  },
+  "role": "user",
+  "phone": "+63030706895",
+  "address": "849 EDSA, Cebu City, Philippines",
+  "dateJoined": {
+    "$date": "2017-06-26T06:20:04.123Z"
+  },
+  "emergencyContact": "Patricia Galang",
+  "emergencyPhone": "+63000279687",
+  "documents": {
+    "id": false,
+    "medicalRecord": true,
+    "training": false,
+    "security": true
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.510Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.510Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:25.665Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf28274"
+  },
+  "name": "Elena Marquez",
+  "rank": "Brigadier General",
+  "serviceNumber": "284853",
+  "company": "Headquarters",
+  "status": "Active",
+  "email": "elena.marquez@afp.mil.ph",
+  "password": {
+    "hash": "699dd16539d1fa1955d3d99d58789a15d890f0747229adc9ff11c0a25555cc53e6793cacc7c3ad296cec5fa6f307e9365283a3f65bc43951fcd2d3c87b56c1fc",
+    "salt": "c68e263176b29418afa19426360412ff"
+  },
+  "role": "staff",
+  "phone": "+63237797481",
+  "address": "650 Marcos Highway, Cebu City, Philippines",
+  "dateJoined": {
+    "$date": "2025-02-01T21:24:42.035Z"
+  },
+  "emergencyContact": "Juan Galang",
+  "emergencyPhone": "+63022335041",
+  "documents": {
+    "id": true,
+    "medicalRecord": true,
+    "training": true,
+    "security": true
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.510Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.510Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:25.677Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf28275"
+  },
+  "name": "Roberto Torres",
+  "rank": "Sergeant",
+  "serviceNumber": "143376",
+  "company": "NERRFAB (NERR-Field Artillery Battery)",
+  "status": "Active",
+  "email": "roberto.torres@afp.mil.ph",
+  "password": {
+    "hash": "29e6af3c987cb2b591b4def3dc146084b272057b05356af5acebaac0488862d39f1a63e43a238454e7768eab2ff6e24ed6740a149e88f1d96d8c43350846396a",
+    "salt": "3b7df2a0c1b0c96048a53f67bb037ba1"
+  },
+  "role": "user",
+  "phone": "+63414796289",
+  "address": "623 EDSA, Taguig, Philippines",
+  "dateJoined": {
+    "$date": "2017-04-14T18:11:17.361Z"
+  },
+  "emergencyContact": "Rosario Aquino",
+  "emergencyPhone": "+63496270292",
+  "documents": {
+    "id": true,
+    "medicalRecord": true,
+    "training": true,
+    "security": true
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.510Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.510Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:25.685Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf28276"
+  },
+  "name": "Rosa Fernandez",
+  "rank": "Colonel",
+  "serviceNumber": "726847",
+  "company": "Headquarters",
+  "status": "Active",
+  "email": "rosa.fernandez@afp.mil.ph",
+  "password": {
+    "hash": "f52f740090b2f786aa7a02b2787944bb640263d9886a106cc50655c0d234e075cdae916dcda782c7568166bee73b2ccb45a1ed89a686269f411146eceefe1ef0",
+    "salt": "9417ffacf7eec54866ad158ce72e49b2"
+  },
+  "role": "staff",
+  "phone": "+63626976662",
+  "address": "273 Mabini Street, Taguig, Philippines",
+  "dateJoined": {
+    "$date": "2012-05-04T00:39:20.657Z"
+  },
+  "emergencyContact": "Rosa Gonzales",
+  "emergencyPhone": "+63886417102",
+  "documents": {
+    "id": true,
+    "medicalRecord": true,
+    "training": true,
+    "security": true
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.510Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.510Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:25.698Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf28277"
+  },
+  "name": "Carlos Castro",
+  "rank": "Brigadier General",
+  "serviceNumber": "507689",
+  "company": "Headquarters",
+  "status": "Standby",
+  "email": "carlos.castro@afp.mil.ph",
+  "password": {
+    "hash": "d20b3a0d11b6ca8b90de305198f10fc101af4ee75f8f59596a0cff560ef98e1db85b1c07a53d2ba948bb5f903b335b57bddc52b9225f291dc18ed83798f1fef4",
+    "salt": "d96fc642ea23ff1842512c7540c1f429"
+  },
+  "role": "staff",
+  "phone": "+63512196137",
+  "address": "25 Quezon Avenue, Cebu City, Philippines",
+  "dateJoined": {
+    "$date": "2011-05-23T09:33:00.172Z"
+  },
+  "emergencyContact": "Maria Navarro",
+  "emergencyPhone": "+63080166405",
+  "documents": {
+    "id": true,
+    "medicalRecord": true,
+    "training": false,
+    "security": true
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.511Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.511Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:25.710Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf28278"
+  },
+  "name": "Fernando Santos",
+  "rank": "Sergeant",
+  "serviceNumber": "660568",
+  "company": "Alpha",
+  "status": "Active",
+  "email": "fernando.santos@afp.mil.ph",
+  "password": {
+    "hash": "250ed333bdf96b0a8be76d54c54b7cde5ebcc48c08bbf852b122d9b103868b7f4d5409a081480c17b77c887afd5c06988aa65217fc2c98954e4993738288cd09",
+    "salt": "ccf72c7423f34ff33266a9fd08d5188e"
+  },
+  "role": "user",
+  "phone": "+63499714486",
+  "address": "706 Bonifacio Street, Taguig, Philippines",
+  "dateJoined": {
+    "$date": "2010-08-09T23:40:02.667Z"
+  },
+  "emergencyContact": "Ana Mendoza",
+  "emergencyPhone": "+63181667338",
+  "documents": {
+    "id": true,
+    "medicalRecord": true,
+    "training": false,
+    "security": false
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.511Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.511Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:25.720Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf28279"
+  },
+  "name": "Angelica Pascual",
+  "rank": "Private",
+  "serviceNumber": "199920",
+  "company": "Headquarters",
+  "status": "Active",
+  "email": "angelica.pascual@afp.mil.ph",
+  "password": {
+    "hash": "9601af98d9b8d5b416500313beb6b8a13c25f894f092ec1a6d062fcec3e9ba6d3be4ba2a58bed24ca7f187cc556e99358a4587e367454aac7a823802d87cbe3e",
+    "salt": "6ec53b8f68037d379308bee9e74496c5"
+  },
+  "role": "staff",
+  "phone": "+63338915884",
+  "address": "254 EDSA, Iloilo City, Philippines",
+  "dateJoined": {
+    "$date": "2015-10-05T18:05:51.833Z"
+  },
+  "emergencyContact": "Maria Tan",
+  "emergencyPhone": "+63778468304",
+  "documents": {
+    "id": true,
+    "medicalRecord": true,
+    "training": true,
+    "security": true
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.511Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.511Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:25.733Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf2827a"
+  },
+  "name": "Juan Salazar",
+  "rank": "Second Lieutenant",
+  "serviceNumber": "680990",
+  "company": "Alpha",
+  "status": "Active",
+  "email": "juan.salazar@afp.mil.ph",
+  "password": {
+    "hash": "34912c82c6effe9622e053802eb4ebf0d512f1d8e6ac495855e9b5a76dff77f72a0c48e84b68ee2a8f1b011ff38c2370a18ad47a0612d39e5e0638735a74bd5c",
+    "salt": "2707dda8325f7481a289da5628e0b36b"
+  },
+  "role": "staff",
+  "phone": "+63542922590",
+  "address": "418 Marcos Highway, Davao City, Philippines",
+  "dateJoined": {
+    "$date": "2013-08-15T09:28:12.676Z"
+  },
+  "emergencyContact": "Patricia Mendoza",
+  "emergencyPhone": "+63491685093",
+  "documents": {
+    "id": false,
+    "medicalRecord": true,
+    "training": true,
+    "security": true
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.511Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.511Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:25.745Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf2827b"
+  },
+  "name": "Patricia Aquino",
+  "rank": "Brigadier General",
+  "serviceNumber": "488264",
+  "company": "Alpha",
+  "status": "Active",
+  "email": "patricia.aquino@afp.mil.ph",
+  "password": {
+    "hash": "3ebecf130e3f93cde7b033a577cf90244ec7939b2863c35c9d2f4be6e3c12c2b18f058c35a8f16a9e7d1f3b8ee4c60b1ce411e07ebfddf8b0cf379f35e0c4e37",
+    "salt": "521c36ce5bd8f68d49897a9a8746fef5"
+  },
+  "role": "staff",
+  "phone": "+63944465420",
+  "address": "715 EDSA, Manila, Philippines",
+  "dateJoined": {
+    "$date": "2014-03-31T17:27:49.938Z"
+  },
+  "emergencyContact": "Jose Castro",
+  "emergencyPhone": "+63842633165",
+  "documents": {
+    "id": false,
+    "medicalRecord": true,
+    "training": false,
+    "security": false
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.511Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.511Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:25.757Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf2827c"
+  },
+  "name": "Carmen Flores",
+  "rank": "Private",
+  "serviceNumber": "281737",
+  "company": "NERRFAB (NERR-Field Artillery Battery)",
+  "status": "Active",
+  "email": "carmen.flores@afp.mil.ph",
+  "password": {
+    "hash": "663edb24b8690bbb1186b5f5cbe1e6a420d7cd2a01c6e7b8e476e38f00892640729aa60e58eab38fddfc5694c0a0064288f21903681520fde94c082a11a3a353",
+    "salt": "c1d2cde34cc2dee28ab1a782da0543be"
+  },
+  "role": "user",
+  "phone": "+63194038311",
+  "address": "610 Marcos Highway, Pasig, Philippines",
+  "dateJoined": {
+    "$date": "2010-10-27T06:24:55.598Z"
+  },
+  "emergencyContact": "Maria Galang",
+  "emergencyPhone": "+63228386014",
+  "documents": {
+    "id": true,
+    "medicalRecord": true,
+    "training": false,
+    "security": false
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.512Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.512Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:25.771Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf2827d"
+  },
+  "name": "Manuel Castro",
+  "rank": "Private",
+  "serviceNumber": "727823",
+  "company": "Alpha",
+  "status": "inactive",
+  "email": "manuel.castro@afp.mil.ph",
+  "password": {
+    "hash": "94e699d1efd6968d4b4ddb7c6c5a7103e4ccc3115c2687e2fe5cf6f11fb3cd3a17a9b725f81010bd0266d40e76f9d09c87b6c8fe38bcab1d75732240a4cecef0",
+    "salt": "7dea0711504d636ae8b763a6111a7c8a"
+  },
+  "role": "user",
+  "phone": "+63270312202",
+  "address": "925 Quezon Avenue, Iloilo City, Philippines",
+  "dateJoined": {
+    "$date": "2020-03-24T04:29:50.490Z"
+  },
+  "emergencyContact": "Juan Galang",
+  "emergencyPhone": "+63494433833",
+  "documents": {
+    "id": false,
+    "medicalRecord": true,
+    "training": false,
+    "security": true
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.512Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.512Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:25.781Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf2827e"
+  },
+  "name": "Juan Ang",
+  "rank": "Private",
+  "serviceNumber": "685842",
+  "company": "Charlie",
+  "status": "Active",
+  "email": "juan.ang@afp.mil.ph",
+  "password": {
+    "hash": "0fc6def2b832d8c282b0359b8e84719777c559e8eb0b3b0b77789aad738ef0401a6e11785397f5267dd3737dd7af967af6519f1f8f2973e0a6812441782c6355",
+    "salt": "fb5d3ee9f945d9ae83f6520efaa47c6c"
+  },
+  "role": "user",
+  "phone": "+63985904225",
+  "address": "973 Marcos Highway, Zamboanga City, Philippines",
+  "dateJoined": {
+    "$date": "2014-06-28T14:22:22.389Z"
+  },
+  "emergencyContact": "Carlos Ramos",
+  "emergencyPhone": "+63388659780",
+  "documents": {
+    "id": true,
+    "medicalRecord": true,
+    "training": true,
+    "security": false
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.512Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.512Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:25.796Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf2827f"
+  },
+  "name": "Sofia Bautista",
+  "rank": "Second Lieutenant",
+  "serviceNumber": "591440",
+  "company": "Alpha",
+  "status": "Standby",
+  "email": "sofia.bautista@afp.mil.ph",
+  "password": {
+    "hash": "b40ddac0ba19444dac8da87724a7de9516d681c05df93aa531753364539a7e102a1bd0f8c29a297acd6c29a462ac68b84473016c05861ab128aa6a8bd9e88253",
+    "salt": "8cdea6a1e3a97df3746e56590cbfc971"
+  },
+  "role": "staff",
+  "phone": "+63216002351",
+  "address": "553 Roxas Boulevard, Davao City, Philippines",
+  "dateJoined": {
+    "$date": "2024-07-08T06:04:09.127Z"
+  },
+  "emergencyContact": "Sofia Sy",
+  "emergencyPhone": "+63703296302",
+  "documents": {
+    "id": true,
+    "medicalRecord": true,
+    "training": false,
+    "security": false
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.512Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.512Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:25.807Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf28280"
+  },
+  "name": "Beatriz Navarro",
+  "rank": "Private First Class",
+  "serviceNumber": "159842",
+  "company": "NERRFAB (NERR-Field Artillery Battery)",
+  "status": "Active",
+  "email": "beatriz.navarro@afp.mil.ph",
+  "password": {
+    "hash": "64b8027f31ad4e2c14d2fe0b5ba60ea742d0ac07b9bcb50516cdce0de25d0cda1ff6de8e7107c724694fbd8e47bae520bf141c76e62192f789d88a97f5f12e1f",
+    "salt": "b5cf0389ecc26f46601e9c21e84dae5c"
+  },
+  "role": "user",
+  "phone": "+63749477520",
+  "address": "818 Rizal Avenue, Pasig, Philippines",
+  "dateJoined": {
+    "$date": "2015-08-18T10:51:57.706Z"
+  },
+  "emergencyContact": "Roberto Tan",
+  "emergencyPhone": "+63799011197",
+  "documents": {
+    "id": true,
+    "medicalRecord": false,
+    "training": false,
+    "security": false
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.512Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.512Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:25.825Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf28281"
+  },
+  "name": "Carmen Fernandez",
+  "rank": "Private First Class",
+  "serviceNumber": "069721",
+  "company": "Alpha",
+  "status": "Active",
+  "email": "carmen.fernandez@afp.mil.ph",
+  "password": {
+    "hash": "ae73c1b923527912bd0d7f529bc2829b6290c29bfd2fa827298154007520686329a48991b44a8e9b15991d9cfa094fd89ddd993ae8c685e6f8e317c3d7cc80ce",
+    "salt": "b2d6cbc3315cdb9b2a9f97edbe8a7303"
+  },
+  "role": "user",
+  "phone": "+63364895080",
+  "address": "328 Roxas Boulevard, Pasig, Philippines",
+  "dateJoined": {
+    "$date": "2020-06-01T12:34:36.932Z"
+  },
+  "emergencyContact": "Luis Del Rosario",
+  "emergencyPhone": "+63961389399",
+  "documents": {
+    "id": true,
+    "medicalRecord": true,
+    "training": true,
+    "security": false
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.512Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.512Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:25.836Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf28282"
+  },
+  "name": "Fernando Tan",
+  "rank": "Colonel",
+  "serviceNumber": "137429",
+  "company": "Headquarters",
+  "status": "Active",
+  "email": "fernando.tan@afp.mil.ph",
+  "password": {
+    "hash": "742ffc0553bc27db2d331811b30fb2a202aaeeb4a4c28bb8376dcf190b03efad16fd0ce6652636c4ef3c58ca7a85bda8a3fe7751aa168c6217a2a7dfbdef555d",
+    "salt": "fbcc5d96db05e6bb9745f8fde6b8246f"
+  },
+  "role": "staff",
+  "phone": "+63496241814",
+  "address": "205 EDSA, Cebu City, Philippines",
+  "dateJoined": {
+    "$date": "2025-02-20T16:26:45.864Z"
+  },
+  "emergencyContact": "Beatriz Morales",
+  "emergencyPhone": "+63759418501",
+  "documents": {
+    "id": false,
+    "medicalRecord": true,
+    "training": true,
+    "security": true
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.512Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.512Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:25.849Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf28283"
+  },
+  "name": "Maria Ramos",
+  "rank": "Sergeant",
+  "serviceNumber": "950487",
+  "company": "Alpha",
+  "status": "Active",
+  "email": "maria.ramos@afp.mil.ph",
+  "password": {
+    "hash": "eeb3ea94ec22fad2d3c2132f9b3fb89e19310a115eab08bc923bff0d579b191717b096c573621e48756de4d2dc76a2af0ca01306439203ba6063f1e140915bf9",
+    "salt": "19f5d5ef5705febb7d0f50c63284fd92"
+  },
+  "role": "user",
+  "phone": "+63311482636",
+  "address": "561 Mabini Street, Cebu City, Philippines",
+  "dateJoined": {
+    "$date": "2023-04-18T13:02:53.907Z"
+  },
+  "emergencyContact": "Fernando Ramos",
+  "emergencyPhone": "+63563133606",
+  "documents": {
+    "id": true,
+    "medicalRecord": true,
+    "training": true,
+    "security": true
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.513Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.513Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:25.861Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf28284"
+  },
+  "name": "Lourdes Castro",
+  "rank": "Second Lieutenant",
+  "serviceNumber": "682447",
+  "company": "Headquarters",
+  "status": "Active",
+  "email": "lourdes.castro@afp.mil.ph",
+  "password": {
+    "hash": "4e5b7e1fd6ddeef8bbfc08d65c75fda064807e6eeb8c71f89d72623f1d72d77a162653d282c7c2f4c8f936e9d105fc769d76ab6b23de456c0d9c0d98a2fd88a4",
+    "salt": "0472cd74fd1a13a7e8cd477b19892255"
+  },
+  "role": "staff",
+  "phone": "+63950586667",
+  "address": "183 Marcos Highway, Pasig, Philippines",
+  "dateJoined": {
+    "$date": "2020-03-08T14:48:44.794Z"
+  },
+  "emergencyContact": "Jose Tan",
+  "emergencyPhone": "+63842253025",
+  "documents": {
+    "id": true,
+    "medicalRecord": false,
+    "training": false,
+    "security": false
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.513Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.513Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:25.873Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf28285"
+  },
+  "name": "Carmen Torres",
+  "rank": "Private",
+  "serviceNumber": "123303",
+  "company": "Alpha",
+  "status": "Active",
+  "email": "carmen.torres@afp.mil.ph",
+  "password": {
+    "hash": "1981626caefc63d8d6fda1087464fe7ae590bb2891252887194b3409ed27d4510a3e00b5f575504cc7d09b2a261b047fd137702fa14ad16df5936a8cdb993894",
+    "salt": "4ecdd6d66439fc869cbbedc58a5614d1"
+  },
+  "role": "staff",
+  "phone": "+63768218117",
+  "address": "18 Quezon Avenue, Davao City, Philippines",
+  "dateJoined": {
+    "$date": "2024-06-12T20:09:02.040Z"
+  },
+  "emergencyContact": "Juan Aquino",
+  "emergencyPhone": "+63557082762",
+  "documents": {
+    "id": false,
+    "medicalRecord": false,
+    "training": false,
+    "security": true
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.513Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.513Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:25.884Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf28286"
+  },
+  "name": "Antonio Galang",
+  "rank": "Private",
+  "serviceNumber": "923512",
+  "company": "Alpha",
+  "status": "Active",
+  "email": "antonio.galang@afp.mil.ph",
+  "password": {
+    "hash": "c22afbde3ea2ce25cb803de7e7b223249f9213f4aafac8c87ed75238fc0156780de877a44aa1490ad756ba2d5ee4debaf0f88d48646ce2ba40e740c80c66238e",
+    "salt": "dd8a42e9607636dfb76c5d82131033c1"
+  },
+  "role": "user",
+  "phone": "+63466533148",
+  "address": "446 Taft Avenue, Manila, Philippines",
+  "dateJoined": {
+    "$date": "2021-03-16T05:26:18.015Z"
+  },
+  "emergencyContact": "Carmen Galang",
+  "emergencyPhone": "+63076673810",
+  "documents": {
+    "id": true,
+    "medicalRecord": true,
+    "training": false,
+    "security": true
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.513Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.513Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:25.899Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf28287"
+  },
+  "name": "Carlos Del Rosario",
+  "rank": "Brigadier General",
+  "serviceNumber": "338733",
+  "company": "Alpha",
+  "status": "Active",
+  "email": "carlos.del rosario@afp.mil.ph",
+  "password": {
+    "hash": "29ef8c3752a09d8a303ba200bded30d52d126d59297b022bf744c01834be33daaf6faa63147ab51dcf81da88d4e83523f420aad4b24930f81ca0886b321a54fc",
+    "salt": "1c6b677ede638e12be21a00b2831b3d8"
+  },
+  "role": "admin",
+  "phone": "+63639359457",
+  "address": "947 Quezon Avenue, Iloilo City, Philippines",
+  "dateJoined": {
+    "$date": "2013-06-04T19:50:28.761Z"
+  },
+  "emergencyContact": "Carmen Villanueva",
+  "emergencyPhone": "+63695570788",
+  "documents": {
+    "id": false,
+    "medicalRecord": true,
+    "training": true,
+    "security": true
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.513Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.513Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:25.928Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf28288"
+  },
+  "name": "Rosario Bautista",
+  "rank": "Colonel",
+  "serviceNumber": "953132",
+  "company": "Headquarters",
+  "status": "Active",
+  "email": "rosario.bautista@afp.mil.ph",
+  "password": {
+    "hash": "64b95e283499764f9ddf3b118bd477dc2784566eee39a4d5ec0f212f2746010b6b62eb0ef014240a107e910a3ef42e2e7836dcebc70c416954cc70ff2fc23e13",
+    "salt": "3a427a6bff6e1f430651974f1b1a7677"
+  },
+  "role": "admin",
+  "phone": "+63808123494",
+  "address": "794 EDSA, Iloilo City, Philippines",
+  "dateJoined": {
+    "$date": "2021-04-24T19:20:51.481Z"
+  },
+  "emergencyContact": "Sofia Cruz",
+  "emergencyPhone": "+63613277796",
+  "documents": {
+    "id": true,
+    "medicalRecord": false,
+    "training": true,
+    "security": false
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.513Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.513Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:25.952Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf28289"
+  },
+  "name": "Pedro Garcia",
+  "rank": "First Lieutenant",
+  "serviceNumber": "700459",
+  "company": "Charlie",
+  "status": "Active",
+  "email": "pedro.garcia@afp.mil.ph",
+  "password": {
+    "hash": "db19d42a906370398ff822ee13b175c70c3a07185d6eabb8322c07879d3d5371cee52f6a1d4bec7971f1bad70ba916923b274c87dcdc1ba0a97ee4d601679ab8",
+    "salt": "dc3a504960638f941e004a7063e3f060"
+  },
+  "role": "admin",
+  "phone": "+63506827741",
+  "address": "392 EDSA, Cebu City, Philippines",
+  "dateJoined": {
+    "$date": "2018-04-16T08:21:10.977Z"
+  },
+  "emergencyContact": "Patricia Aquino",
+  "emergencyPhone": "+63977322989",
+  "documents": {
+    "id": true,
+    "medicalRecord": false,
+    "training": false,
+    "security": true
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.513Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.513Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:25.977Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf2828a"
+  },
+  "name": "Luis Pascual",
+  "rank": "Major",
+  "serviceNumber": "682760",
+  "company": "Alpha",
+  "status": "Active",
+  "email": "luis.pascual@afp.mil.ph",
+  "password": {
+    "hash": "6a46a8cd4203a2a6673e807cd7f77a6ce91e0a25771c562eb488f430838d2b60411855226556b504eb4d74c140f89e746ed5ba9e2b5be39b49bf2bdc505b0eb5",
+    "salt": "080cc0584ba840613d07e4829f61b107"
+  },
+  "role": "staff",
+  "phone": "+63391809722",
+  "address": "901 Marcos Highway, Quezon City, Philippines",
+  "dateJoined": {
+    "$date": "2017-07-02T01:35:11.435Z"
+  },
+  "emergencyContact": "Francisco Diaz",
+  "emergencyPhone": "+63105979562",
+  "documents": {
+    "id": true,
+    "medicalRecord": true,
+    "training": true,
+    "security": true
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.514Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.514Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:26.002Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf2828b"
+  },
+  "name": "Fernando Aquino",
+  "rank": "Major",
+  "serviceNumber": "710397",
+  "company": "Alpha",
+  "status": "Active",
+  "email": "fernando.aquino@afp.mil.ph",
+  "password": {
+    "hash": "a120e8a39983c5a9f8eeebd617b4e9f7ee15abde6291d52edfe46c80b74034ae48a1a4760e3380cbf3b5d065f978ab64ef67a167c871d4b69e9ee7568825f357",
+    "salt": "53a8dbc2caa519abfd608dcac65f782a"
+  },
+  "role": "staff",
+  "phone": "+63255513925",
+  "address": "556 Aguinaldo Highway, Pasig, Philippines",
+  "dateJoined": {
+    "$date": "2014-12-24T20:53:44.863Z"
+  },
+  "emergencyContact": "Francisco Diaz",
+  "emergencyPhone": "+63584061571",
+  "documents": {
+    "id": true,
+    "medicalRecord": false,
+    "training": false,
+    "security": false
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.514Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.514Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:26.021Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf2828c"
+  },
+  "name": "Elena Navarro",
+  "rank": "Private First Class",
+  "serviceNumber": "242933",
+  "company": "Alpha",
+  "status": "Active",
+  "email": "elena.navarro@afp.mil.ph",
+  "password": {
+    "hash": "271a1bb3a1cadc61447a61c7190a0714a3f7cbf1de4a24433bde8f51d3bdfa3a8bb690dbc3a8b91cf810c51dde9c03652a785317762fa8537e8e3b102701e2da",
+    "salt": "fa57d57f02098fade3b4488472afc1e8"
+  },
+  "role": "user",
+  "phone": "+63998576820",
+  "address": "557 Taft Avenue, Makati, Philippines",
+  "dateJoined": {
+    "$date": "2022-01-24T12:51:25.293Z"
+  },
+  "emergencyContact": "Josefina Lopez",
+  "emergencyPhone": "+63317956049",
+  "documents": {
+    "id": true,
+    "medicalRecord": true,
+    "training": false,
+    "security": true
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.514Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.514Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:26.031Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf2828d"
+  },
+  "name": "Patricia Gonzales",
+  "rank": "Sergeant",
+  "serviceNumber": "830615",
+  "company": "Bravo",
+  "status": "Active",
+  "email": "patricia.gonzales@afp.mil.ph",
+  "password": {
+    "hash": "8a89df8222c9986795e8b7a0f27afb1c13b0198767e9f4034706ba0cd071f89ae9981f66f089b32fefff7d379d73edcde171b879e6fe8ac5e6562beaabdb5d9c",
+    "salt": "996c840425d52e448b06beeca7ddc3bf"
+  },
+  "role": "user",
+  "phone": "+63396892642",
+  "address": "912 Aguinaldo Highway, Quezon City, Philippines",
+  "dateJoined": {
+    "$date": "2024-04-06T09:31:33.430Z"
+  },
+  "emergencyContact": "Rosa Torres",
+  "emergencyPhone": "+63776959034",
+  "documents": {
+    "id": true,
+    "medicalRecord": false,
+    "training": false,
+    "security": true
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.514Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.514Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:26.050Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf2828e"
+  },
+  "name": "Juan Reyes",
+  "rank": "Private First Class",
+  "serviceNumber": "607414",
+  "company": "Alpha",
+  "status": "Standby",
+  "email": "juan.reyes@afp.mil.ph",
+  "password": {
+    "hash": "3d21704f20c53ac745b2d50b53e94c6c0ab7b305cf636ae2c31783452772534430e1b99dc22f030bbaeec01d1e18ff125b821454d0bd3053392d9aa7a7347675",
+    "salt": "5dc93b1fb91dbdb9d32e1286e8b32b6c"
+  },
+  "role": "user",
+  "phone": "+63931986320",
+  "address": "866 Quezon Avenue, Taguig, Philippines",
+  "dateJoined": {
+    "$date": "2016-12-31T01:21:37.879Z"
+  },
+  "emergencyContact": "Carlos Mendoza",
+  "emergencyPhone": "+63453685390",
+  "documents": {
+    "id": true,
+    "medicalRecord": true,
+    "training": true,
+    "security": true
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.514Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.514Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:26.065Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf2828f"
+  },
+  "name": "Luis Co",
+  "rank": "Sergeant",
+  "serviceNumber": "371780",
+  "company": "Alpha",
+  "status": "Active",
+  "email": "luis.co@afp.mil.ph",
+  "password": {
+    "hash": "b05e45685039b69c699a50c1fa22ade9c5bffe5e1c5ddefd43be8332e57e682e13bb085477e2a494a85a84f99fb8f421488300ca089431a74a301864e065e6a1",
+    "salt": "25ad7688e84539c52b70e64297139812"
+  },
+  "role": "user",
+  "phone": "+63222580844",
+  "address": "919 EDSA, Baguio City, Philippines",
+  "dateJoined": {
+    "$date": "2021-10-20T09:31:39.773Z"
+  },
+  "emergencyContact": "Ana Sy",
+  "emergencyPhone": "+63401920958",
+  "documents": {
+    "id": true,
+    "medicalRecord": true,
+    "training": true,
+    "security": false
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.514Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.514Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:26.081Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf28290"
+  },
+  "name": "Manuel Ang",
+  "rank": "Private",
+  "serviceNumber": "073462",
+  "company": "Alpha",
+  "status": "Active",
+  "email": "manuel.ang@afp.mil.ph",
+  "password": {
+    "hash": "516672a9a9b6dceec20aab6b6043afc760426f73edc0dffa9e01351f791e45a3830a286cd57684922b0759f9dada1e9d7f1f953aec2dfa69a6c80436a6c899e7",
+    "salt": "f57a07a3ebcb2f5e09055bb2a4f4678d"
+  },
+  "role": "staff",
+  "phone": "+63556199469",
+  "address": "280 EDSA, Taguig, Philippines",
+  "dateJoined": {
+    "$date": "2016-11-15T08:04:08.793Z"
+  },
+  "emergencyContact": "Victoria Ang",
+  "emergencyPhone": "+63008949683",
+  "documents": {
+    "id": false,
+    "medicalRecord": true,
+    "training": true,
+    "security": true
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.514Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.514Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:26.098Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf28291"
+  },
+  "name": "Ana Dela Cruz",
+  "rank": "First Lieutenant",
+  "serviceNumber": "903121",
+  "company": "Alpha",
+  "status": "inactive",
+  "email": "ana.dela cruz@afp.mil.ph",
+  "password": {
+    "hash": "f87581892b3851049c52c96f389db1d254481db10995a90c27219e2237ab45efdc974a809ce8a6622518272812bcd43384f7a273f2488280b8c520a76cd219ae",
+    "salt": "335350bd79115defb26af1bd294b4179"
+  },
+  "role": "staff",
+  "phone": "+63287796140",
+  "address": "962 Quezon Avenue, Iloilo City, Philippines",
+  "dateJoined": {
+    "$date": "2020-01-29T13:58:03.479Z"
+  },
+  "emergencyContact": "Jose Gonzales",
+  "emergencyPhone": "+63149361903",
+  "documents": {
+    "id": true,
+    "medicalRecord": true,
+    "training": true,
+    "security": true
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.514Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.514Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:26.110Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf28292"
+  },
+  "name": "Juan Del Rosario",
+  "rank": "Brigadier General",
+  "serviceNumber": "972368",
+  "company": "Alpha",
+  "status": "Active",
+  "email": "juan.del rosario@afp.mil.ph",
+  "password": {
+    "hash": "d19481f9408004d5dab3306088b844d5592bfbb886e4c477df8570e6c0b092b91c34ec056d19027009299eb582f60281fd0c64d679cf081d0bb3588f9a9e08d7",
+    "salt": "db1abca94c097f3a6b536c23c8d85494"
+  },
+  "role": "staff",
+  "phone": "+63684904185",
+  "address": "572 Taft Avenue, Iloilo City, Philippines",
+  "dateJoined": {
+    "$date": "2012-09-14T19:30:31.059Z"
+  },
+  "emergencyContact": "Angelica Navarro",
+  "emergencyPhone": "+63394841946",
+  "documents": {
+    "id": true,
+    "medicalRecord": false,
+    "training": false,
+    "security": false
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.515Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.515Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:26.122Z"
+  }
+},
+{
+  "_id": {
+    "$oid": "67efd5bb8e395126edf28293"
+  },
+  "name": "Angelica Aquino",
+  "rank": "Private",
+  "serviceNumber": "054496",
+  "company": "Headquarters",
+  "status": "Active",
+  "email": "angelica.aquino@afp.mil.ph",
+  "password": {
+    "hash": "bc37a74612e660ee2609628b84ee5d9675d2d0770a6da37eaf4d1c619b82918d7dc39e9a7ef0335e9fd14088a3a673edd57b36269f93ffebb44455469547da95",
+    "salt": "4ed7cadfb6a2ebd4e4d4e3606bcbf8a1"
+  },
+  "role": "staff",
+  "phone": "+63753228837",
+  "address": "481 Bonifacio Street, Cebu City, Philippines",
+  "dateJoined": {
+    "$date": "2016-08-19T16:20:31.731Z"
+  },
+  "emergencyContact": "Roberto Galang",
+  "emergencyPhone": "+63108099369",
+  "documents": {
+    "id": false,
+    "medicalRecord": true,
+    "training": false,
+    "security": true
+  },
+  "createdAt": {
+    "$date": "2025-04-04T12:51:07.515Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-04T12:51:07.515Z"
+  },
+  "__v": 0,
+  "lastUpdated": {
+    "$date": "2025-04-05T05:55:26.149Z"
+  }
+}]

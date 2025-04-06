@@ -1,5 +1,9 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { jwtVerify } from 'jose';
+
+// JWT secret key - in production, this should be an environment variable
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-for-jwt-signing';
 
 // Define paths that require authentication
 const protectedPaths = [
@@ -17,8 +21,25 @@ const roleRestrictedPaths = {
   '/analytics': ['director'],
 };
 
-export function middleware(request: NextRequest) {
+// Public paths that shouldn't redirect even when not authenticated
+const publicPaths = [
+  '/login',
+  '/register',
+  '/forgot-password',
+  '/reset-password',
+  '/api',
+  '/_next',
+  '/favicon.ico',
+  '/static',
+];
+
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  
+  // Skip middleware for public paths and static assets
+  if (publicPaths.some(path => pathname === path || pathname.startsWith(`${path}/`))) {
+    return NextResponse.next();
+  }
   
   // Check if the path is protected
   const isProtectedPath = protectedPaths.some(path => 
@@ -26,20 +47,26 @@ export function middleware(request: NextRequest) {
   );
 
   if (isProtectedPath) {
-    // Get the user from the cookie
-    const user = request.cookies.get('user')?.value;
+    // Get the token from the Authorization header or cookie
+    const token = request.cookies.get('token')?.value;
     
-    // If there's no user, redirect to login
-    if (!user) {
+    // If there's no token, redirect to login
+    if (!token) {
       const url = new URL('/login', request.url);
-      url.searchParams.set('callbackUrl', pathname);
+      if (pathname !== '/dashboard') {
+        url.searchParams.set('callbackUrl', pathname);
+      }
       return NextResponse.redirect(url);
     }
 
     try {
-      // Parse the user to check role restrictions
-      const userData = JSON.parse(user);
-      const userRole = userData.role;
+      // Verify the token
+      const { payload } = await jwtVerify(
+        token,
+        new TextEncoder().encode(JWT_SECRET)
+      );
+      
+      const userRole = payload.role as string;
 
       // Check if the path is restricted by role
       for (const [path, roles] of Object.entries(roleRestrictedPaths)) {
@@ -51,9 +78,12 @@ export function middleware(request: NextRequest) {
         }
       }
     } catch (error) {
-      // If there's an error parsing the user, redirect to login
+      // If there's an error verifying the token, redirect to login
+      console.error('Token verification failed:', error);
       const url = new URL('/login', request.url);
-      url.searchParams.set('callbackUrl', pathname);
+      if (pathname !== '/dashboard') {
+        url.searchParams.set('callbackUrl', pathname);
+      }
       return NextResponse.redirect(url);
     }
   }

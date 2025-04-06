@@ -12,17 +12,17 @@ This diagram represents a vertical, hierarchical system architecture for a perso
 |    | - Sign Up      | |  | - Sign Up      |  |  | - Sign Up      |   |  | Dashboard      |   |
 |    | - Login        | |  | - Login        |  |  | - Login        |   |  | - System-wide  |   |
 |    +----------------+ |  +----------------+  |  +----------------+   |  |   Analytics     |   |
-|    | Manage Modules | |  | Manage Modules |  |  | Manage Modules |   |  | - Prescriptive |   |
-|    | - Update Profile| |  | - Manage Cos   |  |  | - Manage All   |   |  |   Analytics   |   |
-|    | - Upload Docs  | |  |   (Alpha,Bravo,|  |  |   Companies    |   |  +----------------+   |
-|    | - View/Signify | |  |    Charlie,HQ, |  |  | - Full Records |   |  | Admin Control  |   |
-|    |   Trainings    | |  |    Signal,FAB) |  |  |   Access      |   |  | - Create Admin |   |
-|    | - Notifications| |  | - Add/Update   |  |  | - System       |   |  | - Approve/     |   |
-|    | - View Calendar| |  |   Records      |  |  |   Management   |   |  |   Deactivate   |   |
-|    | - View Attended| |  | - View Personnel|  |  | - Policy      |   |  |   Accounts     |   |
-|    |   Trainings    | |  |   per Company  |  |  |   Control     |   |  +----------------+   |
-|    | - View Policy  | |  | - Update Status|  |  | - Batch       |   |                        |
-|    +----------------+ |  |   (Ready,      |  |  |   Processing  |   |                        |
+|    | Manage Modules | |  | Manage Modules |  |  | Manage Modules |   |  | - Prescriptive |    |
+|    | - Update Profile| | | -Manage Company   |  | | - Manage All |    | |   Analytics   |     |
+|    | - Upload Docs  | |  |   (Alpha,Bravo,|  |  |   Companies    |   |  +----------------+    |
+|    | - View/Signify | |  |    Charlie,HQ, |  |  | - Full Records |   |  | Admin Control  |    |
+|    |   Trainings    | |  |    Signal,FAB) |  |  |   Access      |   |  | - Create Admin |     |
+|    | - Notifications| |  | - Add/Update   |  |  | - System       |   |  | - Approve/     |    |
+|    | - View Calendar| |  |   Records      |  |  |   Management   |   |  |   Deactivate   |    |
+|    | - View Attended| |  | - View Personnel|  |  | - Policy      |   |  |   Accounts     |    |
+|    |   Trainings    | |  |   per Company  |  |  |   Control     |    |  +----------------+    |
+|    | - View Policy  | |  | - Update Status|  |  | - Batch       |    |                        |
+|    +----------------+ |  |   (Ready,      |  |  |   Processing  |    |                        |
 |                       |  |    Standby,    |  |  +----------------+   |                        |
 |                       |  |    Retired)    |  |                       |                        |
 |                       |  | - Approve Accts|  |                       |                        |

@@ -8,24 +8,38 @@ import Button from '@/components/Button';
 import { UserIcon, DocumentTextIcon, AcademicCapIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
 import ConfirmationDialog from '@/components/ConfirmationDialog';
 import TwoFactorAuthSetup from '@/components/TwoFactorAuthSetup';
+import { UserRole } from '@/types/personnel';
+import axios from 'axios';
 
 export default function ProfilePage() {
   const { user, isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
   const [formData, setFormData] = useState({
-    name: '',
+    firstName: '',
+    lastName: '',
     email: '',
     company: '',
     rank: '',
     phone: '',
-    address: '',
-    emergencyContact: '',
-    emergencyPhone: '',
+    address: {
+      street: '',
+      city: '',
+      province: '',
+      postalCode: ''
+    },
+    emergencyContact: {
+      name: '',
+      relationship: '',
+      contactNumber: ''
+    }
   });
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [show2FASetup, setShow2FASetup] = useState(false);
   const [is2FAEnabled, setIs2FAEnabled] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -33,31 +47,178 @@ export default function ProfilePage() {
     }
 
     if (user) {
-      setFormData({
-        name: user.name || '',
-        email: user.email || '',
-        company: user.company || '',
-        rank: user.rank || '',
-        phone: '09123456789', // Mock data
-        address: '123 Main St, Quezon City, Philippines', // Mock data
-        emergencyContact: 'Jane Doe', // Mock data
-        emergencyPhone: '09987654321', // Mock data
-      });
+      // Load user profile from API
+      loadUserProfile();
     }
   }, [isLoading, isAuthenticated, router, user]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+  const loadUserProfile = async () => {
+    try {
+      // Get the token
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.error('No token found in localStorage');
+        setErrorMessage('Authentication error. Please log in again.');
+        setTimeout(() => {
+          router.push('/login');
+        }, 2000);
+        return;
+      }
+
+      console.log('Token found, making API request to load profile');
+
+      // Fetch user profile data
+      const response = await axios.get('/api/user/profile', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (response.data.success) {
+        const userData = response.data.data.user;
+        console.log('Profile data received successfully');
+        
+        // Set form data with user profile information
+        setFormData({
+          firstName: userData.firstName || '',
+          lastName: userData.lastName || '',
+          email: userData.email || '',
+          company: userData.company || '',
+          rank: userData.rank || '',
+          phone: userData.contactNumber || '',
+          address: userData.address || {
+            street: '',
+            city: '',
+            province: '',
+            postalCode: ''
+          },
+          emergencyContact: userData.emergencyContact || {
+            name: '',
+            relationship: '',
+            contactNumber: ''
+          }
+        });
+      }
+    } catch (error: any) {
+      console.error('Failed to load user profile:', error);
+      
+      // Handle 401 errors (token expired/invalid)
+      if (error.response && error.response.status === 401) {
+        setErrorMessage('Session expired. Please log in again.');
+        // Clear token and redirect to login
+        localStorage.removeItem('token');
+        setTimeout(() => {
+          router.push('/login');
+        }, 2000);
+      } else {
+        setErrorMessage('Failed to load profile. Please refresh the page.');
+      }
+    }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    
+    // Handle nested objects
+    if (name.includes('.')) {
+      const [parentKey, childKey] = name.split('.');
+      setFormData((prev) => ({
+        ...prev,
+        [parentKey]: {
+          ...(prev[parentKey as keyof typeof prev] as Record<string, string>),
+          [childKey]: value
+        }
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // In a real app, you would make an API call to update the user's profile
-    setIsEditing(false);
+    setIsSubmitting(true);
+    setErrorMessage('');
+    setSuccessMessage('');
+    
+    // Validate required fields before submitting
+    if (!formData.rank) {
+      setErrorMessage('Please select a rank before saving.');
+      setIsSubmitting(false);
+      return;
+    }
+
+    try {
+      // Get the token
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setErrorMessage('Authentication error. Please log in again.');
+        setIsSubmitting(false);
+        setTimeout(() => {
+          router.push('/login');
+        }, 2000);
+        return;
+      }
+
+      console.log('Submitting profile update with token');
+
+      // Prepare update data
+      const updateData = {
+        firstName: formData.firstName || '',
+        lastName: formData.lastName || '',
+        contactNumber: formData.phone || '',
+        address: formData.address || {
+          street: '',
+          city: '',
+          province: '',
+          postalCode: ''
+        },
+        emergencyContact: formData.emergencyContact || {
+          name: '',
+          relationship: '',
+          contactNumber: ''
+        },
+        rank: formData.rank,
+        company: formData.company || ''
+      };
+
+      // Send update to API
+      const response = await axios.put('/api/user/profile', updateData, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (response.data.success) {
+        console.log('Profile updated successfully');
+        setSuccessMessage('Profile updated successfully!');
+        setIsEditing(false);
+      } else {
+        throw new Error(response.data.error || 'Failed to update profile');
+      }
+    } catch (error: any) {
+      console.error('Profile update error:', error);
+      
+      // Handle 401 errors (token expired/invalid)
+      if (error.response && error.response.status === 401) {
+        if (error.response.data && error.response.data.error && error.response.data.error.includes('rank')) {
+          setErrorMessage('Please select a valid rank.');
+        } else {
+          setErrorMessage('Session expired. Please log in again.');
+          // Clear token and redirect to login
+          localStorage.removeItem('token');
+          setTimeout(() => {
+            router.push('/login');
+          }, 2000);
+        }
+      } else {
+        setErrorMessage(error.response?.data?.error || error.message || 'Failed to update profile');
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleDeleteAccountClick = () => {
@@ -107,8 +268,8 @@ export default function ProfilePage() {
     return null;
   }
 
-  const companies = ['Alpha', 'Bravo', 'Charlie', 'HQ', 'Signal', 'FAB'];
-  const ranks = ['Private', 'Corporal', 'Sergeant', 'Lieutenant', 'Captain', 'Major', 'Colonel'];
+  const companies = ['Alpha', 'Bravo', 'Charlie', 'Headquarters', 'NERRSC (NERR-Signal Company)', 'NERRFAB (NERR-Field Artillery Battery)'];
+  const ranks = ['Private', 'Private First Class', 'Corporal', 'Sergeant', 'Second Lieutenant', 'First Lieutenant', 'Captain', 'Major', 'Lieutenant Colonel', 'Colonel', 'Brigadier General'];
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -121,25 +282,66 @@ export default function ProfilePage() {
             <div className="ml-4">
               <h2 className="text-lg font-medium text-gray-900">My Profile</h2>
               <p className="text-sm text-gray-500">
-                {user.role === 'RESERVIST' ? `${user.rank || 'N/A'} | ${user.company || 'N/A'} Company | Status: ${user.status || 'N/A'}` : user.role}
+                {user.role === 'admin' ? 'Administrator' : 
+                 user.role === 'director' ? 'Director' : 
+                 user.role === 'staff' ? 'Staff Officer' : 
+                 user.role === 'reservist' ? 'Reservist' : 
+                 user.role === 'enlisted' ? 'Enlisted Personnel' : 
+                 user.role}
               </p>
             </div>
           </div>
         </div>
 
         <Card title="Personal Information">
+          {errorMessage && (
+            <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-4">
+              <div className="flex">
+                <div className="ml-3">
+                  <p className="text-sm text-red-700">{errorMessage}</p>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          {successMessage && (
+            <div className="bg-green-50 border-l-4 border-green-500 p-4 mb-4">
+              <div className="flex">
+                <div className="ml-3">
+                  <p className="text-sm text-green-700">{successMessage}</p>
+                </div>
+              </div>
+            </div>
+          )}
+          
           <form onSubmit={handleSubmit}>
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                    Full Name
+                  <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
+                    First Name
                   </label>
                   <input
-                    id="name"
-                    name="name"
+                    id="firstName"
+                    name="firstName"
                     type="text"
-                    value={formData.name}
+                    placeholder="Enter your first name"
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    disabled={!isEditing}
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm disabled:bg-gray-100 disabled:text-gray-500"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
+                    Last Name
+                  </label>
+                  <input
+                    id="lastName"
+                    name="lastName"
+                    type="text"
+                    placeholder="Enter your last name"
+                    value={formData.lastName}
                     onChange={handleChange}
                     disabled={!isEditing}
                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm disabled:bg-gray-100 disabled:text-gray-500"
@@ -153,54 +355,13 @@ export default function ProfilePage() {
                     id="email"
                     name="email"
                     type="email"
+                    placeholder="Enter your email address"
                     value={formData.email}
                     onChange={handleChange}
-                    disabled={!isEditing}
+                    disabled={true} // Email cannot be changed
                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm disabled:bg-gray-100 disabled:text-gray-500"
                   />
                 </div>
-                {user.role === 'RESERVIST' && (
-                  <>
-                    <div>
-                      <label htmlFor="company" className="block text-sm font-medium text-gray-700">
-                        Company
-                      </label>
-                      <select
-                        id="company"
-                        name="company"
-                        value={formData.company}
-                        onChange={handleChange}
-                        disabled={!isEditing}
-                        className="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md disabled:bg-gray-100 disabled:text-gray-500"
-                      >
-                        {companies.map((company) => (
-                          <option key={company} value={company}>
-                            {company}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    <div>
-                      <label htmlFor="rank" className="block text-sm font-medium text-gray-700">
-                        Rank
-                      </label>
-                      <select
-                        id="rank"
-                        name="rank"
-                        value={formData.rank}
-                        onChange={handleChange}
-                        disabled={!isEditing}
-                        className="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md disabled:bg-gray-100 disabled:text-gray-500"
-                      >
-                        {ranks.map((rank) => (
-                          <option key={rank} value={rank}>
-                            {rank}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </>
-                )}
                 <div>
                   <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
                     Phone Number
@@ -209,6 +370,7 @@ export default function ProfilePage() {
                     id="phone"
                     name="phone"
                     type="text"
+                    placeholder="Enter your phone number"
                     value={formData.phone}
                     onChange={handleChange}
                     disabled={!isEditing}
@@ -216,69 +378,195 @@ export default function ProfilePage() {
                   />
                 </div>
                 <div>
-                  <label htmlFor="address" className="block text-sm font-medium text-gray-700">
-                    Address
+                  <label htmlFor="company" className="block text-sm font-medium text-gray-700">
+                    Company
                   </label>
-                  <input
-                    id="address"
-                    name="address"
-                    type="text"
-                    value={formData.address}
+                  <select
+                    id="company"
+                    name="company"
+                    value={formData.company}
                     onChange={handleChange}
                     disabled={!isEditing}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm disabled:bg-gray-100 disabled:text-gray-500"
-                  />
+                    className="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md disabled:bg-gray-100 disabled:text-gray-500"
+                  >
+                    <option value="">Select Company</option>
+                    {companies.map((company) => (
+                      <option key={company} value={company}>
+                        {company}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <div>
-                  <label htmlFor="emergencyContact" className="block text-sm font-medium text-gray-700">
-                    Emergency Contact
+                  <label htmlFor="rank" className="block text-sm font-medium text-gray-700">
+                    Rank
                   </label>
-                  <input
-                    id="emergencyContact"
-                    name="emergencyContact"
-                    type="text"
-                    value={formData.emergencyContact}
+                  <select
+                    id="rank"
+                    name="rank"
+                    value={formData.rank}
                     onChange={handleChange}
                     disabled={!isEditing}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm disabled:bg-gray-100 disabled:text-gray-500"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="emergencyPhone" className="block text-sm font-medium text-gray-700">
-                    Emergency Contact Phone
-                  </label>
-                  <input
-                    id="emergencyPhone"
-                    name="emergencyPhone"
-                    type="text"
-                    value={formData.emergencyPhone}
-                    onChange={handleChange}
-                    disabled={!isEditing}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm disabled:bg-gray-100 disabled:text-gray-500"
-                  />
+                    className="mt-1 block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md disabled:bg-gray-100 disabled:text-gray-500"
+                  >
+                    <option value="">Select Rank</option>
+                    {ranks.map((rank) => (
+                      <option key={rank} value={rank}>
+                        {rank}
+                      </option>
+                    ))}
+                  </select>
                 </div>
               </div>
-              <div className="flex justify-end space-x-3 mt-6">
-                {isEditing ? (
-                  <>
-                    <Button type="button" variant="secondary" onClick={() => setIsEditing(false)}>
-                      Cancel
-                    </Button>
-                    <Button type="submit" variant="primary">
-                      Save Changes
-                    </Button>
-                  </>
-                ) : (
-                  <Button type="button" variant="primary" onClick={() => setIsEditing(true)}>
-                    Edit Profile
+              
+              <div className="mt-4">
+                <h3 className="text-md font-medium text-gray-900 mb-2">Address Information</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="address.street" className="block text-sm font-medium text-gray-700">
+                      Street Address
+                    </label>
+                    <input
+                      id="address.street"
+                      name="address.street"
+                      type="text"
+                      placeholder="Enter street address"
+                      value={formData.address.street}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm disabled:bg-gray-100 disabled:text-gray-500"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="address.city" className="block text-sm font-medium text-gray-700">
+                      City
+                    </label>
+                    <input
+                      id="address.city"
+                      name="address.city"
+                      type="text"
+                      placeholder="Enter city"
+                      value={formData.address.city}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm disabled:bg-gray-100 disabled:text-gray-500"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="address.province" className="block text-sm font-medium text-gray-700">
+                      Province
+                    </label>
+                    <input
+                      id="address.province"
+                      name="address.province"
+                      type="text"
+                      placeholder="Enter province"
+                      value={formData.address.province}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm disabled:bg-gray-100 disabled:text-gray-500"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="address.postalCode" className="block text-sm font-medium text-gray-700">
+                      Postal Code
+                    </label>
+                    <input
+                      id="address.postalCode"
+                      name="address.postalCode"
+                      type="text"
+                      placeholder="Enter postal code"
+                      value={formData.address.postalCode}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm disabled:bg-gray-100 disabled:text-gray-500"
+                    />
+                  </div>
+                </div>
+              </div>
+              
+              <div className="mt-4">
+                <h3 className="text-md font-medium text-gray-900 mb-2">Emergency Contact</h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label htmlFor="emergencyContact.name" className="block text-sm font-medium text-gray-700">
+                      Contact Name
+                    </label>
+                    <input
+                      id="emergencyContact.name"
+                      name="emergencyContact.name"
+                      type="text"
+                      placeholder="Enter emergency contact name"
+                      value={formData.emergencyContact.name}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm disabled:bg-gray-100 disabled:text-gray-500"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="emergencyContact.relationship" className="block text-sm font-medium text-gray-700">
+                      Relationship
+                    </label>
+                    <input
+                      id="emergencyContact.relationship"
+                      name="emergencyContact.relationship"
+                      type="text"
+                      placeholder="Enter relationship"
+                      value={formData.emergencyContact.relationship}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm disabled:bg-gray-100 disabled:text-gray-500"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="emergencyContact.contactNumber" className="block text-sm font-medium text-gray-700">
+                      Contact Phone
+                    </label>
+                    <input
+                      id="emergencyContact.contactNumber"
+                      name="emergencyContact.contactNumber"
+                      type="text"
+                      placeholder="Enter emergency contact phone"
+                      value={formData.emergencyContact.contactNumber}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm disabled:bg-gray-100 disabled:text-gray-500"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="mt-6 flex justify-end">
+              {isEditing ? (
+                <>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    className="mr-3"
+                    onClick={() => setIsEditing(false)}
+                  >
+                    Cancel
                   </Button>
-                )}
-              </div>
+                  <Button 
+                    type="submit"
+                    isLoading={isSubmitting}
+                  >
+                    Save Changes
+                  </Button>
+                </>
+              ) : (
+                <Button
+                  type="button"
+                  onClick={() => setIsEditing(true)}
+                >
+                  Edit Profile
+                </Button>
+              )}
             </div>
           </form>
         </Card>
 
-        {user.role === 'RESERVIST' && (
+        {user && user.role === 'reservist' && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Card title="Documents">
               <div className="space-y-4">
@@ -363,6 +651,67 @@ export default function ProfilePage() {
               </div>
             </Card>
           </div>
+        )}
+
+        {user && user.role === 'admin' && (
+          <Card title="Administrator Panel">
+            <div className="space-y-4">
+              <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4">
+                <div className="flex">
+                  <div className="flex-shrink-0">
+                    <svg className="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div className="ml-3">
+                    <p className="text-sm text-yellow-700">
+                      You have Administrator privileges. Use this panel to manage system users.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <Button
+                size="sm"
+                variant="primary"
+                className="w-full"
+                onClick={() => router.push('/admin/users')}
+              >
+                Manage Users
+              </Button>
+              <Button
+                size="sm"
+                variant="secondary"
+                className="w-full"
+                onClick={() => router.push('/admin/reports')}
+              >
+                View System Reports
+              </Button>
+            </div>
+          </Card>
+        )}
+
+        {user && user.role === 'director' && (
+          <Card title="Director Dashboard">
+            <div className="space-y-4">
+              <div className="bg-blue-50 border-l-4 border-blue-400 p-4">
+                <div className="flex">
+                  <div className="ml-3">
+                    <p className="text-sm text-blue-700">
+                      As Director, you have full access to all system features and administrative controls.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <Button
+                size="sm"
+                variant="primary"
+                className="w-full"
+                onClick={() => router.push('/director/dashboard')}
+              >
+                Director Dashboard
+              </Button>
+            </div>
+          </Card>
         )}
 
         <Card title="Account Settings">
