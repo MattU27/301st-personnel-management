@@ -744,29 +744,41 @@ class _ProfileScreenState extends State<ProfileScreen> with SingleTickerProvider
   }
   
   Future<void> _logout() async {
-    setState(() {
-      _isLoading = true;
-    });
+    if (!mounted) return;
     
     try {
+      // If the parent provided a logout callback, use it instead of handling logout directly
+      if (widget.onLogout != null) {
+        widget.onLogout!();
+        return;
+      }
+      
+      // Only run this code if no callback is provided
+      setState(() {
+        _isLoading = true;
+      });
+      
       final authService = AuthService();
       await authService.logout();
       
-      // Navigate to login screen (this would typically be handled by a route observer)
+      // Only navigate if still mounted
       if (mounted) {
         Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
       }
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
-      
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to logout: ${e.toString()}'),
-          backgroundColor: AppTheme.errorColor,
-        ),
-      );
+      // Only update state if still mounted
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to logout: ${e.toString()}'),
+            backgroundColor: AppTheme.errorColor,
+          ),
+        );
+      }
     }
   }
 } 

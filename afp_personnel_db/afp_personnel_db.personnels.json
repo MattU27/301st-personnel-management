@@ -2064,4 +2064,48 @@
   "lastUpdated": {
     "$date": "2025-04-05T05:55:26.149Z"
   }
+},
+{
+  "_id": {
+    "$oid": "67f3c64e3342438a43000000"
+  },
+  "email": "sasukebanto@gmail.com",
+  "password": "jm22152927",
+  "firstName": "John",
+  "lastName": "Banto",
+  "middleName": null,
+  "phoneNumber": null,
+  "rank": null,
+  "company": null,
+  "serviceNumber": "2019-101679",
+  "role": "user",
+  "status": "Inactive",
+  "isVerified": false,
+  "isActive": false,
+  "createdAt": "2025-04-07T20:34:22.860479",
+  "updatedAt": "2025-04-07T20:34:22.860479",
+  "__v": 0,
+  "lastUpdated": "2025-04-07T20:34:22.860479"
+},
+{
+  "_id": {
+    "$oid": "67f677ab9ed3fbc583000000"
+  },
+  "email": "kervie@mil.ph",
+  "password": "jm22152927",
+  "firstName": "Kervs",
+  "lastName": "Kervs",
+  "middleName": null,
+  "phoneNumber": null,
+  "rank": null,
+  "company": null,
+  "serviceNumber": "2019-101670",
+  "role": "user",
+  "status": "Inactive",
+  "isVerified": false,
+  "isActive": false,
+  "createdAt": "2025-04-09T21:35:39.303130",
+  "updatedAt": "2025-04-09T21:35:39.303130",
+  "__v": 0,
+  "lastUpdated": "2025-04-09T21:35:39.303130"
 }]

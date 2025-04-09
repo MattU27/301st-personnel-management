@@ -57,6 +57,22 @@ class ArmedForcesApp extends StatelessWidget {
           '/dashboard': (context) => const DashboardScreen(),
           '/forgot_password': (context) => const ForgotPasswordScreen(),
         },
+        // Handle dashboard route with parameters
+        onGenerateRoute: (settings) {
+          if (settings.name == '/dashboard') {
+            // Extract the arguments if available
+            final args = settings.arguments as Map<String, dynamic>?;
+            
+            return MaterialPageRoute(
+              settings: settings,
+              builder: (context) => DashboardScreen(
+                initialTabIndex: args?['initialTabIndex'],
+                params: args?['params'],
+              ),
+            );
+          }
+          return null;
+        },
         // If a route isn't found, go to the login screen
         onUnknownRoute: (settings) {
           return MaterialPageRoute(builder: (context) => const LoginScreen());

@@ -78,7 +78,7 @@ export default function ProfilePage() {
         const userData = response.data.data.user;
         console.log('Profile data received successfully');
         
-        // Set form data with user profile information
+        // Set form data with user profile information, ensuring all values are defined
         setFormData({
           firstName: userData.firstName || '',
           lastName: userData.lastName || '',
@@ -86,16 +86,16 @@ export default function ProfilePage() {
           company: userData.company || '',
           rank: userData.rank || '',
           phone: userData.contactNumber || '',
-          address: userData.address || {
-            street: '',
-            city: '',
-            province: '',
-            postalCode: ''
+          address: {
+            street: userData.address?.street || '',
+            city: userData.address?.city || '',
+            province: userData.address?.province || '',
+            postalCode: userData.address?.postalCode || ''
           },
-          emergencyContact: userData.emergencyContact || {
-            name: '',
-            relationship: '',
-            contactNumber: ''
+          emergencyContact: {
+            name: userData.emergencyContact?.name || '',
+            relationship: userData.emergencyContact?.relationship || '',
+            contactNumber: userData.emergencyContact?.contactNumber || ''
           }
         });
       }

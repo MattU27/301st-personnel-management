@@ -6,7 +6,9 @@ import SkipToContent from "@/components/SkipToContent";
 import Footer from "@/components/Footer";
 import { AuthProvider } from "@/contexts/AuthContext";
 import SessionTimeoutWarning from '@/components/SessionTimeoutWarning';
+import AccountDeactivationNotice from '@/components/AccountDeactivationNotice';
 import StateResetWrapper from '@/components/StateResetWrapper';
+import { Toaster } from 'react-hot-toast';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -32,6 +34,8 @@ export default function RootLayout({
             </main>
             <Footer />
             <SessionTimeoutWarning />
+            <AccountDeactivationNotice />
+            <Toaster position="top-right" />
           </StateResetWrapper>
         </AuthProvider>
       </body>

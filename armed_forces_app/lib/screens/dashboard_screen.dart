@@ -10,7 +10,14 @@ import './documents_screen.dart';
 import './profile_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
-  const DashboardScreen({Key? key}) : super(key: key);
+  final int? initialTabIndex;
+  final Map<String, dynamic>? params;
+  
+  const DashboardScreen({
+    Key? key, 
+    this.initialTabIndex,
+    this.params,
+  }) : super(key: key);
 
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
@@ -20,11 +27,46 @@ class _DashboardScreenState extends State<DashboardScreen> {
   int _currentIndex = 0;
   bool _isLoading = true;
   User? _user;
+  Map<String, dynamic>? _params;
 
   @override
   void initState() {
     super.initState();
+    // Set initial tab index if provided
+    if (widget.initialTabIndex != null) {
+      _currentIndex = widget.initialTabIndex!;
+    }
+    // Store params for passing to child screens
+    _params = widget.params;
     _loadUserData();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    
+    // Check for navigation arguments
+    final args = ModalRoute.of(context)?.settings.arguments;
+    print('Dashboard received args: $args');
+    
+    if (args != null && args is Map<String, dynamic>) {
+      if (args.containsKey('initialTabIndex')) {
+        final newIndex = args['initialTabIndex'] as int;
+        print('Setting current index from $_currentIndex to $newIndex');
+        
+        // Only update state if the index has changed
+        if (_currentIndex != newIndex) {
+          setState(() {
+            _currentIndex = newIndex;
+          });
+        }
+      }
+      
+      if (args.containsKey('params')) {
+        _params = args['params'];
+        print('Received params: $_params');
+      }
+    }
   }
 
   Future<void> _loadUserData() async {
@@ -59,6 +101,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Future<void> _logout() async {
+    // First check if we need to show the confirmation
+    if (!context.mounted) return;
+    
     final shouldLogout = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -81,19 +126,50 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
 
     if (shouldLogout != true) return;
+    
+    // Show loading indicator
+    if (context.mounted) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return const AlertDialog(
+            content: Row(
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(width: 16),
+                Text("Logging out..."),
+              ],
+            ),
+          );
+        },
+      );
+    }
 
     try {
       final authService = AuthService();
       await authService.logout();
 
+      // Close the loading dialog and navigate to login
       if (context.mounted) {
-        Navigator.pushReplacement(
+        Navigator.of(context).pop(); // Remove loading dialog
+        Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const LoginScreen()),
+          (route) => false,
         );
       }
     } catch (e) {
-      // Handle error
+      // Close the loading dialog and show error
+      if (context.mounted) {
+        Navigator.of(context).pop(); // Remove loading dialog
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Logout failed: ${e.toString()}'),
+            backgroundColor: AppTheme.errorColor,
+          ),
+        );
+      }
     }
   }
 
@@ -102,9 +178,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
       case 0:
         return HomeScreen(user: _user);
       case 1:
+        // Pass target ID to TrainingsScreen if available
         return const TrainingsScreen();
+        // TODO: Update TrainingsScreen to support targeting specific training by ID
+        // return TrainingsScreen(initialId: _params != null ? _params!['targetId'] : null);
       case 2:
+        // Pass target ID to DocumentsScreen if available
         return const DocumentsScreen();
+        // TODO: Update DocumentsScreen to support targeting specific document by ID
+        // return DocumentsScreen(initialId: _params != null ? _params!['targetId'] : null);
       case 3:
         return ProfileScreen(user: _user, onLogout: _logout);
       default:

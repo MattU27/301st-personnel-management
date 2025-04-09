@@ -11,11 +11,13 @@ import {
   XCircleIcon,
   TrashIcon,
   BriefcaseIcon,
-  ExclamationTriangleIcon
+  ExclamationTriangleIcon,
+  InformationCircleIcon
 } from '@heroicons/react/24/outline';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
 import axios from 'axios';
 import { UserStatus } from '@/types/auth';
+import DeactivationReasonModal from '@/components/DeactivationReasonModal';
 
 interface User {
   _id: string;
@@ -28,6 +30,7 @@ interface User {
   company?: string;
   lastLogin?: string;
   createdAt: string;
+  deactivationReason?: string;
 }
 
 export default function AdministratorAccountsPage() {
@@ -44,6 +47,8 @@ export default function AdministratorAccountsPage() {
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [usersPerPage] = useState(8);
+  const [showDeactivationModal, setShowDeactivationModal] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   // Separate useEffect for authentication checking
   useEffect(() => {
@@ -96,7 +101,7 @@ export default function AdministratorAccountsPage() {
     };
   }, [searchQuery]);
 
-  const fetchUsers = async () => {
+  const fetchUsers = async (refreshCallback?: () => void) => {
     try {
       setLoading(true);
       setLoadingMessage('Loading user accounts...');
@@ -119,8 +124,26 @@ export default function AdministratorAccountsPage() {
       });
       
       if (response.data.success) {
+        // Check for inactive users and log their deactivation reasons for debugging
+        const inactiveUsers = response.data.data.users
+          .filter((u: User) => u.status === UserStatus.INACTIVE);
+          
+        if (inactiveUsers.length > 0) {
+          console.log('Inactive users with deactivation reasons:', 
+            inactiveUsers.map((u: User) => ({
+              id: u._id,
+              name: `${u.firstName} ${u.lastName}`,
+              reason: u.deactivationReason || 'No reason provided'
+            }))
+          );
+        }
+        
         setUsers(response.data.data.users);
         setError(null);
+        
+        if (refreshCallback) {
+          refreshCallback();
+        }
       } else {
         setError(response.data.error || 'Failed to fetch user accounts');
       }
@@ -132,7 +155,11 @@ export default function AdministratorAccountsPage() {
     }
   };
 
-  const handleStatusChange = async (userId: string, newStatus: UserStatus) => {
+  const handleStatusChange = (userId: string, newStatus: UserStatus) => {
+    handleStatusChangeWithReason(userId, newStatus);
+  };
+
+  const handleStatusChangeWithReason = async (userId: string, newStatus: UserStatus, reason?: string) => {
     try {
       setLoading(true);
       setLoadingMessage(`Updating user status...`);
@@ -142,8 +169,18 @@ export default function AdministratorAccountsPage() {
         throw new Error('Authentication token not found');
       }
       
+      const payload: any = { userId, status: newStatus };
+      
+      // Add reason if provided (for deactivation)
+      if (reason && newStatus === UserStatus.INACTIVE) {
+        console.log(`Adding reason "${reason}" to deactivation payload`);
+        payload.reason = reason;
+      }
+      
+      console.log('Sending PATCH request with payload:', payload);
+      
       const response = await axios.patch('/api/admin/users', 
-        { userId, status: newStatus },
+        payload,
         {
           headers: {
             Authorization: `Bearer ${token}`
@@ -151,13 +188,13 @@ export default function AdministratorAccountsPage() {
         }
       );
       
+      console.log('Response from PATCH request:', response.data);
+      
       if (response.data.success) {
-        // Update the user in the local state
-        setUsers(prevUsers => 
-          prevUsers.map(u => 
-            u._id === userId ? { ...u, status: newStatus } : u
-          )
-        );
+        // Request fresh data from the server
+        fetchUsers(() => {
+          console.log('Data refreshed after status change');
+        });
         setError(null);
       } else {
         setError(response.data.error || 'Failed to update user status');
@@ -167,6 +204,8 @@ export default function AdministratorAccountsPage() {
       setError(err.response?.data?.error || err.message || 'An error occurred while updating user status');
     } finally {
       setLoading(false);
+      // Reset selected user
+      setSelectedUser(null);
     }
   };
 
@@ -269,6 +308,40 @@ export default function AdministratorAccountsPage() {
   const paginate = (pageNumber: number) => {
     if (pageNumber > 0 && pageNumber <= totalPages) {
       setCurrentPage(pageNumber);
+    }
+  };
+
+  const initiateDeactivation = (user: User) => {
+    console.log('Initiating deactivation for user:', user);
+    setSelectedUser(user);
+    setShowDeactivationModal(true);
+  };
+
+  const handleDeactivationConfirm = (reason: string) => {
+    console.log('Deactivation confirmed with reason:', reason);
+    
+    if (!reason || !reason.trim()) {
+      console.error('Empty deactivation reason provided, using default');
+      reason = 'No specific reason provided';
+    }
+    
+    // Store the reason as a backup
+    try {
+      localStorage.setItem('lastDeactivationReason', reason);
+      console.log('Stored deactivation reason in localStorage as backup:', reason);
+    } catch (error) {
+      console.error('Error storing deactivation reason in localStorage:', error);
+    }
+    
+    if (selectedUser) {
+      // This is important: the reason must be passed to the API
+      console.log(`Deactivating user ${selectedUser._id} (${selectedUser.firstName} ${selectedUser.lastName}) with reason: "${reason}"`);
+      
+      handleStatusChangeWithReason(selectedUser._id, UserStatus.INACTIVE, reason);
+      setShowDeactivationModal(false);
+    } else {
+      console.error('No user selected for deactivation');
+      setError('No user selected for deactivation');
     }
   };
 
@@ -441,9 +514,28 @@ export default function AdministratorAccountsPage() {
                           </div>
                         </td>
                         <td className="px-4 py-4">
-                          <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeColor(user.status)}`}>
-                            {user.status.charAt(0).toUpperCase() + user.status.slice(1)}
-                          </span>
+                          <div className="flex items-center">
+                            <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeColor(user.status)}`}>
+                              {user.status.charAt(0).toUpperCase() + user.status.slice(1)}
+                            </span>
+                            {user.status === UserStatus.INACTIVE && (
+                              <div className="relative ml-2 group">
+                                <InformationCircleIcon 
+                                  className="h-5 w-5 text-gray-400 hover:text-gray-600 cursor-help" 
+                                  onClick={() => {
+                                    const reason = user.deactivationReason || 'No reason provided';
+                                    console.log(`Viewing deactivation reason for ${user.firstName} ${user.lastName}:`, reason);
+                                    
+                                    alert(`Deactivation reason for ${user.firstName} ${user.lastName}:\n${reason}`);
+                                  }}
+                                />
+                                <div className="absolute z-50 top-0 right-6 mt-0 p-3 bg-gray-800 text-white text-sm rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 w-64 pointer-events-none border border-gray-700">
+                                  <p className="font-semibold mb-1 text-yellow-300">Deactivation Reason:</p>
+                                  <p className="break-words">{user.deactivationReason || 'No reason provided'}</p>
+                                </div>
+                              </div>
+                            )}
+                          </div>
                         </td>
                         <td className="px-4 py-4 text-sm text-gray-500 truncate max-w-[150px]">
                           {formatDate(user.lastLogin)}
@@ -462,7 +554,7 @@ export default function AdministratorAccountsPage() {
                             
                             {user.status === UserStatus.ACTIVE && (
                               <button 
-                                onClick={() => handleStatusChange(user._id, UserStatus.INACTIVE)}
+                                onClick={() => initiateDeactivation(user)}
                                 className="text-yellow-600 hover:text-yellow-900 mx-1"
                                 title="Deactivate Account"
                               >
@@ -570,6 +662,16 @@ export default function AdministratorAccountsPage() {
           )}
         </div>
       </Card>
+
+      {/* Deactivation Reason Modal */}
+      {selectedUser && (
+        <DeactivationReasonModal
+          isOpen={showDeactivationModal}
+          onClose={() => setShowDeactivationModal(false)}
+          onConfirm={handleDeactivationConfirm}
+          userName={getFullName(selectedUser)}
+        />
+      )}
     </div>
   );
 } 

@@ -407,23 +407,38 @@ class AuthService extends ChangeNotifier {
   // Request password reset
   Future<Map<String, dynamic>> forgotPassword(String email) async {
     try {
-      final response = await _dio.post(
-        AppConstants.forgotPasswordEndpoint,
-        data: {
-          'email': email,
-        },
-      );
-
-      if (response.statusCode == 200) {
+      if (_useLocalMongoDB) {
+        // Simulate API call delay
+        await Future.delayed(const Duration(seconds: 2));
+        
+        // For testing purposes, always return success
+        if (kDebugMode) {
+          print('Password reset requested for: $email');
+        }
+        
         return {
           'success': true,
           'message': 'Password reset instructions sent to your email',
         };
       } else {
-        return {
-          'success': false,
-          'message': response.data['message'] ?? 'Failed to send reset instructions',
-        };
+        final response = await _dio.post(
+          AppConstants.forgotPasswordEndpoint,
+          data: {
+            'email': email,
+          },
+        );
+
+        if (response.statusCode == 200) {
+          return {
+            'success': true,
+            'message': 'Password reset instructions sent to your email',
+          };
+        } else {
+          return {
+            'success': false,
+            'message': response.data['message'] ?? 'Failed to send reset instructions',
+          };
+        }
       }
     } catch (e) {
       _logger.e('Forgot password exception: $e');

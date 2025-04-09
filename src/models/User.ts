@@ -62,6 +62,7 @@ export interface IUser extends mongoose.Document {
   profileImage?: string;
   specializations?: string[];
   lastLogin?: Date;
+  deactivationReason?: string;
   createdAt: Date;
   updatedAt: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
@@ -115,6 +116,10 @@ const UserSchema = new mongoose.Schema({
     type: String,
     enum: Object.values(UserStatus),
     default: UserStatus.PENDING,
+  },
+  deactivationReason: {
+    type: String,
+    required: false,
   },
   rank: {
     type: String,

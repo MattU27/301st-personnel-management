@@ -7,6 +7,8 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import { hasPermission as checkRolePermission } from '@/utils/rolePermissions';
 import { auditService } from '@/utils/auditService';
+import websocketService, { WebSocketEventType } from '@/utils/websocketService';
+import { toast } from 'react-hot-toast';
 
 // Cookie helper functions
 const setCookie = (name: string, value: string, days = 7) => {
@@ -55,6 +57,8 @@ interface AuthContextType {
   isRedirecting: boolean;
   register: (userData: RegisterData) => Promise<void>;
   getToken: () => Promise<string | null>;
+  accountDeactivated: boolean;
+  dismissDeactivationNotice: () => void;
 }
 
 // Create the auth context
@@ -76,6 +80,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const sessionWarningRef = useRef<NodeJS.Timeout | null>(null);
   const [simulatedRole, setSimulatedRole] = useState<UserRole | null>(null);
   const [isRedirecting, setIsRedirecting] = useState(false);
+  const [accountDeactivated, setAccountDeactivated] = useState(false);
 
   // Handle client-side mounting
   useEffect(() => {
@@ -95,6 +100,64 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     console.log('AuthContext state:', { user, isLoading, isAuthenticated: !!user, mounted });
   }, [user, isLoading, mounted]);
+
+  // After the existing useEffects, add a new one for WebSocket connection
+  useEffect(() => {
+    // Only connect to WebSocket if user is logged in and in the browser
+    if (typeof window !== 'undefined' && user && user._id && websocketService) {
+      // Connect to WebSocket
+      websocketService.connect(user._id);
+      
+      // Listen for account deactivation
+      const handleAccountDeactivated = (payload: any) => {
+        console.log('Account deactivated:', payload);
+        
+        // Store the deactivation reason (even if null)
+        console.log('Received deactivation reason:', payload.reason);
+        
+        // Always store a reason, even if it's a default one
+        const deactivationReason = payload.reason || 'No reason provided by administrator';
+        console.log('Storing deactivation reason in sessionStorage:', deactivationReason);
+        
+        // Store in sessionStorage
+        sessionStorage.setItem('deactivationReason', deactivationReason);
+        
+        // Show a toast notification
+        toast.error(`Your account has been deactivated${payload.reason ? ': ' + payload.reason : ''}`, {
+          duration: 5000,
+          position: 'top-center',
+        });
+        
+        // Set account deactivated flag
+        setAccountDeactivated(true);
+        
+        // Wait a moment before logging out
+        setTimeout(() => {
+          logout();
+        }, 3000);
+      };
+      
+      // Add event listener
+      websocketService.addEventListener(
+        WebSocketEventType.ACCOUNT_DEACTIVATED,
+        handleAccountDeactivated
+      );
+      
+      // Clean up function
+      return () => {
+        if (websocketService) {
+          // Remove event listener
+          websocketService.removeEventListener(
+            WebSocketEventType.ACCOUNT_DEACTIVATED,
+            handleAccountDeactivated
+          );
+          
+          // Disconnect from WebSocket
+          websocketService.disconnect();
+        }
+      };
+    }
+  }, [user?._id]);
 
   const checkAuth = async () => {
     console.log('Running checkAuth...');
@@ -116,8 +179,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
       
       if (response.data.success) {
-        setUser(response.data.data.user);
-        startSessionTimer();
+        const userData = response.data.data.user;
+        
+        // Check if account is inactive
+        if (userData.status === 'inactive') {
+          // Show appropriate message
+          toast.error('Your account has been deactivated. Please contact an administrator.', {
+            duration: 5000,
+          });
+          
+          // Set deactivated flag
+          setAccountDeactivated(true);
+          
+          // Clear cookies and local storage
+          Cookies.remove('token');
+          localStorage.removeItem('token');
+          sessionStorage.removeItem('token');
+          
+          setUser(null);
+          router.push('/login');
+        } else {
+          // Account is active, proceed normally
+          setUser(userData);
+          startSessionTimer();
+        }
       } else {
         setUser(null);
         Cookies.remove('token');
@@ -422,8 +507,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Use simulated role if set
     const roleToCheck = simulatedRole || user.role;
     
-    // Use the imported checkPermission function
-    return checkRolePermission(roleToCheck, permission as any);
+    // Explicitly check the permission in the rolePermissions map
+    // rather than using a generic check
+    return checkRolePermission(roleToCheck.toLowerCase(), permission as any);
   };
 
   const getToken = async (): Promise<string | null> => {
@@ -449,6 +535,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // Add a method to dismiss the deactivation notice
+  const dismissDeactivationNotice = () => {
+    setAccountDeactivated(false);
+  };
+
   // Provide auth context value
   const contextValue: AuthContextType = {
     user,
@@ -465,6 +556,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isRedirecting,
     getToken,
     register,
+    accountDeactivated,
+    dismissDeactivationNotice,
   };
 
   return (

@@ -8,6 +8,7 @@
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:label="armed_forces_app"
+        android:enableOnBackInvokedCallback="true"
         android:hardwareAccelerated="true">
         <activity
             android:name=".MainActivity"

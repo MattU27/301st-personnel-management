@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import '../core/theme/app_theme.dart';
 import '../core/constants/app_constants.dart';
 import '../models/training_model.dart';
+import '../screens/home_screen.dart'; // Import for NotificationState
 
 class TrainingsScreen extends StatefulWidget {
   const TrainingsScreen({Key? key}) : super(key: key);
@@ -144,6 +145,46 @@ class _TrainingsScreenState extends State<TrainingsScreen> with SingleTickerProv
         backgroundColor: AppTheme.primaryColor,
         foregroundColor: Colors.white,
         elevation: 0,
+        actions: [
+          // Notification bell with badge
+          Stack(
+            alignment: Alignment.center,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.notifications),
+                onPressed: () {
+                  _showNotificationsDialog(context);
+                },
+              ),
+              if (NotificationState.unreadCount > 0)
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: Container(
+                    padding: const EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    constraints: const BoxConstraints(
+                      minWidth: 16,
+                      minHeight: 16,
+                    ),
+                    child: Text(
+                      NotificationState.unreadCount.toString(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(width: 8),
+        ],
         bottom: TabBar(
           controller: _tabController,
           indicatorColor: Colors.white,
@@ -742,5 +783,239 @@ class _TrainingsScreenState extends State<TrainingsScreen> with SingleTickerProv
       default:
         return 'Unknown';
     }
+  }
+
+  // Add notification dialog method
+  void _showNotificationsDialog(BuildContext context) {
+    // Ensure we don't trigger navigation just by opening the notification drawer
+    print('Opening notification dialog from TrainingsScreen - preventing navigation');
+    
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      isDismissible: true,
+      enableDrag: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      routeSettings: const RouteSettings(name: 'training_notifications_dialog'),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Container(
+              height: MediaQuery.of(context).size.height * 0.7,
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Notifications',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          // Mark all as read
+                          NotificationState.markAllAsRead();
+                          
+                          // Update UI
+                          setState(() {});
+                          this.setState(() {});
+                        },
+                        child: const Text('Mark all as read'),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Expanded(
+                    child: ListView.separated(
+                      itemCount: NotificationState.announcements.length,
+                      separatorBuilder: (context, index) => const Divider(),
+                      itemBuilder: (context, index) {
+                        final notification = NotificationState.announcements[index];
+                        // Ensure isRead is always a boolean
+                        final isRead = notification['isRead'] ?? false;
+                        final isImportant = notification['isImportant'] ?? false;
+                        
+                        return ListTile(
+                          leading: CircleAvatar(
+                            backgroundColor: isRead 
+                              ? AppTheme.textSecondaryColor.withOpacity(0.2)
+                              : AppTheme.primaryColor,
+                            foregroundColor: Colors.white,
+                            child: Icon(
+                              isImportant 
+                                ? Icons.priority_high 
+                                : Icons.notifications,
+                            ),
+                          ),
+                          title: Text(
+                            notification['title'] ?? 'No Title',
+                            style: TextStyle(
+                              fontWeight: isRead 
+                                ? FontWeight.normal 
+                                : FontWeight.bold,
+                            ),
+                          ),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                notification['content'] ?? 'No content',
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                notification['date'] != null 
+                                  ? DateFormat('MMM d, yyyy').format(notification['date'])
+                                  : 'No date',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: AppTheme.textSecondaryColor,
+                                ),
+                              ),
+                            ],
+                          ),
+                          onTap: () {
+                            // Show notification details immediately in a dialog
+                            _showNotificationDetailsInBottomSheet(
+                              context, 
+                              notification,
+                              () {
+                                // Mark as read when details are viewed
+                                if (!isRead) {
+                                  NotificationState.markAsRead(notification['id']);
+                                  
+                                  // Update UI
+                                  setState(() {});
+                                  this.setState(() {});
+                                }
+                              }
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+  
+  // Show notification details directly in the bottom sheet
+  void _showNotificationDetailsInBottomSheet(
+    BuildContext context, 
+    Map<String, dynamic> notification,
+    VoidCallback onDetailsViewed
+  ) {
+    final hasNavigationTarget = notification['targetType'] != null && 
+                               notification['targetType'] != 'notification';
+    
+    String actionButtonText = 'View Details';
+    switch (notification['targetType']) {
+      case 'training':
+        actionButtonText = 'Go to Training';
+        break;
+      case 'document':
+        actionButtonText = 'View Document';
+        break;
+      default:
+        actionButtonText = 'View Details';
+    }
+    
+    // Call the callback to mark as read
+    onDetailsViewed();
+    
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(notification['title'] ?? 'Notification'),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(notification['content'] ?? ''),
+              const SizedBox(height: 16),
+              Text(
+                'Date: ${notification['date'] != null ? DateFormat('MMMM d, yyyy').format(notification['date']) : 'Unknown date'}',
+                style: const TextStyle(
+                  color: AppTheme.textSecondaryColor,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+          if (hasNavigationTarget)
+            ElevatedButton(
+              onPressed: () {
+                // Close the details dialog
+                Navigator.pop(context);
+                // Close the bottom sheet
+                Navigator.pop(context);
+                // Navigate to the target
+                _navigateToTarget(notification['targetType'], notification['targetId']);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.primaryColor,
+                foregroundColor: Colors.white,
+              ),
+              child: Text(actionButtonText),
+            ),
+        ],
+      ),
+    );
+  }
+  
+  // Navigate to the target based on type and ID
+  void _navigateToTarget(String targetType, String? targetId) {
+    // First pop back to close any open dialogs (if any still open)
+    if (Navigator.canPop(context)) {
+      Navigator.of(context).pop();
+    }
+    
+    // Create a map to store any parameters we want to pass
+    final Map<String, dynamic> params = {
+      'targetId': targetId,
+    };
+    
+    // Navigate back to dashboard with the appropriate tab selected
+    int tabIndex;
+    switch (targetType) {
+      case 'training':
+        tabIndex = 1; // Trainings tab
+        break;
+      case 'document':
+        tabIndex = 2; // Documents tab
+        break;
+      default:
+        tabIndex = 0; // Home tab
+    }
+    
+    // Use pushReplacementNamed to avoid building up the navigation stack
+    Navigator.of(context).pushNamedAndRemoveUntil(
+      '/dashboard',
+      (route) => false,
+      arguments: {
+        'initialTabIndex': tabIndex,
+        'params': params,
+      },
+    );
   }
 } 
