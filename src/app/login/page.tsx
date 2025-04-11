@@ -37,7 +37,13 @@ function LoginContent() {
       // Use direct location for more reliable redirect
       window.location.href = '/dashboard';
     }
-  }, [isAuthenticated, user, isRedirecting]);
+    
+    // Check if the URL has a deactivated parameter
+    const deactivated = searchParams?.get('deactivated');
+    if (deactivated === 'true') {
+      setInactiveAccount(true);
+    }
+  }, [isAuthenticated, user, isRedirecting, searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -263,13 +269,12 @@ function LoginContent() {
                   </div>
 
                   <div className="text-sm">
-                    <button 
-                      type="button"
-                      onClick={() => setShowForgotPasswordModal(true)}
+                    <Link 
+                      href="/password-recovery"
                       className="font-medium text-[#092140] hover:text-[#D1B000] transition-all duration-300"
                     >
                       Forgot your password?
-                    </button>
+                    </Link>
                   </div>
                 </div>
 

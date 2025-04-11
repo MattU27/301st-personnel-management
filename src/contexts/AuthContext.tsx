@@ -81,6 +81,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [simulatedRole, setSimulatedRole] = useState<UserRole | null>(null);
   const [isRedirecting, setIsRedirecting] = useState(false);
   const [accountDeactivated, setAccountDeactivated] = useState(false);
+  const accountStatusPollingRef = useRef<NodeJS.Timeout | null>(null);
 
   // Handle client-side mounting
   useEffect(() => {
@@ -100,6 +101,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     console.log('AuthContext state:', { user, isLoading, isAuthenticated: !!user, mounted });
   }, [user, isLoading, mounted]);
+
+  // Create a memoized version of forceLogout for use in effects
+  const forceLogout = useCallback(() => {
+    console.log('Force logout due to account deactivation');
+    
+    // Clear cookies and local storage
+    Cookies.remove('token');
+    localStorage.removeItem('token');
+    sessionStorage.removeItem('token');
+    
+    // Reset user state
+    setUser(null);
+    
+    // Clear timeouts
+    if (sessionTimeoutRef.current) {
+      clearTimeout(sessionTimeoutRef.current);
+      sessionTimeoutRef.current = null;
+    }
+    
+    if (sessionWarningRef.current) {
+      clearTimeout(sessionWarningRef.current);
+      sessionWarningRef.current = null;
+    }
+    
+    if (accountStatusPollingRef.current) {
+      clearInterval(accountStatusPollingRef.current);
+      accountStatusPollingRef.current = null;
+    }
+    
+    setSessionExpiring(false);
+    router.push('/login');
+  }, [router]);
 
   // After the existing useEffects, add a new one for WebSocket connection
   useEffect(() => {
@@ -133,7 +166,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         
         // Wait a moment before logging out
         setTimeout(() => {
-          logout();
+          forceLogout();
         }, 3000);
       };
       
@@ -157,7 +190,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       };
     }
-  }, [user?._id]);
+  }, [user?._id, forceLogout]);
 
   const checkAuth = async () => {
     console.log('Running checkAuth...');
@@ -425,6 +458,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       setSessionExpiring(false);
       router.push('/login');
+      
+      // Clear account status polling interval
+      if (accountStatusPollingRef.current) {
+        clearInterval(accountStatusPollingRef.current);
+        accountStatusPollingRef.current = null;
+      }
     } catch (error) {
       console.error('Logout error:', error);
       
@@ -520,6 +559,76 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return null;
     }
   };
+
+  // Re-add the polling effect here, after getToken is defined
+  useEffect(() => {
+    // Only start polling if user is logged in
+    if (user && user._id) {
+      console.log('Setting up account status polling');
+      
+      // Function to check user status
+      const checkUserStatus = async () => {
+        try {
+          const token = await getToken();
+          if (!token) return;
+          
+          try {
+            const response = await axios.get('/api/auth/me', {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+              },
+              timeout: 5000 // 5 second timeout
+            });
+            
+            if (response.data.success) {
+              const userData = response.data.data.user;
+              
+              // If account has been deactivated, log out the user
+              if (userData.status === 'inactive' || userData.status === 'deactivated') {
+                console.log('Status polling detected account deactivation');
+                
+                // Show notification
+                toast.error('Your account has been deactivated. You will be logged out.', {
+                  duration: 5000,
+                  position: 'top-center',
+                });
+                
+                // Set deactivated flag
+                setAccountDeactivated(true);
+                
+                // Wait a moment before logging out
+                setTimeout(() => {
+                  forceLogout();
+                }, 3000);
+              }
+            }
+          } catch (axiosError) {
+            // Only log serious errors, not the regular polling checks
+            if (axiosError.code !== 'ECONNABORTED') {
+              console.error('Auth check error:', axiosError.message || 'Unknown error');
+            }
+          }
+        } catch (error) {
+          console.error('Error in status check wrapper:', error);
+        }
+      };
+      
+      // Check immediately on login
+      checkUserStatus();
+      
+      // Set up interval to check every minute (60000 ms)
+      accountStatusPollingRef.current = setInterval(checkUserStatus, 60000);
+      
+      // Clean up interval on unmount or logout
+      return () => {
+        if (accountStatusPollingRef.current) {
+          clearInterval(accountStatusPollingRef.current);
+          accountStatusPollingRef.current = null;
+        }
+      };
+    }
+  }, [user?._id, forceLogout]);
 
   // Add register function
   const register = async (userData: RegisterData): Promise<void> => {

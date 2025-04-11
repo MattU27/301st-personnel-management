@@ -67,6 +67,15 @@ export async function middleware(request: NextRequest) {
       );
       
       const userRole = payload.role as string;
+      const userStatus = payload.status as string;
+      
+      // Check if account is deactivated
+      if (userStatus === 'deactivated' || userStatus === 'inactive') {
+        // Redirect to login with deactivated message
+        const url = new URL('/login', request.url);
+        url.searchParams.set('deactivated', 'true');
+        return NextResponse.redirect(url);
+      }
 
       // Check if the path is restricted by role
       for (const [path, roles] of Object.entries(roleRestrictedPaths)) {

@@ -1,33 +1,22 @@
 import { NextResponse } from 'next/server';
-import { dbConnect } from '@/utils/dbConnect';
-import Training, { TrainingStatus } from '@/models/Training';
-import User from '@/models/User';
-import { verifyJWT } from '@/utils/auth';
 import mongoose from 'mongoose';
+import { dbConnect, isUsingLocalFallback, readLocalJSONCollection } from '@/utils/dbConnect';
+import Training from '@/models/Training';
+import User from '@/models/User';
 import AuditLog from '@/models/AuditLog';
+import { verifyJWT } from '@/utils/auth';
+import { TrainingStatus } from '@/models/Training';
 
 // Add dynamic directive to ensure route is dynamic
 export const dynamic = 'force-dynamic';
 
 /**
- * GET handler to retrieve trainings
+ * GET handler to fetch trainings
  */
 export async function GET(request: Request) {
   try {
     // Connect to MongoDB
     await dbConnect();
-    
-    // Import the models to ensure they're registered before using them
-    await Promise.all([
-      import('@/models/User'),
-      import('@/models/Training')
-    ]);
-    
-    // Get query parameters
-    const { searchParams } = new URL(request.url);
-    const status = searchParams.get('status');
-    const userId = searchParams.get('userId');
-    const trainingId = searchParams.get('trainingId');
     
     // Verify authentication
     const authHeader = request.headers.get('authorization');
@@ -48,114 +37,99 @@ export async function GET(request: Request) {
       );
     }
     
-    // Build query
-    const query: any = {};
+    let trainings = [];
+    let user = null;
+    let allUsers = [];
     
-    // If trainingId is provided, fetch a specific training
-    if (trainingId) {
-      query._id = new mongoose.Types.ObjectId(trainingId);
-    }
-    
-    // Filter by status if provided
-    if (status && Object.values(TrainingStatus).includes(status as TrainingStatus)) {
-      query.status = status;
-    }
-    
-    // If userId is provided, filter by attendees
-    if (userId) {
-      query['attendees.userId'] = new mongoose.Types.ObjectId(userId);
-    }
-    
-    // Get user details for role-based filtering
-    const user = await User.findById(decoded.userId);
-    if (!user) {
-      return NextResponse.json(
-        { success: false, error: 'User not found' },
-        { status: 404 }
-      );
-    }
-    
-    // Implement role-based filtering
-    // Directors and Administrators can see all trainings
-    if (user.role !== 'director' && user.role !== 'administrator' && user.role !== 'admin') {
-      // Staff, Enlisted, and Reservists only see trainings that:
-      // 1. Are relevant to their rank (if eligibleRanks is specified)
-      // 2. Are relevant to their company (if eligibleCompanies is specified)
-      // 3. Are mandatory for everyone
-      // 4. Or they are already registered for
+    if (isUsingLocalFallback()) {
+      // Use local JSON files if we're in fallback mode
+      console.log('Using local JSON files for trainings data');
       
-      const userQuery = {
-        $or: [
-          // If no eligibleRanks is specified, or user's rank is in eligibleRanks
-          { 
-            $or: [
-              { eligibleRanks: { $exists: false } },
-              { eligibleRanks: { $size: 0 } },
-              { eligibleRanks: user.rank }
-            ]
-          },
-          // If no eligibleCompanies is specified, or user's company is in eligibleCompanies
-          { 
-            $or: [
-              { eligibleCompanies: { $exists: false } },
-              { eligibleCompanies: { $size: 0 } },
-              { eligibleCompanies: user.company }
-            ]
-          },
-          // Trainings that are mandatory
-          { mandatory: true },
-          // Trainings that the user is already registered for
-          { 'attendees.userId': user._id }
-        ]
-      };
+      // Get trainings and users from local JSON
+      trainings = await readLocalJSONCollection('trainings');
+      allUsers = await readLocalJSONCollection('personnels');
       
-      // Merge with existing query
-      query.$and = query.$and ? [...query.$and, userQuery] : [query, userQuery];
-    }
-    
-    // Execute query and populate attendee user data
-    const trainings = await Training.find(query)
-      .populate({
-        path: 'attendees.userId',
-        select: 'firstName lastName rank company email serviceNumber militaryId', 
-        model: User
-      })
-      .sort({ startDate: 1 })
-      .lean();
-    
-    // Process trainings to add registration status and format attendee data
-    const processedTrainings = trainings.map(training => {
-      const userAttendee = training.attendees?.find(
-        (attendee: { userId: mongoose.Types.ObjectId | string | any }) => 
-          attendee.userId && attendee.userId._id && 
-          attendee.userId._id.toString() === decoded.userId
-      );
+      // Find current user
+      user = allUsers.find((u: any) => u._id.$oid === decoded.userId);
       
-      // Format attendees to include user data in a more accessible format
-      const formattedAttendees = training.attendees?.map((attendee: any) => {
-        if (attendee.userId && typeof attendee.userId === 'object') {
-          return {
-            ...attendee,
-            userData: {
-              firstName: attendee.userId.firstName,
-              lastName: attendee.userId.lastName,
-              rank: attendee.userId.rank,
-              company: attendee.userId.company,
-              email: attendee.userId.email,
-              militaryId: attendee.userId.militaryId
-            },
-            userId: attendee.userId._id
-          };
-        }
-        return attendee;
+      if (!user) {
+        return NextResponse.json(
+          { success: false, error: 'User not found in local database' },
+          { status: 404 }
+        );
+      }
+    } else {
+      // Use MongoDB normally
+      // Get all trainings
+      trainings = await Training.find({})
+        .populate('attendees.userId', 'firstName lastName rank company email militaryId serviceId')
+        .lean();
+      
+      console.log(`Found ${trainings.length} trainings`);
+      
+      // Get user info for attendee filtering and logging
+      user = await User.findById(decoded.userId, 'firstName lastName role rank company');
+      
+      if (!user) {
+        return NextResponse.json(
+          { success: false, error: 'User not found' },
+          { status: 404 }
+        );
+      }
+      
+      // Log for debugging
+      console.log(`User found: ${user.firstName} ${user.lastName}`, {
+        id: user._id,
+        role: user.role,
+        rank: user.rank,
+        company: user.company
       });
       
+      // Check if there are any trainings in the system at all
+      const totalTrainings = await Training.countDocuments({});
+      console.log(`Total trainings in database: ${totalTrainings}`);
+      
+      if (totalTrainings === 0) {
+        console.log('No trainings exist in the database. Consider seeding data.');
+      }
+    }
+    
+    // Process trainings to add registration status and format attendee data
+    const processedTrainings = trainings.map((training: any) => {
+      const attendees = training.attendees || [];
+      
+      // Find if current user is registered for this training
+      let userAttendee = null;
+      
+      if (isUsingLocalFallback()) {
+        // For local JSON file structure
+        userAttendee = attendees.find((attendee: any) => {
+          const attendeeUserId = attendee.userId?.$oid || attendee.userId;
+          return attendeeUserId === decoded.userId;
+        });
+      } else {
+        // For MongoDB structure
+        userAttendee = attendees.find((attendee: any) => {
+          const attendeeUserId = attendee.userId?._id?.toString() || attendee.userId?.toString();
+          return attendeeUserId === decoded.userId;
+        });
+      }
+      
+      // Set registration status based on user attendance
+      let registrationStatus = 'not_registered';
+      if (userAttendee) {
+        registrationStatus = userAttendee.status || 'registered';
+      }
+      
+      // Build the training object with registration status
       return {
         ...training,
-        attendees: formattedAttendees || [],
-        registrationStatus: userAttendee ? userAttendee.status : 'not_registered'
+        registrationStatus
       };
     });
+    
+    // Always return all trainings regardless of user role - administrators and directors should see everything
+    // We'll let the frontend handle role-specific filtering if needed
     
     return NextResponse.json({
       success: true,
@@ -263,10 +237,31 @@ export async function POST(request: Request) {
         );
       }
       
+      // Determine the appropriate status based on training dates
+      const now = new Date();
+      const startDate = new Date(training.startDate);
+      const endDate = new Date(training.endDate);
+      
+      // For upcoming trainings, the status should always be 'registered'
+      // For ongoing trainings, it can be 'attended'
+      // For completed trainings, it should be 'completed'
+      let registrationStatus = 'registered';
+      
+      if (startDate <= now && endDate >= now) {
+        // Training is ongoing
+        registrationStatus = 'registered'; // Default for registration is still 'registered'
+      } else if (endDate < now) {
+        // Training is completed, so they can't really register
+        return NextResponse.json(
+          { success: false, error: 'Cannot register for past trainings' },
+          { status: 400 }
+        );
+      }
+      
       // Register user
       if (attendeeIndex !== undefined && attendeeIndex >= 0) {
         // User is already registered, update their status
-        training.attendees[attendeeIndex].status = 'registered';
+        training.attendees[attendeeIndex].status = registrationStatus;
         actionTaken = 'updated registration for';
       } else {
         // Add user to attendees
@@ -274,10 +269,23 @@ export async function POST(request: Request) {
           training.attendees = [];
         }
         
+        // Get more user details for storing with the attendee record
+        const userDetails = await User.findById(decoded.userId, 'firstName lastName rank company email militaryId serviceId');
+        
         training.attendees.push({
           userId,
-          status: 'registered',
-          registrationDate: new Date()
+          status: registrationStatus,
+          registrationDate: new Date(),
+          // Store user data directly with the attendee record for easier access
+          userData: {
+            firstName: userDetails.firstName,
+            lastName: userDetails.lastName,
+            fullName: `${userDetails.firstName} ${userDetails.lastName}`,
+            rank: userDetails.rank || '',
+            company: userDetails.company || '',
+            email: userDetails.email || '',
+            militaryId: userDetails.militaryId || userDetails.serviceId || ''
+          }
         });
         actionTaken = 'registered for';
       }
@@ -296,6 +304,20 @@ export async function POST(request: Request) {
     }
     
     // Save the updated training
+    await training.save();
+    
+    // Update the registered count to match the actual number of valid attendees
+    // Count only attendees with a valid status
+    const validAttendees = training.attendees ? training.attendees.filter((attendee: { 
+      userId: mongoose.Types.ObjectId | string;
+      status?: string;
+    }) => 
+      attendee && attendee.userId && 
+      (!attendee.status || attendee.status === 'registered' || 
+       attendee.status === 'attended' || attendee.status === 'completed')
+    ) : [];
+    
+    training.registered = validAttendees.length;
     await training.save();
     
     // Create audit log entry
@@ -336,5 +358,25 @@ export async function POST(request: Request) {
       { success: false, error: error.message || 'Error updating training registration' },
       { status: 500 }
     );
+  }
+}
+
+// Helper function to extract first and last name from email
+function extractNameFromEmail(email: string): { firstName: string, lastName: string } | null {
+  try {
+    // Format: firstname.lastname@domain.com
+    const localPart = email.split('@')[0];
+    if (!localPart) return null;
+    
+    const nameParts = localPart.split('.');
+    if (nameParts.length < 2) return null;
+    
+    // Convert to title case
+    const firstName = nameParts[0].charAt(0).toUpperCase() + nameParts[0].slice(1);
+    const lastName = nameParts[1].charAt(0).toUpperCase() + nameParts[1].slice(1);
+    
+    return { firstName, lastName };
+  } catch (e) {
+    return null;
   }
 } 

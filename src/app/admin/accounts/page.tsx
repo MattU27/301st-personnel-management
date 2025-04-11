@@ -18,6 +18,7 @@ import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
 import axios from 'axios';
 import { UserStatus } from '@/types/auth';
 import DeactivationReasonModal from '@/components/DeactivationReasonModal';
+import { toast } from 'react-hot-toast';
 
 interface User {
   _id: string;
@@ -31,6 +32,8 @@ interface User {
   lastLogin?: string;
   createdAt: string;
   deactivationReason?: string;
+  isArchived?: boolean;
+  serviceId?: string;
 }
 
 export default function AdministratorAccountsPage() {
@@ -41,42 +44,46 @@ export default function AdministratorAccountsPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [roleFilter, setRoleFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [usersPerPage] = useState(8);
   const [showDeactivationModal, setShowDeactivationModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const isNavigatingRef = useRef(false); // Ref to track navigation state
+  const initialFetchDoneRef = useRef(false); // Track initial fetch
+  const activationHandledRef = useRef(false); // Track if activation redirect was handled
+  const fetchInProgressRef = useRef(false); // Track if fetch is in progress
 
   // Separate useEffect for authentication checking
   useEffect(() => {
-    if (!isLoading) {
-      if (!isAuthenticated) {
-        router.push('/login');
-        return;
-      }
+    // If we're in the middle of navigation, don't fetch
+    if (isNavigatingRef.current) {
+      return;
+    }
+    
+    // Skip if still loading
+    if (isLoading) {
+      return;
+    }
+    
+    // Handle authentication
+    if (!isAuthenticated) {
+      router.push('/login');
+      return;
+    }
 
-      if (user?.role !== 'director') {
-        router.push('/dashboard');
-        return;
-      }
+    if (user?.role !== 'director') {
+      router.push('/dashboard');
+      return;
+    }
 
-      // Only fetch users initially
+    // Only fetch users initially if we don't already have data and not already fetching
+    if (users.length === 0 && !initialFetchDoneRef.current && !fetchInProgressRef.current) {
+      initialFetchDoneRef.current = true;
       fetchUsers();
     }
   }, [isLoading, isAuthenticated, router, user]);
-
-  // Separate useEffect for filter changes
-  useEffect(() => {
-    if (isAuthenticated && user?.role === 'director' && !isLoading) {
-      // Only execute if filters have changed and it's not from a search query
-      if (!searchTimeoutRef.current) {
-        fetchUsers();
-      }
-    }
-  }, [statusFilter, roleFilter]);
 
   // Separate useEffect for search query with debouncing
   useEffect(() => {
@@ -89,7 +96,9 @@ export default function AdministratorAccountsPage() {
     
     // Set new timeout
     searchTimeoutRef.current = setTimeout(() => {
-      fetchUsers();
+      if (!fetchInProgressRef.current) {
+        fetchUsers();
+      }
       searchTimeoutRef.current = null;
     }, 500);
     
@@ -101,7 +110,50 @@ export default function AdministratorAccountsPage() {
     };
   }, [searchQuery]);
 
+  // Handle activation redirect - only run once on initial load
+  useEffect(() => {
+    // Skip if activation has been handled or we're not authenticated yet
+    if (activationHandledRef.current || !isAuthenticated) {
+      return;
+    }
+    
+    const queryParams = new URLSearchParams(window.location.search);
+    const fromActivation = queryParams.get('fromActivation');
+    const userId = queryParams.get('userId');
+    
+    if (fromActivation === 'true' && userId) {
+      console.log('Detected activation redirect with userId:', userId);
+      activationHandledRef.current = true;
+      
+      // Instead of refreshing, just update our UI if the user exists
+      const updatedQParams = new URLSearchParams(window.location.search);
+      updatedQParams.delete('fromActivation');
+      updatedQParams.delete('userId');
+      
+      // Replace the URL without the query parameters to avoid issues on refresh
+      window.history.replaceState(
+        null, 
+        '', 
+        window.location.pathname + (updatedQParams.toString() ? `?${updatedQParams.toString()}` : '')
+      );
+      
+      // Only fetch users once when redirected from activation if we need to
+      if (users.length === 0 && !fetchInProgressRef.current) {
+        fetchUsers();
+      }
+      
+      toast.success(`User account has been successfully activated`);
+    }
+  }, [isAuthenticated, users.length]);
+
   const fetchUsers = async (refreshCallback?: () => void) => {
+    // Prevent concurrent fetches
+    if (fetchInProgressRef.current) {
+      return;
+    }
+    
+    fetchInProgressRef.current = true;
+    
     try {
       setLoading(true);
       setLoadingMessage('Loading user accounts...');
@@ -111,10 +163,8 @@ export default function AdministratorAccountsPage() {
         throw new Error('Authentication token not found');
       }
       
-      // Build URL with filters
+      // Build URL with search only
       let url = '/api/admin/users?';
-      if (statusFilter !== 'all') url += `status=${statusFilter}&`;
-      if (roleFilter !== 'all') url += `role=${roleFilter}&`;
       if (searchQuery) url += `search=${encodeURIComponent(searchQuery)}`;
       
       const response = await axios.get(url, {
@@ -138,7 +188,13 @@ export default function AdministratorAccountsPage() {
           );
         }
         
-        setUsers(response.data.data.users);
+        // Filter out archived users from the main view
+        let filteredUsers = response.data.data.users;
+        
+        // Only show non-archived users in the main view
+        filteredUsers = filteredUsers.filter((u: User) => !u.isArchived);
+        
+        setUsers(filteredUsers);
         setError(null);
         
         if (refreshCallback) {
@@ -152,6 +208,7 @@ export default function AdministratorAccountsPage() {
       setError(err.response?.data?.error || err.message || 'An error occurred while fetching users');
     } finally {
       setLoading(false);
+      fetchInProgressRef.current = false;
     }
   };
 
@@ -175,6 +232,10 @@ export default function AdministratorAccountsPage() {
       if (reason && newStatus === UserStatus.INACTIVE) {
         console.log(`Adding reason "${reason}" to deactivation payload`);
         payload.reason = reason;
+        
+        // Automatically mark deactivated accounts as archived
+        payload.isArchived = true;
+        console.log('Automatically marking account as archived');
       }
       
       console.log('Sending PATCH request with payload:', payload);
@@ -191,6 +252,33 @@ export default function AdministratorAccountsPage() {
       console.log('Response from PATCH request:', response.data);
       
       if (response.data.success) {
+        // Add additional debug request to check user state after update
+        console.log('Verifying user state after deactivation...');
+        try {
+          const checkResponse = await axios.get(`/api/admin/users?search=${userId}`, {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          });
+          
+          if (checkResponse.data.success) {
+            const foundUser = checkResponse.data.data.users.find((u: any) => u._id === userId);
+            if (foundUser) {
+              console.log('User state after deactivation:', {
+                id: foundUser._id,
+                name: `${foundUser.firstName} ${foundUser.lastName}`,
+                status: foundUser.status,
+                isArchived: foundUser.isArchived,
+                deactivationReason: foundUser.deactivationReason
+              });
+            } else {
+              console.log('User not found in verification check - may have been filtered out due to isArchived=true');
+            }
+          }
+        } catch (verifyErr) {
+          console.error('Error verifying user state:', verifyErr);
+        }
+        
         // Request fresh data from the server
         fetchUsers(() => {
           console.log('Data refreshed after status change');
@@ -262,8 +350,6 @@ export default function AdministratorAccountsPage() {
       searchTimeoutRef.current = null;
     }
     
-    setStatusFilter('all');
-    setRoleFilter('all');
     setSearchQuery('');
     fetchUsers();
   };
@@ -345,16 +431,42 @@ export default function AdministratorAccountsPage() {
     }
   };
 
+  // Optimized navigation function to prevent double fetches
+  const navigateToArchive = () => {
+    // Set navigation flag to prevent additional fetches
+    isNavigatingRef.current = true;
+    
+    // Clear users state to force a fresh fetch when returning
+    setUsers([]);
+    
+    // Ensure any in-progress operations are canceled
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+      searchTimeoutRef.current = null;
+    }
+    
+    // Use replace instead of push to avoid browser history issues
+    router.replace('/admin/archive');
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Manage Administrator Accounts</h1>
-        <Link
-          href="/admin/create"
-          className="px-4 py-2 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-        >
-          Create New Account
-        </Link>
+        <div className="flex space-x-3">
+          <button
+            onClick={() => router.replace('/admin/archive')}
+            className="px-4 py-2 bg-gray-600 text-white font-medium rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+          >
+            Archive
+          </button>
+          <Link
+            href="/admin/create"
+            className="px-4 py-2 bg-indigo-600 text-white font-medium rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          >
+            Create New Account
+          </Link>
+        </div>
       </div>
 
       <Card>
@@ -374,41 +486,8 @@ export default function AdministratorAccountsPage() {
           )}
 
           {/* Filters and Search */}
-          <div className="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div>
-              <label htmlFor="statusFilter" className="block text-sm font-medium text-gray-700 mb-1">
-                Status
-              </label>
-              <select
-                id="statusFilter"
-                name="statusFilter"
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              >
-                <option value="all">All Statuses</option>
-                <option value="active">Active</option>
-                <option value="pending">Pending</option>
-                <option value="inactive">Inactive</option>
-              </select>
-            </div>
-            <div>
-              <label htmlFor="roleFilter" className="block text-sm font-medium text-gray-700 mb-1">
-                Role
-              </label>
-              <select
-                id="roleFilter"
-                name="roleFilter"
-                value={roleFilter}
-                onChange={(e) => setRoleFilter(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              >
-                <option value="all">All Roles</option>
-                <option value="administrator">Administrator</option>
-                <option value="staff">Staff</option>
-              </select>
-            </div>
-            <div className="md:col-span-2">
+          <div className="mb-6">
+            <div className="w-full md:w-1/2">
               <label htmlFor="search" className="block text-sm font-medium text-gray-700 mb-1">
                 Search
               </label>
@@ -419,14 +498,14 @@ export default function AdministratorAccountsPage() {
                   name="search"
                   value={searchQuery}
                   onChange={handleSearchChange}
-                  placeholder="Search by name, rank, email"
+                  placeholder="Search by name, rank, email, or service ID"
                   className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                   autoComplete="off"
                 />
                 <button
                   type="button"
                   onClick={clearFilters}
-                  className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
+                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                 >
                   Clear
                 </button>
@@ -465,31 +544,34 @@ export default function AdministratorAccountsPage() {
               <BriefcaseIcon className="h-12 w-12 text-gray-400 mb-2" />
               <h3 className="text-lg font-medium text-gray-900">No user accounts found</h3>
               <p className="text-gray-500 text-center mt-1">
-                {statusFilter !== 'all' || roleFilter !== 'all' || searchQuery 
-                  ? 'Try changing your filters or search criteria'
+                {searchQuery 
+                  ? 'Try changing your search criteria'
                   : 'Start by creating a new user account'
                 }
               </p>
             </div>
           ) : (
             <div className="overflow-hidden rounded-md border border-gray-200">
-              <div className="w-full" style={{ overflowX: 'hidden' }}>
+              <div className="w-full" style={{ overflow: 'hidden' }}>
                 <table className="w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[22%]">
+                      <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[18%]">
                         Name
                       </th>
                       <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[22%]">
                         Rank & Company
                       </th>
-                      <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[16%]">
+                      <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[13%]">
+                        Service ID
+                      </th>
+                      <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[11%]">
                         Role
                       </th>
-                      <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[12%]">
+                      <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[10%]">
                         Status
                       </th>
-                      <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[16%]">
+                      <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-[14%]">
                         Last Login
                       </th>
                       <th scope="col" className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-[12%]">
@@ -506,10 +588,13 @@ export default function AdministratorAccountsPage() {
                         </td>
                         <td className="px-4 py-4">
                           <div className="text-sm text-gray-900 truncate max-w-[200px]">{user.rank || 'N/A'}</div>
-                          <div className="text-sm text-gray-500 truncate max-w-[200px]">{user.company || 'N/A'}</div>
+                          <div className="text-sm text-gray-500 max-w-[300px] whitespace-normal">{user.company || 'N/A'}</div>
                         </td>
                         <td className="px-4 py-4">
-                          <div className="text-sm text-gray-900 capitalize truncate max-w-[150px]">
+                          <div className="text-sm text-gray-900 truncate max-w-[150px]">{user.serviceId || 'N/A'}</div>
+                        </td>
+                        <td className="px-4 py-4">
+                          <div className="text-sm text-gray-900 capitalize truncate max-w-[130px]">
                             {user.role === 'administrator' ? 'Administrator' : user.role}
                           </div>
                         </td>
@@ -545,40 +630,32 @@ export default function AdministratorAccountsPage() {
                             {user.status === UserStatus.PENDING && (
                               <button 
                                 onClick={() => handleStatusChange(user._id, UserStatus.ACTIVE)}
-                                className="text-green-600 hover:text-green-900 mx-1"
+                                className="text-green-600 hover:text-green-900 mx-1 px-3 py-1 border border-green-600 rounded-md"
                                 title="Approve Account"
                               >
-                                <CheckCircleIcon className="h-5 w-5" />
+                                Activate
                               </button>
                             )}
                             
                             {user.status === UserStatus.ACTIVE && (
                               <button 
                                 onClick={() => initiateDeactivation(user)}
-                                className="text-yellow-600 hover:text-yellow-900 mx-1"
+                                className="text-yellow-600 hover:text-yellow-900 mx-1 px-3 py-1 border border-yellow-600 rounded-md"
                                 title="Deactivate Account"
                               >
-                                <XCircleIcon className="h-5 w-5" />
+                                Deactivate
                               </button>
                             )}
                             
                             {user.status === UserStatus.INACTIVE && (
                               <button 
                                 onClick={() => handleStatusChange(user._id, UserStatus.ACTIVE)}
-                                className="text-green-600 hover:text-green-900 mx-1"
+                                className="text-green-600 hover:text-green-900 mx-1 px-3 py-1 border border-green-600 rounded-md"
                                 title="Reactivate Account"
                               >
-                                <CheckCircleIcon className="h-5 w-5" />
+                                Activate
                               </button>
                             )}
-                            
-                            <button 
-                              onClick={() => handleDelete(user._id)}
-                              className="text-red-600 hover:text-red-900 mx-1"
-                              title="Delete Account"
-                            >
-                              <TrashIcon className="h-5 w-5" />
-                            </button>
                           </div>
                         </td>
                       </tr>

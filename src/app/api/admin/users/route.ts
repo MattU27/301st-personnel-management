@@ -5,6 +5,9 @@ import { verifyJWT } from '@/utils/auth';
 import { UserStatus } from '@/types/auth';
 import { sendNotificationToUser } from '@/app/api/ws/route';
 import { WebSocketEventType } from '@/utils/websocketService';
+import mongoose from 'mongoose';
+import { UserRole } from '@/types/auth';
+import AuditLog from '@/models/AuditLog';
 
 /**
  * GET handler to retrieve user accounts with filtering options
@@ -46,6 +49,7 @@ export async function GET(request: Request) {
     const role = searchParams.get('role');
     const status = searchParams.get('status');
     const search = searchParams.get('search');
+    const archived = searchParams.get('archived');
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '20');
     
@@ -55,12 +59,24 @@ export async function GET(request: Request) {
     if (role) query.role = role;
     if (status) query.status = status;
     
+    // Handle archived parameter
+    if (archived === 'true') {
+      query.isArchived = true;
+      console.log('Setting query.isArchived = true to filter for archived users');
+    } else if (archived === 'false') {
+      query.isArchived = false;
+      console.log('Setting query.isArchived = false to filter for non-archived users');
+    }
+
+    console.log('Final MongoDB query:', JSON.stringify(query));
+    
     if (search) {
       query.$or = [
         { firstName: { $regex: search, $options: 'i' } },
         { lastName: { $regex: search, $options: 'i' } },
         { email: { $regex: search, $options: 'i' } },
-        { militaryId: { $regex: search, $options: 'i' } }
+        { militaryId: { $regex: search, $options: 'i' } },
+        { serviceId: { $regex: search, $options: 'i' } }
       ];
     }
     
@@ -75,14 +91,13 @@ export async function GET(request: Request) {
       .limit(limit)
       .lean();
     
-    console.log('Fetched users from database:', JSON.stringify(users.map(u => ({
-      _id: u._id,
-      firstName: u.firstName,
-      lastName: u.lastName,
-      email: u.email,
+    console.log(`MongoDB found ${users.length} users matching query:`, JSON.stringify(query));
+    console.log('Archive status of users found:', users.map(u => ({
+      id: u._id,
+      name: `${u.firstName} ${u.lastName}`,
       status: u.status,
-      deactivationReason: u.deactivationReason
-    }))));
+      isArchived: u.isArchived
+    })));
     
     // Filter out the super director account
     const filteredUsers = users.filter(user => 
@@ -170,8 +185,25 @@ export async function PATCH(request: Request) {
       );
     }
     
-    // Get request body
-    const data = await request.json();
+    // Get request body or URL params
+    let data;
+    
+    // First check URL parameters for activation
+    const { searchParams } = new URL(request.url);
+    const queryUserId = searchParams.get('userId');
+    const queryAction = searchParams.get('action');
+    
+    if (queryUserId && queryAction === 'activate') {
+      console.log('Processing activation via URL params for user:', queryUserId);
+      data = {
+        userId: queryUserId,
+        status: UserStatus.ACTIVE,
+        isArchived: false
+      };
+    } else {
+      // Otherwise get data from request body
+      data = await request.json();
+    }
     
     console.log('PATCH request received with data:', JSON.stringify(data));
     
@@ -181,6 +213,19 @@ export async function PATCH(request: Request) {
         { status: 400 }
       );
     }
+    
+    // Check if the user exists before updating
+    const existingUser = await User.findById(data.userId);
+    if (!existingUser) {
+      console.error(`User not found with ID: ${data.userId}`);
+      return NextResponse.json(
+        { success: false, error: 'User not found' },
+        { status: 404 }
+      );
+    }
+    
+    console.log(`Found user to update: ${existingUser.firstName} ${existingUser.lastName} (${existingUser._id})`);
+    console.log(`Current status: ${existingUser.status}, isArchived: ${existingUser.isArchived}`);
     
     // Validate status
     if (!Object.values(UserStatus).includes(data.status as UserStatus)) {
@@ -197,6 +242,12 @@ export async function PATCH(request: Request) {
       status: data.status, 
       updatedAt: new Date() 
     };
+    
+    // Handle isArchived property if it's provided
+    if (data.isArchived !== undefined) {
+      console.log(`Setting isArchived to ${data.isArchived}`);
+      updateData.isArchived = data.isArchived;
+    }
     
     // Add deactivation reason if provided and status is INACTIVE
     if (data.status === UserStatus.INACTIVE) {
@@ -223,15 +274,83 @@ export async function PATCH(request: Request) {
         { new: true }
       ).select('-password');
       
-      console.log('PATCH: User after update:', JSON.stringify(user));
+      console.log('PATCH: User after update:', JSON.stringify({
+        _id: user?._id,
+        firstName: user?.firstName,
+        lastName: user?.lastName,
+        status: user?.status,
+        isArchived: user?.isArchived,
+        deactivationReason: user?.deactivationReason
+      }));
   
+      // Send real-time notification if user is deactivated
+      if (data.status === UserStatus.INACTIVE) {
+        console.log(`PATCH: Sending WebSocket deactivation notification to user ${data.userId}`);
+        
+        // Create notification payload
+        const notificationPayload = { 
+          reason: updateData.deactivationReason || 'Account deactivated by administrator'
+        };
+        
+        console.log(`PATCH: Deactivation notification payload: ${JSON.stringify(notificationPayload)}`);
+        
+        // Send the notification
+        try {
+          const sent = sendNotificationToUser(
+            data.userId, 
+            WebSocketEventType.ACCOUNT_DEACTIVATED,
+            notificationPayload
+          );
+          
+          console.log(`PATCH: WebSocket notification ${sent ? 'sent successfully' : 'failed to send'}`);
+          
+          // If WebSocket notification fails, still continue with the update
+          if (!sent) {
+            console.log(`PATCH: User ${data.userId} might not be connected to WebSocket. Deactivation will take effect on next request.`);
+          }
+        } catch (wsError) {
+          console.error(`PATCH: Error sending WebSocket notification: ${wsError}`);
+        }
+      }
+      
       // Verify the update worked correctly
       const updatedUser = await User.findById(data.userId).select('-password');
       console.log('PATCH: Verification check - user after update:', JSON.stringify({
         _id: updatedUser?._id,
+        firstName: updatedUser?.firstName,
+        lastName: updatedUser?.lastName,
         status: updatedUser?.status,
+        isArchived: updatedUser?.isArchived,
         deactivationReason: updatedUser?.deactivationReason
       }));
+      
+      // If setting to inactive and should be archived, ensure the isArchived flag is set using direct MongoDB update
+      if (data.status === UserStatus.INACTIVE && data.isArchived) {
+        console.log('PATCH: Ensuring isArchived flag is set using direct MongoDB update');
+        // Use direct MongoDB driver for most reliable update
+        const collection = mongoose.connection.collection('users');
+        const result = await collection.updateOne(
+          { _id: new mongoose.Types.ObjectId(data.userId) },
+          { 
+            $set: { 
+              isArchived: true,
+              updatedAt: new Date()
+            } 
+          }
+        );
+        
+        console.log('PATCH: Direct MongoDB update result:', result);
+        
+        // Final verification check
+        const finalUser = await User.findById(data.userId).select('-password');
+        console.log('PATCH: Final user state after direct update:', {
+          id: finalUser?._id,
+          name: `${finalUser?.firstName} ${finalUser?.lastName}`,
+          status: finalUser?.status,
+          isArchived: finalUser?.isArchived,
+          deactivationReason: finalUser?.deactivationReason
+        });
+      }
       
       if (!updatedUser) {
         console.error(`PATCH: Failed to find user after update!`);
@@ -241,66 +360,9 @@ export async function PATCH(request: Request) {
         );
       }
       
-      // Enhanced verification for deactivation reason
-      if (data.status === UserStatus.INACTIVE) {
-        if (!updatedUser.deactivationReason) {
-          console.error(`PATCH: Deactivation reason not saved! Attempting repair...`);
-          
-          // Try a direct update as a backup
-          const repairResult = await User.updateOne(
-            { _id: data.userId },
-            { $set: { deactivationReason: data.reason || 'No reason provided (repair)' } }
-          );
-          
-          console.log(`PATCH: Repair attempt result:`, repairResult);
-          
-          // Fetch the user one more time to confirm repair
-          const repairedUser = await User.findById(data.userId).select('deactivationReason');
-          console.log(`PATCH: User after repair:`, repairedUser);
-        } else {
-          console.log(`PATCH: Deactivation reason successfully saved: "${updatedUser.deactivationReason}"`);
-        }
-      }
-    
-      // Send WebSocket notification to the affected user
-      if (data.status === UserStatus.INACTIVE) {
-        // For deactivation, send a special notification
-        // Make sure the reason is never empty or null
-        const deactivationReason = data.reason || updateData.deactivationReason || 'No reason provided';
-        
-        const notificationPayload = {
-          message: 'Your account has been deactivated by an administrator.',
-          timestamp: new Date().toISOString(),
-          adminId: decoded?.userId || 'unknown',
-          adminRole: decoded?.role || 'administrator',
-          reason: deactivationReason
-        };
-        
-        console.log(`PATCH: Sending deactivation notification with reason: "${notificationPayload.reason}"`);
-        
-        // Also log the user that's being deactivated and the reason for server logs
-        console.log(`PATCH: User ${data.userId} deactivated by ${decoded?.userId} with reason: "${deactivationReason}"`);
-        
-        sendNotificationToUser(
-          data.userId, 
-          WebSocketEventType.ACCOUNT_DEACTIVATED, 
-          notificationPayload
-        );
-      } else if (data.status === UserStatus.ACTIVE) {
-        // For activation, send an activation notification
-        sendNotificationToUser(
-          data.userId, 
-          WebSocketEventType.ACCOUNT_ACTIVATED, 
-          {
-            message: 'Your account has been activated by an administrator.',
-            timestamp: new Date().toISOString()
-          }
-        );
-      }
-      
       return NextResponse.json({
         success: true,
-        data: { user }
+        data: { user: updatedUser }
       });
     } catch (error) {
       console.error('PATCH: Error during user update or notification:', error);

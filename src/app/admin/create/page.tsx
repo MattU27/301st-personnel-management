@@ -18,12 +18,13 @@ export default function CreateAdministratorPage() {
     firstName: '',
     lastName: '',
     email: '',
+    alternativeEmail: '',
     password: '',
     confirmPassword: '',
     rank: '',
     company: '',
     role: 'administrator',
-    militaryId: ''
+    serviceId: ''
   });
   const [formError, setFormError] = useState('');
   const [formSuccess, setFormSuccess] = useState('');
@@ -52,14 +53,36 @@ export default function CreateAdministratorPage() {
     }));
   };
 
+  // Helper function to validate email
+  const isValidEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) return false;
+    
+    // Check if the email domain is allowed
+    const allowedDomains = ['gmail.com', 'outlook.com', 'yahoo.com', 'mil.ph'];
+    const domain = email.split('@')[1].toLowerCase();
+    return allowedDomains.includes(domain);
+  };
+
   const validateForm = () => {
     if (!formData.firstName.trim()) return 'First name is required';
     if (!formData.lastName.trim()) return 'Last name is required';
     if (!formData.email.trim()) return 'Email is required';
+    
+    // Validate primary email
+    if (!isValidEmail(formData.email)) {
+      return 'Please provide a valid email address (only gmail.com, outlook.com, yahoo.com, or mil.ph domains are accepted)';
+    }
+    
+    // Validate alternative email if provided
+    if (formData.alternativeEmail && !isValidEmail(formData.alternativeEmail)) {
+      return 'Please provide a valid alternative email address (only gmail.com, outlook.com, yahoo.com, or mil.ph domains are accepted)';
+    }
+    
     if (!formData.password) return 'Password is required';
     if (formData.password.length < 8) return 'Password must be at least 8 characters';
     if (formData.password !== formData.confirmPassword) return 'Passwords do not match';
-    if (!formData.militaryId.trim()) return 'Military ID is required';
+    if (!formData.serviceId.trim()) return 'Service ID is required';
     return '';
   };
 
@@ -88,11 +111,12 @@ export default function CreateAdministratorPage() {
         firstName: formData.firstName,
         lastName: formData.lastName,
         email: formData.email,
+        alternativeEmail: formData.alternativeEmail || undefined,
         password: formData.password,
         role: formData.role,
         rank: formData.rank || undefined,
         company: formData.company || undefined,
-        militaryId: formData.militaryId,
+        serviceId: formData.serviceId,
         status: 'pending' // All new accounts are pending until approved
       };
       
@@ -116,12 +140,13 @@ export default function CreateAdministratorPage() {
             firstName: '',
             lastName: '',
             email: '',
+            alternativeEmail: '',
             password: '',
             confirmPassword: '',
             rank: '',
             company: '',
             role: 'administrator',
-            militaryId: ''
+            serviceId: ''
           });
         } else {
           setFormError(response.data.error || 'Failed to create account');
@@ -199,7 +224,7 @@ export default function CreateAdministratorPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="firstName" className="block text-base font-medium text-gray-700 mb-1">
                   First Name <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -210,10 +235,11 @@ export default function CreateAdministratorPage() {
                   onChange={handleChange}
                   required
                   className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  placeholder="First name"
                 />
               </div>
               <div>
-                <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="lastName" className="block text-base font-medium text-gray-700 mb-1">
                   Last Name <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -224,28 +250,49 @@ export default function CreateAdministratorPage() {
                   onChange={handleChange}
                   required
                   className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  placeholder="Last name"
                 />
               </div>
             </div>
 
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                Email Address <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label htmlFor="email" className="block text-base font-medium text-gray-700 mb-1">
+                  AFP Email Address <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  placeholder="Email address (gmail, outlook, yahoo, or mil.ph only)"
+                />
+              </div>
+              <div>
+                <label htmlFor="alternativeEmail" className="block text-base font-medium text-gray-700 mb-1">
+                  Alternative Email (Personal)
+                </label>
+                <input
+                  type="email"
+                  id="alternativeEmail"
+                  name="alternativeEmail"
+                  value={formData.alternativeEmail}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  placeholder="Alternative email (gmail, outlook, yahoo, or mil.ph only)"
+                />
+                <p className="mt-1 text-xs text-gray-500">
+                  Used for account recovery
+                </p>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="password" className="block text-base font-medium text-gray-700 mb-1">
                   Password <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -257,13 +304,14 @@ export default function CreateAdministratorPage() {
                   required
                   minLength={8}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  placeholder="Password"
                 />
                 <p className="mt-1 text-xs text-gray-500">
                   Password must be at least 8 characters long.
                 </p>
               </div>
               <div>
-                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="confirmPassword" className="block text-base font-medium text-gray-700 mb-1">
                   Confirm Password <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -274,28 +322,35 @@ export default function CreateAdministratorPage() {
                   onChange={handleChange}
                   required
                   className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  placeholder="Confirm password"
                 />
+                {formData.password !== formData.confirmPassword && formData.confirmPassword && (
+                  <p className="mt-1 text-sm text-red-600">
+                    Passwords do not match
+                  </p>
+                )}
               </div>
             </div>
 
             <div>
-              <label htmlFor="militaryId" className="block text-sm font-medium text-gray-700 mb-1">
-                Military ID <span className="text-red-500">*</span>
+              <label htmlFor="serviceId" className="block text-base font-medium text-gray-700 mb-1">
+                Service ID <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
-                id="militaryId"
-                name="militaryId"
-                value={formData.militaryId}
+                id="serviceId"
+                name="serviceId"
+                value={formData.serviceId}
                 onChange={handleChange}
                 required
                 className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                placeholder="Your AFP Service ID number"
               />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label htmlFor="role" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="role" className="block text-base font-medium text-gray-700 mb-1">
                   Role <span className="text-red-500">*</span>
                 </label>
                 <select
@@ -311,7 +366,7 @@ export default function CreateAdministratorPage() {
                 </select>
               </div>
               <div>
-                <label htmlFor="rank" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="rank" className="block text-base font-medium text-gray-700 mb-1">
                   Rank
                 </label>
                 <select
@@ -342,7 +397,7 @@ export default function CreateAdministratorPage() {
                 </select>
               </div>
               <div>
-                <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-1">
+                <label htmlFor="company" className="block text-base font-medium text-gray-700 mb-1">
                   Company
                 </label>
                 <select
@@ -367,11 +422,11 @@ export default function CreateAdministratorPage() {
               <button
                 type="submit"
                 disabled={creating}
-                className={`w-full md:w-auto px-4 py-2 ${creating ? 'bg-indigo-400' : 'bg-indigo-600 hover:bg-indigo-700'} text-white font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 flex items-center justify-center`}
+                className={`w-full md:w-auto px-4 py-3 ${creating ? 'bg-indigo-400' : 'bg-indigo-600 hover:bg-indigo-700'} text-white font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 flex items-center justify-center text-lg`}
               >
                 {creating ? (
                   <>
-                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <svg className="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>

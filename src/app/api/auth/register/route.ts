@@ -13,7 +13,7 @@ export async function POST(request: Request) {
     const data = await request.json();
     
     // Validate required fields
-    const requiredFields = ['firstName', 'lastName', 'email', 'password', 'role', 'militaryId'];
+    const requiredFields = ['firstName', 'lastName', 'email', 'password', 'role', 'serviceId'];
     for (const field of requiredFields) {
       if (!data[field]) {
         return NextResponse.json(
@@ -33,11 +33,11 @@ export async function POST(request: Request) {
       );
     }
     
-    // Check if military ID already exists
-    const existingMilitaryId = await userCollection.findOne({ militaryId: data.militaryId });
-    if (existingMilitaryId) {
+    // Check if Service ID already exists
+    const existingServiceId = await userCollection.findOne({ serviceId: data.serviceId });
+    if (existingServiceId) {
       return NextResponse.json(
-        { success: false, error: 'Military ID already registered' },
+        { success: false, error: 'Service ID already registered' },
         { status: 400 }
       );
     }
@@ -95,11 +95,12 @@ export async function POST(request: Request) {
         firstName: data.firstName,
         lastName: data.lastName,
         email: data.email.toLowerCase(),
+        alternativeEmail: data.alternativeEmail ? data.alternativeEmail.toLowerCase() : null,
         password: hashedPassword,
         role: data.role,
         company: data.company || null,
         rank: data.rank || null,
-        militaryId: data.militaryId,
+        serviceId: data.serviceId,
         status: 'pending',
         specializations: data.specializations || [],
         createdAt: new Date(),

@@ -10,20 +10,20 @@ export async function GET(request: Request) {
     // Connect to MongoDB
     await dbConnect();
     
-    // Get the military ID from the URL
+    // Get the service ID from the URL
     const url = new URL(request.url);
-    const militaryId = url.searchParams.get('id');
+    const serviceId = url.searchParams.get('id');
     
-    if (!militaryId) {
+    if (!serviceId) {
       return NextResponse.json({ 
         success: false, 
-        error: 'Military ID is required' 
+        error: 'Service ID is required' 
       }, { status: 400 });
     }
     
-    // Check if the military ID exists in the database
+    // Check if the service ID exists in the database
     const userCollection = await mongoose.connection.collection('users');
-    const existingUser = await userCollection.findOne({ militaryId });
+    const existingUser = await userCollection.findOne({ serviceId });
     
     return NextResponse.json({
       success: true,
@@ -31,10 +31,10 @@ export async function GET(request: Request) {
     });
     
   } catch (error: any) {
-    console.error('Check military ID error:', error);
+    console.error('Check Service ID error:', error);
     return NextResponse.json({ 
       success: false, 
-      error: error.message || 'Error checking military ID' 
+      error: error.message || 'Error checking Service ID' 
     }, { status: 500 });
   }
 } 

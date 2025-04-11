@@ -23,6 +23,9 @@ class WebSocketService {
   private reconnectTimeoutId: NodeJS.Timeout | null = null;
   private eventListeners: Map<WebSocketEventType, EventCallback[]> = new Map();
   private userId: string | null = null;
+  private silentMode = false;
+  private isConnecting = false;
+  private connectionError = false;
 
   // Get the WebSocket URL (only call this on the client)
   private getWebSocketURL(): string {
@@ -37,13 +40,19 @@ class WebSocketService {
   }
 
   // Initialize WebSocket connection
-  connect(userId: string): void {
+  connect(userId: string, silent = false): void {
     // Skip if running on server
     if (typeof window === 'undefined') {
       return;
     }
     
     this.userId = userId;
+    this.silentMode = silent;
+    
+    // Don't attempt if we're already connecting
+    if (this.isConnecting) {
+      return;
+    }
     
     // Close existing connection if any
     if (this.socket) {
@@ -51,6 +60,7 @@ class WebSocketService {
     }
 
     try {
+      this.isConnecting = true;
       const wsUrl = this.getWebSocketURL();
       // Create new WebSocket connection with user ID in the URL for authentication
       this.socket = new WebSocket(`${wsUrl}?userId=${userId}`);
@@ -61,9 +71,15 @@ class WebSocketService {
       this.socket.onclose = this.handleClose.bind(this);
       this.socket.onerror = this.handleError.bind(this);
       
-      console.log(`WebSocket: Connecting for user ${userId}...`);
+      if (!this.silentMode) {
+        console.log(`WebSocket: Connecting for user ${userId}...`);
+      }
     } catch (error) {
-      console.error('WebSocket: Failed to create connection', error);
+      if (!this.silentMode) {
+        console.error('WebSocket: Failed to create connection', error);
+      }
+      this.isConnecting = false;
+      this.connectionError = true;
       this.scheduleReconnect();
     }
   }
@@ -113,7 +129,11 @@ class WebSocketService {
 
   // Handle WebSocket open event
   private handleOpen(): void {
-    console.log('WebSocket: Connection established');
+    this.isConnecting = false;
+    this.connectionError = false;
+    if (!this.silentMode) {
+      console.log('WebSocket: Connection established');
+    }
     this.reconnectAttempts = 0;
   }
 
@@ -184,7 +204,11 @@ class WebSocketService {
 
   // Handle WebSocket close event
   private handleClose(event: CloseEvent): void {
-    console.log(`WebSocket: Connection closed (${event.code}): ${event.reason}`);
+    this.isConnecting = false;
+    
+    if (!this.silentMode) {
+      console.log(`WebSocket: Connection closed (${event.code}): ${event.reason}`);
+    }
     
     // Try to reconnect unless it was a normal closure
     if (event.code !== 1000) {
@@ -194,7 +218,22 @@ class WebSocketService {
 
   // Handle WebSocket error
   private handleError(error: Event): void {
-    console.error('WebSocket: Error', error);
+    this.isConnecting = false;
+    this.connectionError = true;
+    
+    // Only log the error once, not repeatedly
+    if (!this.silentMode && this.reconnectAttempts < 1) {
+      // Use a more informative error message that won't clutter the console
+      console.warn('WebSocket: Connection error - will retry in background. This is normal if server is not available.');
+    }
+    
+    // Stop trying to reconnect if we've already tried several times
+    if (this.reconnectAttempts >= 2) {
+      this.silentMode = true;
+    }
+    
+    // Immediately try to reconnect
+    this.scheduleReconnect();
   }
 
   // Schedule reconnection with exponential backoff
@@ -205,7 +244,12 @@ class WebSocketService {
     }
     
     if (this.reconnectAttempts >= this.maxReconnectAttempts) {
-      console.log('WebSocket: Max reconnect attempts reached');
+      if (!this.silentMode) {
+        console.log('WebSocket: Max reconnect attempts reached');
+      }
+      
+      // After max attempts, future reconnects will be silent
+      this.silentMode = true;
       return;
     }
     
@@ -217,13 +261,23 @@ class WebSocketService {
     // Calculate backoff delay: 1s, 2s, 4s, 8s, 16s
     const delay = Math.min(1000 * Math.pow(2, this.reconnectAttempts), 30000);
     
-    console.log(`WebSocket: Scheduling reconnect in ${delay}ms (attempt ${this.reconnectAttempts + 1}/${this.maxReconnectAttempts})`);
+    if (!this.silentMode) {
+      console.log(`WebSocket: Scheduling reconnect in ${delay}ms (attempt ${this.reconnectAttempts + 1}/${this.maxReconnectAttempts})`);
+    }
     
     this.reconnectTimeoutId = setTimeout(() => {
       if (this.userId) {
-        console.log(`WebSocket: Attempting to reconnect...`);
+        if (!this.silentMode) {
+          console.log(`WebSocket: Attempting to reconnect...`);
+        }
         this.reconnectAttempts++;
-        this.connect(this.userId);
+        
+        // If we've had persistent errors, go into silent mode for future attempts
+        if (this.connectionError && this.reconnectAttempts > 2) {
+          this.silentMode = true;
+        }
+        
+        this.connect(this.userId, this.silentMode);
       }
     }, delay);
   }

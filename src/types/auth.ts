@@ -14,7 +14,7 @@ export enum UserRole {
 export enum UserStatus {
   ACTIVE = 'active',
   PENDING = 'pending',
-  INACTIVE = 'inactive',
+  INACTIVE = 'deactivated',
   RETIRED = 'retired',
   STANDBY = 'standby',
   READY = 'ready',

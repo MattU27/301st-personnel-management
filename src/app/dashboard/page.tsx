@@ -447,7 +447,7 @@ export default function DashboardPage() {
               size="sm" 
               variant="secondary" 
               className="w-full mt-4"
-              onClick={() => handleNavigation('/trainings')}
+              onClick={() => handleNavigation('/trainings?tab=upcoming')}
             >
               View All Trainings
             </Button>

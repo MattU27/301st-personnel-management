@@ -40,12 +40,13 @@ export interface IUser extends mongoose.Document {
   firstName: string;
   lastName: string;
   email: string;
+  alternativeEmail?: string;
   password: string;
   role: UserRole;
   status: UserStatus;
   rank?: MilitaryRank;
   company?: Company;
-  militaryId: string;
+  serviceId: string;
   contactNumber?: string;
   dateOfBirth?: Date;
   address?: {
@@ -63,6 +64,7 @@ export interface IUser extends mongoose.Document {
   specializations?: string[];
   lastLogin?: Date;
   deactivationReason?: string;
+  isArchived?: boolean;
   createdAt: Date;
   updatedAt: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
@@ -89,15 +91,22 @@ const UserSchema = new mongoose.Schema({
     lowercase: true,
     match: [/^\S+@\S+\.\S+$/, 'Please provide a valid email address'],
   },
+  alternativeEmail: {
+    type: String,
+    required: false,
+    trim: true,
+    lowercase: true,
+    match: [/^\S+@\S+\.\S+$/, 'Please provide a valid alternative email address'],
+  },
   password: {
     type: String,
     required: [true, 'Please provide a password'],
     minlength: [8, 'Password should be at least 8 characters long'],
     select: false, // Don't return password in queries by default
   },
-  militaryId: {
+  serviceId: {
     type: String,
-    required: [true, 'Please provide your military ID'],
+    required: [true, 'Please provide your Service ID'],
     trim: true,
   },
   role: {
@@ -120,6 +129,12 @@ const UserSchema = new mongoose.Schema({
   deactivationReason: {
     type: String,
     required: false,
+  },
+  isArchived: {
+    type: Boolean,
+    default: false,
+    index: true, // Add index for faster filtering
+    description: 'Flag indicating if the user has been archived'
   },
   rank: {
     type: String,

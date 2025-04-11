@@ -48,6 +48,7 @@ export interface ITraining extends mongoose.Document {
   };
   status: TrainingStatus;
   capacity?: number;
+  registered?: number;
   eligibleRanks?: string[];
   eligibleCompanies?: string[];
   mandatory: boolean;
@@ -123,6 +124,10 @@ const TrainingSchema = new mongoose.Schema({
   },
   capacity: {
     type: Number,
+  },
+  registered: {
+    type: Number,
+    default: 0,
   },
   eligibleRanks: [{
     type: String,

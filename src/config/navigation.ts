@@ -25,7 +25,7 @@ export const navigationConfig: NavItem[] = [
   },
   {
     label: 'Trainings',
-    href: '/trainings',
+    href: '/trainings?tab=upcoming',
     roles: [UserRole.STAFF, UserRole.ADMIN, UserRole.DIRECTOR], // Staff can manage trainings, Admin and Director can oversee
   },
   {

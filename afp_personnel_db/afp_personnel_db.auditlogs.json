@@ -5422,4 +5422,2473 @@
   "ipAddress": "::1",
   "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
   "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f695fb09b8a819b150a5d5"
+  },
+  "timestamp": {
+    "$date": "2025-04-09T15:44:59.383Z"
+  },
+  "userId": {
+    "$oid": "67f011f547a45741ecca05d9"
+  },
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "login",
+  "resource": "user",
+  "details": "User login successful",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f696c609b8a819b150a601"
+  },
+  "timestamp": {
+    "$date": "2025-04-09T15:48:22.836Z"
+  },
+  "userId": {
+    "$oid": "67f01c1ee659b9597fe66680"
+  },
+  "userName": "john matthew",
+  "userRole": "administrator",
+  "action": "login",
+  "resource": "user",
+  "details": "User login successful",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f696fe09b8a819b150a66f"
+  },
+  "timestamp": {
+    "$date": "2025-04-09T15:49:18.178Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /admin/audit-logs",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f6970809b8a819b150a672"
+  },
+  "timestamp": {
+    "$date": "2025-04-09T15:49:28.371Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /admin/audit-logs",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f6970f09b8a819b150a675"
+  },
+  "timestamp": {
+    "$date": "2025-04-09T15:49:35.320Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /admin/audit-logs",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f6974f09b8a819b150a693"
+  },
+  "timestamp": {
+    "$date": "2025-04-09T15:50:39.210Z"
+  },
+  "userId": "67f01c1ee659b9597fe66680",
+  "userName": "john matthew",
+  "userRole": "administrator",
+  "action": "logout",
+  "resource": "user",
+  "resourceId": "67f01c1ee659b9597fe66680",
+  "details": "Major john matthew (NERRSC (NERR-Signal Company)) logged out",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f6975b09b8a819b150a6b6"
+  },
+  "timestamp": {
+    "$date": "2025-04-09T15:50:51.145Z"
+  },
+  "userId": {
+    "$oid": "67eff3b1e659b9597fe65e59"
+  },
+  "userName": "ace marasigan",
+  "userRole": "staff",
+  "action": "login",
+  "resource": "user",
+  "details": "User login successful",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f6975e09b8a819b150a6d3"
+  },
+  "timestamp": {
+    "$date": "2025-04-09T15:50:54.746Z"
+  },
+  "userId": "67eff3b1e659b9597fe65e59",
+  "userName": "ace marasigan",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f6976109b8a819b150a6d6"
+  },
+  "timestamp": {
+    "$date": "2025-04-09T15:50:57.627Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f6980209b8a819b150a6fa"
+  },
+  "timestamp": {
+    "$date": "2025-04-09T15:53:38.596Z"
+  },
+  "userId": "67eff3b1e659b9597fe65e59",
+  "userName": "ace marasigan",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "personnel",
+  "resourceId": "67efd5bb8e395126edf28290",
+  "details": "View personnel record: Manuel Ang",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f6980709b8a819b150a6fc"
+  },
+  "timestamp": {
+    "$date": "2025-04-09T15:53:43.508Z"
+  },
+  "userId": "67eff3b1e659b9597fe65e59",
+  "userName": "ace marasigan",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "personnel",
+  "resourceId": "67efd5bb8e395126edf28293",
+  "details": "View personnel record: Angelica Aquino",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f6980d09b8a819b150a6fe"
+  },
+  "timestamp": {
+    "$date": "2025-04-09T15:53:49.894Z"
+  },
+  "userId": "67eff3b1e659b9597fe65e59",
+  "userName": "ace marasigan",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "personnel",
+  "resourceId": "67efd5bb8e395126edf28293",
+  "details": "View personnel record: Angelica Aquino",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f6981209b8a819b150a700"
+  },
+  "timestamp": {
+    "$date": "2025-04-09T15:53:54.045Z"
+  },
+  "userId": "67eff3b1e659b9597fe65e59",
+  "userName": "ace marasigan",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "personnel",
+  "resourceId": "67efd5bb8e395126edf28293",
+  "details": "View personnel record: Angelica Aquino",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f6981b09b8a819b150a702"
+  },
+  "timestamp": {
+    "$date": "2025-04-09T15:54:03.609Z"
+  },
+  "userId": "67eff3b1e659b9597fe65e59",
+  "userName": "ace marasigan",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "personnel",
+  "resourceId": "67efd5bb8e395126edf28293",
+  "details": "View personnel record: Angelica Aquino",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f6981c09b8a819b150a704"
+  },
+  "timestamp": {
+    "$date": "2025-04-09T15:54:04.588Z"
+  },
+  "userId": "67eff3b1e659b9597fe65e59",
+  "userName": "ace marasigan",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "personnel",
+  "resourceId": "67efd5bb8e395126edf28293",
+  "details": "View personnel record: Angelica Aquino",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f6982209b8a819b150a706"
+  },
+  "timestamp": {
+    "$date": "2025-04-09T15:54:10.813Z"
+  },
+  "userId": "67eff3b1e659b9597fe65e59",
+  "userName": "ace marasigan",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "personnel",
+  "resourceId": "67efd5bb8e395126edf28293",
+  "details": "View personnel record: Angelica Aquino",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f6984809b8a819b150a73e"
+  },
+  "timestamp": {
+    "$date": "2025-04-09T15:54:48.660Z"
+  },
+  "userId": "67eff3b1e659b9597fe65e59",
+  "userName": "ace marasigan",
+  "userRole": "staff",
+  "action": "logout",
+  "resource": "user",
+  "resourceId": "67eff3b1e659b9597fe65e59",
+  "details": "Colonel ace marasigan (Charlie) logged out",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f6991c09b8a819b150a74b"
+  },
+  "timestamp": {
+    "$date": "2025-04-09T15:58:20.361Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f72502700e5f9482ac07dd"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T01:55:14.607Z"
+  },
+  "userId": {
+    "$oid": "67f01c1ee659b9597fe66680"
+  },
+  "userName": "john matthew",
+  "userRole": "administrator",
+  "action": "login",
+  "resource": "user",
+  "details": "User login successful",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f72508700e5f9482ac0806"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T01:55:20.033Z"
+  },
+  "userId": "67f01c1ee659b9597fe66680",
+  "userName": "john matthew",
+  "userRole": "administrator",
+  "action": "logout",
+  "resource": "user",
+  "resourceId": "67f01c1ee659b9597fe66680",
+  "details": "Major john matthew (NERRSC (NERR-Signal Company)) logged out",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7250e700e5f9482ac080c"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T01:55:26.618Z"
+  },
+  "userId": {
+    "$oid": "67f011f547a45741ecca05d9"
+  },
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "login",
+  "resource": "user",
+  "details": "User login successful",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f72530700e5f9482ac086c"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T01:56:00.133Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /admin/audit-logs",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7253d700e5f9482ac0870"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T01:56:13.159Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7254d700e5f9482ac088f"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T01:56:29.830Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "logout",
+  "resource": "user",
+  "resourceId": "67f011f547a45741ecca05d9",
+  "details": "Colonel Super Director (Headquarters) logged out",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f72556700e5f9482ac0895"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T01:56:38.048Z"
+  },
+  "userId": {
+    "$oid": "67eff3b1e659b9597fe65e59"
+  },
+  "userName": "ace marasigan",
+  "userRole": "staff",
+  "action": "login",
+  "resource": "user",
+  "details": "User login successful",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7255a700e5f9482ac08b2"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T01:56:42.640Z"
+  },
+  "userId": "67eff3b1e659b9597fe65e59",
+  "userName": "ace marasigan",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7c796e4bf6e7e493c307b"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T13:28:54.942Z"
+  },
+  "userId": {
+    "$oid": "67f011f547a45741ecca05d9"
+  },
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "login",
+  "resource": "user",
+  "details": "User login successful",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7c7bde4bf6e7e493c30fd"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T13:29:33.650Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7d9f6e4bf6e7e493c32be"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T14:47:18.969Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7da7ee4bf6e7e493c32c4"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T14:49:34.555Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7db59e4bf6e7e493c32d9"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T14:53:13.010Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7dbebe4bf6e7e493c32f5"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T14:55:39.927Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "register",
+  "resource": "training",
+  "resourceId": {
+    "$oid": "67f0ba7dcb285c3f71b9123c"
+  },
+  "details": "updated registration for training: KAMANDAG 2023 Joint Military Exercise",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7dbf0e4bf6e7e493c32ff"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T14:55:44.721Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "cancel",
+  "resource": "training",
+  "resourceId": {
+    "$oid": "67f0ba7dcb285c3f71b9123c"
+  },
+  "details": "cancelled registration for training: KAMANDAG 2023 Joint Military Exercise",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7de2fe4bf6e7e493c3318"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T15:05:19.833Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "register",
+  "resource": "training",
+  "resourceId": {
+    "$oid": "67f0ba7dcb285c3f71b9123c"
+  },
+  "details": "registered for training: KAMANDAG 2023 Joint Military Exercise",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7de32e4bf6e7e493c3322"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T15:05:22.456Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "cancel",
+  "resource": "training",
+  "resourceId": {
+    "$oid": "67f0ba7dcb285c3f71b9123c"
+  },
+  "details": "cancelled registration for training: KAMANDAG 2023 Joint Military Exercise",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7df76e4bf6e7e493c332b"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T15:10:46.939Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7e0e7e4bf6e7e493c3350"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T15:16:55.576Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "register",
+  "resource": "training",
+  "resourceId": {
+    "$oid": "67f0ba7dcb285c3f71b9123c"
+  },
+  "details": "registered for training: KAMANDAG 2023 Joint Military Exercise",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7e28ae4bf6e7e493c3366"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T15:23:54.488Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "cancel",
+  "resource": "training",
+  "resourceId": {
+    "$oid": "67f0ba7dcb285c3f71b9123c"
+  },
+  "details": "cancelled registration for training: KAMANDAG 2023 Joint Military Exercise",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7e57ee4bf6e7e493c337a"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T15:36:30.378Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7e65ae4bf6e7e493c3396"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T15:40:10.637Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "register",
+  "resource": "training",
+  "resourceId": {
+    "$oid": "67f0ba7dcb285c3f71b9123c"
+  },
+  "details": "registered for training: KAMANDAG 2023 Joint Military Exercise",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7e65ce4bf6e7e493c33a0"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T15:40:12.889Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "cancel",
+  "resource": "training",
+  "resourceId": {
+    "$oid": "67f0ba7dcb285c3f71b9123c"
+  },
+  "details": "cancelled registration for training: KAMANDAG 2023 Joint Military Exercise",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7e786e4bf6e7e493c33a6"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T15:45:10.727Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7e78fe4bf6e7e493c33c5"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T15:45:19.034Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7e7a7e4bf6e7e493c33c7"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T15:45:43.075Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7e898e4bf6e7e493c33d8"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T15:49:44.632Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "cancel",
+  "resource": "training",
+  "resourceId": {
+    "$oid": "67f0ba7dcb285c3f71b91242"
+  },
+  "details": "cancelled registration for training: Cyber Defense and Information Security Workshop",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7e899e4bf6e7e493c33e1"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T15:49:45.762Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "cancel",
+  "resource": "training",
+  "resourceId": {
+    "$oid": "67f0ba7dcb285c3f71b91257"
+  },
+  "details": "cancelled registration for training: Leadership and Strategic Management Seminar",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7e89ce4bf6e7e493c33e7"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T15:49:48.109Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7e89ee4bf6e7e493c33ea"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T15:49:50.565Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7e89fe4bf6e7e493c340c"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T15:49:51.981Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7e8dbe4bf6e7e493c340e"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T15:50:51.396Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7e8efe4bf6e7e493c3430"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T15:51:11.433Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7e8f2e4bf6e7e493c343b"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T15:51:14.653Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "register",
+  "resource": "training",
+  "resourceId": {
+    "$oid": "67f0ba7dcb285c3f71b91242"
+  },
+  "details": "registered for training: Cyber Defense and Information Security Workshop",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7e908e4bf6e7e493c3444"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T15:51:36.254Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "register",
+  "resource": "training",
+  "resourceId": {
+    "$oid": "67f0ba7dcb285c3f71b91257"
+  },
+  "details": "registered for training: Leadership and Strategic Management Seminar",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7e90ae4bf6e7e493c344a"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T15:51:38.240Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7e910e4bf6e7e493c3455"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T15:51:44.022Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "cancel",
+  "resource": "training",
+  "resourceId": {
+    "$oid": "67f0ba7dcb285c3f71b91242"
+  },
+  "details": "cancelled registration for training: Cyber Defense and Information Security Workshop",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7e911e4bf6e7e493c345e"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T15:51:45.086Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "cancel",
+  "resource": "training",
+  "resourceId": {
+    "$oid": "67f0ba7dcb285c3f71b91257"
+  },
+  "details": "cancelled registration for training: Leadership and Strategic Management Seminar",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7e940e4bf6e7e493c3469"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T15:52:32.373Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "register",
+  "resource": "training",
+  "resourceId": {
+    "$oid": "67f0ba7dcb285c3f71b91242"
+  },
+  "details": "registered for training: Cyber Defense and Information Security Workshop",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7e945e4bf6e7e493c3474"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T15:52:37.361Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "cancel",
+  "resource": "training",
+  "resourceId": {
+    "$oid": "67f0ba7dcb285c3f71b91242"
+  },
+  "details": "cancelled registration for training: Cyber Defense and Information Security Workshop",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7e963e4bf6e7e493c347f"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T15:53:07.083Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "register",
+  "resource": "training",
+  "resourceId": {
+    "$oid": "67f0ba7dcb285c3f71b91242"
+  },
+  "details": "registered for training: Cyber Defense and Information Security Workshop",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7e965e4bf6e7e493c3485"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T15:53:09.344Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7eb6ae4bf6e7e493c34b9"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T16:01:46.098Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7eba4e4bf6e7e493c34bf"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T16:02:44.061Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7efbde4bf6e7e493c34dd"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T16:20:13.991Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7f24be4bf6e7e493c34f7"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T16:31:07.989Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "cancel",
+  "resource": "training",
+  "resourceId": {
+    "$oid": "67f0ba7dcb285c3f71b91242"
+  },
+  "details": "cancelled registration for training: Cyber Defense and Information Security Workshop",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7f2a9e4bf6e7e493c34fd"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T16:32:41.781Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7f328e4bf6e7e493c3506"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T16:34:48.984Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7f398e4bf6e7e493c3514"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T16:36:40.450Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "register",
+  "resource": "training",
+  "resourceId": {
+    "$oid": "67f0ba7dcb285c3f71b91242"
+  },
+  "details": "registered for training: Cyber Defense and Information Security Workshop",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7f39de4bf6e7e493c351f"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T16:36:45.194Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "cancel",
+  "resource": "training",
+  "resourceId": {
+    "$oid": "67f0ba7dcb285c3f71b91242"
+  },
+  "details": "cancelled registration for training: Cyber Defense and Information Security Workshop",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7f4c1e4bf6e7e493c3525"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T16:41:37.933Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7f543e4bf6e7e493c3533"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T16:43:47.743Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "register",
+  "resource": "training",
+  "resourceId": {
+    "$oid": "67f0ba7dcb285c3f71b91242"
+  },
+  "details": "registered for training: Cyber Defense and Information Security Workshop",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7f54fe4bf6e7e493c3539"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T16:43:59.649Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7f55ce4bf6e7e493c3544"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T16:44:12.580Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "cancel",
+  "resource": "training",
+  "resourceId": {
+    "$oid": "67f0ba7dcb285c3f71b91242"
+  },
+  "details": "cancelled registration for training: Cyber Defense and Information Security Workshop",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7f562e4bf6e7e493c354f"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T16:44:18.647Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "register",
+  "resource": "training",
+  "resourceId": {
+    "$oid": "67f0ba7dcb285c3f71b91242"
+  },
+  "details": "registered for training: Cyber Defense and Information Security Workshop",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7f72de4bf6e7e493c3555"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T16:51:57.580Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7f782e4bf6e7e493c3566"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T16:53:22.804Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "cancel",
+  "resource": "training",
+  "resourceId": {
+    "$oid": "67f0ba7dcb285c3f71b91242"
+  },
+  "details": "cancelled registration for training: Cyber Defense and Information Security Workshop",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7f784e4bf6e7e493c356c"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T16:53:24.825Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7f795e4bf6e7e493c356e"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T16:53:41.594Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7f952e4bf6e7e493c3576"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T17:01:06.106Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7f96ae4bf6e7e493c357b"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T17:01:30.089Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7fadfe4bf6e7e493c3596"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T17:07:43.066Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7faeee4bf6e7e493c35a7"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T17:07:58.012Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "register",
+  "resource": "training",
+  "resourceId": {
+    "$oid": "67f0ba7dcb285c3f71b91242"
+  },
+  "details": "registered for training: Cyber Defense and Information Security Workshop",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7fc39e4bf6e7e493c35ad"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T17:13:29.873Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7fc3de4bf6e7e493c35be"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T17:13:33.904Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "cancel",
+  "resource": "training",
+  "resourceId": {
+    "$oid": "67f0ba7dcb285c3f71b91242"
+  },
+  "details": "cancelled registration for training: Cyber Defense and Information Security Workshop",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7fc44e4bf6e7e493c35c4"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T17:13:40.203Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7fc4fe4bf6e7e493c35cf"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T17:13:51.405Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "register",
+  "resource": "training",
+  "resourceId": {
+    "$oid": "67f0ba7dcb285c3f71b91242"
+  },
+  "details": "registered for training: Cyber Defense and Information Security Workshop",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7fc52e4bf6e7e493c35da"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T17:13:54.148Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "cancel",
+  "resource": "training",
+  "resourceId": {
+    "$oid": "67f0ba7dcb285c3f71b91242"
+  },
+  "details": "cancelled registration for training: Cyber Defense and Information Security Workshop",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7fcb2e4bf6e7e493c35e5"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T17:15:30.000Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "register",
+  "resource": "training",
+  "resourceId": {
+    "$oid": "67f0ba7dcb285c3f71b91242"
+  },
+  "details": "registered for training: Cyber Defense and Information Security Workshop",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7fd90e4bf6e7e493c3607"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T17:19:12.651Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f7fdcde4bf6e7e493c367f"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T17:20:13.548Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f801cde4bf6e7e493c369b"
+  },
+  "timestamp": {
+    "$date": "2025-04-10T17:37:17.097Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "logout",
+  "resource": "user",
+  "resourceId": "67f011f547a45741ecca05d9",
+  "details": "Colonel Super Director (Headquarters) logged out",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f8890a4ba8bbe8d094ad9c"
+  },
+  "timestamp": {
+    "$date": "2025-04-11T03:14:18.291Z"
+  },
+  "userId": {
+    "$oid": "67f011f547a45741ecca05d9"
+  },
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "login",
+  "resource": "user",
+  "details": "User login successful",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f889314ba8bbe8d094add5"
+  },
+  "timestamp": {
+    "$date": "2025-04-11T03:14:57.628Z"
+  },
+  "userId": {
+    "$oid": "67f888ff4ba8bbe8d094ad94"
+  },
+  "userName": "John Matthew Banto",
+  "userRole": "administrator",
+  "action": "login",
+  "resource": "user",
+  "details": "User login successful",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f8894e4ba8bbe8d094ae0e"
+  },
+  "timestamp": {
+    "$date": "2025-04-11T03:15:26.807Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /admin/audit-logs",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f889694ba8bbe8d094ae12"
+  },
+  "timestamp": {
+    "$date": "2025-04-11T03:15:53.872Z"
+  },
+  "userId": "67f888ff4ba8bbe8d094ad94",
+  "userName": "John Matthew Banto",
+  "userRole": "administrator",
+  "action": "logout",
+  "resource": "user",
+  "resourceId": "67f888ff4ba8bbe8d094ad94",
+  "details": "John Matthew Banto (Alpha) logged out",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f8896c4ba8bbe8d094ae1a"
+  },
+  "timestamp": {
+    "$date": "2025-04-11T03:15:56.224Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /admin/audit-logs",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f889904ba8bbe8d094ae24"
+  },
+  "timestamp": {
+    "$date": "2025-04-11T03:16:32.809Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "logout",
+  "resource": "user",
+  "resourceId": "67f011f547a45741ecca05d9",
+  "details": "Colonel Super Director (Headquarters) logged out",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f8899c4ba8bbe8d094ae2a"
+  },
+  "timestamp": {
+    "$date": "2025-04-11T03:16:44.943Z"
+  },
+  "userId": {
+    "$oid": "67f011f547a45741ecca05d9"
+  },
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "login",
+  "resource": "user",
+  "details": "User login successful",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f88a334ba8bbe8d094ae63"
+  },
+  "timestamp": {
+    "$date": "2025-04-11T03:19:15.633Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f88a464ba8bbe8d094ae71"
+  },
+  "timestamp": {
+    "$date": "2025-04-11T03:19:34.607Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "cancel",
+  "resource": "training",
+  "resourceId": {
+    "$oid": "67f0ba7dcb285c3f71b91242"
+  },
+  "details": "cancelled registration for training: Cyber Defense and Information Security Workshop",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f88a4e4ba8bbe8d094ae77"
+  },
+  "timestamp": {
+    "$date": "2025-04-11T03:19:42.411Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f88a504ba8bbe8d094ae80"
+  },
+  "timestamp": {
+    "$date": "2025-04-11T03:19:44.779Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "register",
+  "resource": "training",
+  "resourceId": {
+    "$oid": "67f0ba7dcb285c3f71b91257"
+  },
+  "details": "registered for training: Leadership and Strategic Management Seminar",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f88a564ba8bbe8d094ae83"
+  },
+  "timestamp": {
+    "$date": "2025-04-11T03:19:50.813Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f899e74ba8bbe8d094aee7"
+  },
+  "timestamp": {
+    "$date": "2025-04-11T04:26:15.141Z"
+  },
+  "userId": {
+    "$oid": "67f8999d4ba8bbe8d094aed8"
+  },
+  "userName": "Kervie Mislang",
+  "userRole": "staff",
+  "action": "login",
+  "resource": "user",
+  "details": "User login successful",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f89ae64ba8bbe8d094af7d"
+  },
+  "timestamp": {
+    "$date": "2025-04-11T04:30:30.817Z"
+  },
+  "userId": "67f8999d4ba8bbe8d094aed8",
+  "userName": "Kervie Mislang",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f89ae94ba8bbe8d094af82"
+  },
+  "timestamp": {
+    "$date": "2025-04-11T04:30:33.272Z"
+  },
+  "userId": "67f8999d4ba8bbe8d094aed8",
+  "userName": "Kervie Mislang",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f89aeb4ba8bbe8d094af87"
+  },
+  "timestamp": {
+    "$date": "2025-04-11T04:30:35.071Z"
+  },
+  "userId": "67f8999d4ba8bbe8d094aed8",
+  "userName": "Kervie Mislang",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f89c104ba8bbe8d094b022"
+  },
+  "timestamp": {
+    "$date": "2025-04-11T04:35:28.692Z"
+  },
+  "userId": "67f8999d4ba8bbe8d094aed8",
+  "userName": "Kervie Mislang",
+  "userRole": "staff",
+  "action": "logout",
+  "resource": "user",
+  "resourceId": "67f8999d4ba8bbe8d094aed8",
+  "details": "Lieutenant General Kervie Mislang (NERRSC (NERR-Signal Company)) logged out",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f89ca84ba8bbe8d094b034"
+  },
+  "timestamp": {
+    "$date": "2025-04-11T04:38:00.432Z"
+  },
+  "userId": {
+    "$oid": "67f8999d4ba8bbe8d094aed8"
+  },
+  "userName": "Kervie Mislang",
+  "userRole": "staff",
+  "action": "login",
+  "resource": "user",
+  "details": "User login successful",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f89cd54ba8bbe8d094b095"
+  },
+  "timestamp": {
+    "$date": "2025-04-11T04:38:45.352Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /admin/audit-logs",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f8a44a1007841b2200d32c"
+  },
+  "timestamp": {
+    "$date": "2025-04-11T05:10:34.007Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "logout",
+  "resource": "user",
+  "resourceId": "67f011f547a45741ecca05d9",
+  "details": "Colonel Super Director (Headquarters) logged out",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f8a44a1007841b2200d32d"
+  },
+  "timestamp": {
+    "$date": "2025-04-11T05:10:34.011Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "logout",
+  "resource": "user",
+  "resourceId": "67f011f547a45741ecca05d9",
+  "details": "Colonel Super Director (Headquarters) logged out",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f8a5a91007841b2200d33c"
+  },
+  "timestamp": {
+    "$date": "2025-04-11T05:16:25.706Z"
+  },
+  "userId": {
+    "$oid": "67f011f547a45741ecca05d9"
+  },
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "login",
+  "resource": "user",
+  "details": "User login successful",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f8a5cd1007841b2200d370"
+  },
+  "timestamp": {
+    "$date": "2025-04-11T05:17:01.566Z"
+  },
+  "userId": {
+    "$oid": "67f89d274ba8bbe8d094b0be"
+  },
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "login",
+  "resource": "user",
+  "details": "User login successful",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f8a5f71007841b2200d390"
+  },
+  "timestamp": {
+    "$date": "2025-04-11T05:17:43.061Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "logout",
+  "resource": "user",
+  "resourceId": "67f89d274ba8bbe8d094b0be",
+  "details": "Captain Gerimiah Almero (NERRSC (NERR-Signal Company)) logged out",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f8a62d1007841b2200d394"
+  },
+  "timestamp": {
+    "$date": "2025-04-11T05:18:37.869Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "logout",
+  "resource": "user",
+  "resourceId": "67f011f547a45741ecca05d9",
+  "details": "Colonel Super Director (Headquarters) logged out",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f8e295a9a400e4bcbaaf33"
+  },
+  "timestamp": {
+    "$date": "2025-04-11T09:36:21.351Z"
+  },
+  "userId": {
+    "$oid": "67f011f547a45741ecca05d9"
+  },
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "login",
+  "resource": "user",
+  "details": "User login successful",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f8e2f3a9a400e4bcbaaf65"
+  },
+  "timestamp": {
+    "$date": "2025-04-11T09:37:55.434Z"
+  },
+  "userId": {
+    "$oid": "67f89d274ba8bbe8d094b0be"
+  },
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "login",
+  "resource": "user",
+  "details": "User login successful",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f8e2ffa9a400e4bcbaaf84"
+  },
+  "timestamp": {
+    "$date": "2025-04-11T09:38:07.008Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f8e39da9a400e4bcbaaf94"
+  },
+  "timestamp": {
+    "$date": "2025-04-11T09:40:45.719Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f8e3e3a9a400e4bcbaaf98"
+  },
+  "timestamp": {
+    "$date": "2025-04-11T09:41:55.994Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f8e43aa9a400e4bcbaafc1"
+  },
+  "timestamp": {
+    "$date": "2025-04-11T09:43:22.623Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f8e443a9a400e4bcbaafd1"
+  },
+  "timestamp": {
+    "$date": "2025-04-11T09:43:31.326Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "register",
+  "resource": "training",
+  "resourceId": {
+    "$oid": "67f0ba7dcb285c3f71b91242"
+  },
+  "details": "registered for training: Cyber Defense and Information Security Workshop",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f8e446a9a400e4bcbaafdc"
+  },
+  "timestamp": {
+    "$date": "2025-04-11T09:43:34.328Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "cancel",
+  "resource": "training",
+  "resourceId": {
+    "$oid": "67f0ba7dcb285c3f71b91242"
+  },
+  "details": "cancelled registration for training: Cyber Defense and Information Security Workshop",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f8e447a9a400e4bcbaafe7"
+  },
+  "timestamp": {
+    "$date": "2025-04-11T09:43:35.294Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "register",
+  "resource": "training",
+  "resourceId": {
+    "$oid": "67f0ba7dcb285c3f71b91242"
+  },
+  "details": "registered for training: Cyber Defense and Information Security Workshop",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f8e449a9a400e4bcbaafe9"
+  },
+  "timestamp": {
+    "$date": "2025-04-11T09:43:37.847Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "logout",
+  "resource": "user",
+  "resourceId": "67f89d274ba8bbe8d094b0be",
+  "details": "Captain Gerimiah Almero (NERRSC (NERR-Signal Company)) logged out",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f8e454a9a400e4bcbaaff2"
+  },
+  "timestamp": {
+    "$date": "2025-04-11T09:43:48.182Z"
+  },
+  "userId": {
+    "$oid": "67f8a0ea4ba8bbe8d094b0dd"
+  },
+  "userName": "John Matthew Banto",
+  "userRole": "administrator",
+  "action": "login",
+  "resource": "user",
+  "details": "User login successful",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f8e456a9a400e4bcbab011"
+  },
+  "timestamp": {
+    "$date": "2025-04-11T09:43:50.364Z"
+  },
+  "userId": "67f8a0ea4ba8bbe8d094b0dd",
+  "userName": "John Matthew Banto",
+  "userRole": "administrator",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f8e51ba9a400e4bcbab02f"
+  },
+  "timestamp": {
+    "$date": "2025-04-11T09:47:07.894Z"
+  },
+  "userId": "67f8a0ea4ba8bbe8d094b0dd",
+  "userName": "John Matthew Banto",
+  "userRole": "administrator",
+  "action": "register",
+  "resource": "training",
+  "resourceId": {
+    "$oid": "67f0ba7dcb285c3f71b91242"
+  },
+  "details": "registered for training: Cyber Defense and Information Security Workshop",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f8e6d0a9a400e4bcbab050"
+  },
+  "timestamp": {
+    "$date": "2025-04-11T09:54:24.362Z"
+  },
+  "userId": "67f8a0ea4ba8bbe8d094b0dd",
+  "userName": "John Matthew Banto",
+  "userRole": "administrator",
+  "action": "cancel",
+  "resource": "training",
+  "resourceId": {
+    "$oid": "67f0ba7dcb285c3f71b91242"
+  },
+  "details": "cancelled registration for training: Cyber Defense and Information Security Workshop",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f8e6d2a9a400e4bcbab05c"
+  },
+  "timestamp": {
+    "$date": "2025-04-11T09:54:26.575Z"
+  },
+  "userId": "67f8a0ea4ba8bbe8d094b0dd",
+  "userName": "John Matthew Banto",
+  "userRole": "administrator",
+  "action": "register",
+  "resource": "training",
+  "resourceId": {
+    "$oid": "67f0ba7dcb285c3f71b91242"
+  },
+  "details": "registered for training: Cyber Defense and Information Security Workshop",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f8e6d6a9a400e4bcbab066"
+  },
+  "timestamp": {
+    "$date": "2025-04-11T09:54:30.616Z"
+  },
+  "userId": "67f8a0ea4ba8bbe8d094b0dd",
+  "userName": "John Matthew Banto",
+  "userRole": "administrator",
+  "action": "register",
+  "resource": "training",
+  "resourceId": {
+    "$oid": "67f0ba7dcb285c3f71b91257"
+  },
+  "details": "registered for training: Leadership and Strategic Management Seminar",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f8e891a9a400e4bcbab082"
+  },
+  "timestamp": {
+    "$date": "2025-04-11T10:01:53.117Z"
+  },
+  "userId": "67f8a0ea4ba8bbe8d094b0dd",
+  "userName": "John Matthew Banto",
+  "userRole": "administrator",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f8e8a9a9a400e4bcbab09d"
+  },
+  "timestamp": {
+    "$date": "2025-04-11T10:02:17.561Z"
+  },
+  "userId": "67f8a0ea4ba8bbe8d094b0dd",
+  "userName": "John Matthew Banto",
+  "userRole": "administrator",
+  "action": "register",
+  "resource": "training",
+  "resourceId": {
+    "$oid": "67f8e6ff5eb76132188617f0"
+  },
+  "details": "registered for training: Staff Officer Development Course",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f8e8ada9a400e4bcbab0b6"
+  },
+  "timestamp": {
+    "$date": "2025-04-11T10:02:21.488Z"
+  },
+  "userId": "67f8a0ea4ba8bbe8d094b0dd",
+  "userName": "John Matthew Banto",
+  "userRole": "administrator",
+  "action": "register",
+  "resource": "training",
+  "resourceId": {
+    "$oid": "67f8e6ff5eb7613218861827"
+  },
+  "details": "registered for training: KAMANDAG 2023 Joint Military Exercise",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67f8e8afa9a400e4bcbab0be"
+  },
+  "timestamp": {
+    "$date": "2025-04-11T10:02:23.641Z"
+  },
+  "userId": "67f8a0ea4ba8bbe8d094b0dd",
+  "userName": "John Matthew Banto",
+  "userRole": "administrator",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
 }]

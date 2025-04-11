@@ -41,6 +41,15 @@ export async function POST(request: Request) {
     
     console.log(`User found: ${email}`);
     
+    // Check if user is deactivated
+    if (user.status === 'deactivated' || user.status === 'inactive') {
+      console.log(`Attempt to login to deactivated account: ${email}`);
+      return NextResponse.json(
+        { success: false, error: 'This account has been deactivated. Please contact an administrator.' },
+        { status: 403 }
+      );
+    }
+    
     // Compare password
     const isPasswordValid = await bcrypt.compare(password, user.password);
     
@@ -75,7 +84,8 @@ export async function POST(request: Request) {
     const token = jwt.sign(
       { 
         userId: user._id,
-        role: user.role
+        role: user.role,
+        status: user.status
       },
       JWT_SECRET,
       { expiresIn: '8h' }

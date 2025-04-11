@@ -1,55 +1,5 @@
 [{
   "_id": {
-    "$oid": "67efcc8ea338560e8f45e7a5"
-  },
-  "firstName": "Gerimiah",
-  "lastName": "Almero",
-  "email": "gerimiah@mil.ph",
-  "password": "$2b$10$t5q1Zm4RRAKD1Kx1T.UenO3AtfOtLKkvrjf9xut1smC.j/CsfVziy",
-  "militaryId": "2019-203929",
-  "role": "staff",
-  "status": "active",
-  "rank": "First Lieutenant",
-  "company": "NERRSC (NERR-Signal Company)",
-  "specializations": [],
-  "createdAt": {
-    "$date": "2025-04-04T12:11:58.872Z"
-  },
-  "updatedAt": {
-    "$date": "2025-04-04T17:16:32.727Z"
-  },
-  "__v": 0,
-  "lastLogin": {
-    "$date": "2025-04-05T04:51:29.670Z"
-  }
-},
-{
-  "_id": {
-    "$oid": "67eff3b1e659b9597fe65e59"
-  },
-  "firstName": "ace",
-  "lastName": "marasigan",
-  "email": "ace@mil.ph",
-  "password": "$2b$10$TP.nx1hY2oIu6EGr9OgwIOJSYZhPX7b4OzVPRbed4YhHB/96VtVZ2",
-  "militaryId": "2019-92834",
-  "role": "staff",
-  "status": "active",
-  "rank": "Colonel",
-  "company": "Charlie",
-  "specializations": [],
-  "createdAt": {
-    "$date": "2025-04-04T14:58:57.047Z"
-  },
-  "updatedAt": {
-    "$date": "2025-04-05T03:55:17.902Z"
-  },
-  "__v": 0,
-  "lastLogin": {
-    "$date": "2025-04-05T03:54:30.877Z"
-  }
-},
-{
-  "_id": {
     "$oid": "67f011f547a45741ecca05d9"
   },
   "firstName": "Super",
@@ -69,79 +19,85 @@
     "$date": "2025-04-04T17:08:15.630Z"
   },
   "lastLogin": {
-    "$date": "2025-04-09T13:55:37.123Z"
+    "$date": "2025-04-11T09:36:21.346Z"
   }
 },
 {
   "_id": {
-    "$oid": "67f01770e659b9597fe6648f"
+    "$oid": "67f8999d4ba8bbe8d094aed8"
   },
   "firstName": "Kervie",
   "lastName": "Mislang",
   "email": "kervie@mil.ph",
-  "password": "$2b$10$b0EEaEua8/uJW3q5kHGbzuEJoCUQmJmwvOVnXZYQSaaKe8bITFw5y",
-  "role": "administrator",
+  "alternativeEmail": "kervie@gmail.com",
+  "password": "$2b$10$ki8nK3iJj5wnaE98tZ3ZfuY7Ow8Fxre0.ImWAC5Puw1FZMbt3La2u",
+  "role": "staff",
   "company": "NERRSC (NERR-Signal Company)",
-  "rank": "General",
-  "militaryId": "2019-101679",
+  "rank": "Lieutenant General",
+  "serviceId": "2019-101691",
+  "status": "deactivated",
+  "specializations": [],
+  "createdAt": {
+    "$date": "2025-04-11T04:25:01.196Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-11T04:38:07.866Z"
+  },
+  "deactivationReason": "dwadadsa",
+  "lastLogin": {
+    "$date": "2025-04-11T04:38:00.429Z"
+  },
+  "isArchived": true
+},
+{
+  "_id": {
+    "$oid": "67f89d274ba8bbe8d094b0be"
+  },
+  "firstName": "Gerimiah",
+  "lastName": "Almero",
+  "email": "gerimiah@mil.ph",
+  "alternativeEmail": "gerimiah@gmail.com",
+  "password": "$2b$10$0ux1dPfW2DLF1x03fpWPtOMJpcmdLG6MiRqrKJjjzCeBfAqzpgEHK",
+  "role": "staff",
+  "company": "NERRSC (NERR-Signal Company)",
+  "rank": "Captain",
+  "serviceId": "2019-101680",
   "status": "active",
   "specializations": [],
   "createdAt": {
-    "$date": "2025-04-04T17:31:28.702Z"
+    "$date": "2025-04-11T04:40:07.328Z"
   },
   "updatedAt": {
-    "$date": "2025-04-05T05:05:26.207Z"
+    "$date": "2025-04-11T05:16:50.525Z"
   },
+  "deactivationReason": null,
   "lastLogin": {
-    "$date": "2025-04-05T05:40:22.850Z"
+    "$date": "2025-04-11T09:37:55.431Z"
   }
 },
 {
   "_id": {
-    "$oid": "67f01c1ee659b9597fe66680"
+    "$oid": "67f8a0ea4ba8bbe8d094b0dd"
   },
-  "firstName": "john",
-  "lastName": "matthew",
-  "email": "sasukebanto@gmail.com",
-  "password": "$2b$10$5V/Z9RqgC0yDYfOmvHT3zO8iTKZIai2eW3N6/jyA01IZdKkOVB.fm",
+  "firstName": "John Matthew",
+  "lastName": "Banto",
+  "email": "bantojs@mil.ph",
+  "alternativeEmail": "sasukebanto@gmail.com",
+  "password": "$2b$10$yan4fj85gnNEW1ilocackeMP.7RUEQqcs7U53ae3EVHL4B1hwIbEe",
   "role": "administrator",
-  "company": "NERRSC (NERR-Signal Company)",
-  "rank": "Major",
-  "militaryId": "2019-101678",
+  "company": "NERRFAB (NERR-Field Artillery Battery)",
+  "rank": "Lieutenant General",
+  "serviceId": "2019-101679",
   "status": "active",
   "specializations": [],
   "createdAt": {
-    "$date": "2025-04-04T17:51:26.945Z"
+    "$date": "2025-04-11T04:56:10.649Z"
   },
   "updatedAt": {
-    "$date": "2025-04-09T13:37:25.187Z"
+    "$date": "2025-04-11T04:57:39.203Z"
   },
+  "deactivationReason": null,
   "lastLogin": {
-    "$date": "2025-04-09T13:33:33.888Z"
-  },
-  "deactivationReason": null
-},
-{
-  "_id": {
-    "$oid": "67f01cebe659b9597fe666c9"
-  },
-  "firstName": "franze",
-  "lastName": "bert",
-  "email": "franze@mil.ph",
-  "password": "$2b$10$SFG242jDCO0cyj6LuGxvN.HX1vVvIC0o7/AF3Q5pwffMIjnSnqBli",
-  "role": "staff",
-  "company": "Bravo",
-  "rank": "Brigadier General",
-  "militaryId": "2019-10929",
-  "status": "active",
-  "specializations": [],
-  "createdAt": {
-    "$date": "2025-04-04T17:54:51.111Z"
-  },
-  "updatedAt": {
-    "$date": "2025-04-05T05:20:22.627Z"
-  },
-  "lastLogin": {
-    "$date": "2025-04-05T05:40:49.472Z"
+    "$date": "2025-04-11T09:43:48.179Z"
   }
 }]
