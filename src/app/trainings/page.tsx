@@ -14,7 +14,8 @@ import {
   CheckCircleIcon,
   XCircleIcon,
   ArrowDownTrayIcon,
-  DocumentTextIcon
+  DocumentTextIcon,
+  PencilIcon
 } from '@heroicons/react/24/outline';
 import ConfirmationDialog from '@/components/ConfirmationDialog';
 import { toast } from 'react-hot-toast';
@@ -84,6 +85,28 @@ export default function TrainingsPage() {
   // Add state for creating trainings
   const [showCreateTrainingModal, setShowCreateTrainingModal] = useState(false);
   const [newTraining, setNewTraining] = useState<Partial<Training>>({
+    title: '',
+    description: '',
+    type: '',
+    startDate: new Date().toISOString(),
+    endDate: new Date().toISOString(),
+    location: {
+      name: '',
+      address: ''
+    },
+    instructor: {
+      name: '',
+      rank: ''
+    },
+    capacity: 20,
+    category: '',
+    mandatory: false,
+    tags: []
+  });
+  
+  // Add state for editing trainings
+  const [showEditTrainingModal, setShowEditTrainingModal] = useState(false);
+  const [editTraining, setEditTraining] = useState<Partial<Training>>({
     title: '',
     description: '',
     type: '',
@@ -252,40 +275,38 @@ export default function TrainingsPage() {
   }, []);
 
   const handleRegister = async (trainingId: string | undefined) => {
-    if (!user) {
-      toast.error('You must be logged in to register for trainings.');
-      return;
-    }
-    
-    if (!trainingId) {
-      toast.error('Training ID is required');
-      return;
-    }
-
     try {
+      if (!trainingId) {
+        throw new Error('Training ID is required');
+      }
+      
+      setLoading(true);
+      
       // Get the auth token from localStorage
       const token = localStorage.getItem('token');
       if (!token) {
+        console.error('Authentication token not found');
         throw new Error('Authentication token not found');
       }
       
+      // Call the API to register for the training
       const response = await fetch('/api/trainings', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          trainingId,
-          action: 'register',
-        }),
+        body: JSON.stringify({ 
+          trainingId, 
+          action: 'register' 
+        })
       });
-
+      
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to register for training');
+        throw new Error(errorData.error || 'Failed to register for training');
       }
-
+      
       const data = await response.json();
       
       // Update local state with the updated training
@@ -310,6 +331,8 @@ export default function TrainingsPage() {
     } catch (error) {
       console.error('Error registering for training:', error);
       toast.error(error instanceof Error ? error.message : 'Failed to register for training');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -1277,16 +1300,17 @@ export default function TrainingsPage() {
       }
       
       const data = await response.json();
-      console.log('Trainings API response:', data);
+      console.log('Received API response:', data);
       
       if (data.success) {
-        // Process the trainings to match our interface
-        const processedTrainings = data.data.trainings.map((training: any) => {
-          // Create display strings for complex objects
+        // Map the API response to our Training interface with enhanced properties
+        const enhancedTrainings = data.data.trainings.map((training: any) => {
+          // Format the location display
           const locationDisplay = typeof training.location === 'object' 
             ? (training.location?.name || training.location?.address || 'No location specified') 
             : (training.location && training.location.trim() !== '' ? training.location : 'No location specified');
           
+          // Format the instructor display
           const instructorDisplay = typeof training.instructor === 'object'
             ? ((training.instructor?.rank ? `${training.instructor.rank} ` : '') + (training.instructor?.name || 'TBD'))
             : (training.instructor && training.instructor.trim() !== '' ? training.instructor : 'TBD');
@@ -1300,29 +1324,27 @@ export default function TrainingsPage() {
             startDate: training.startDate || new Date().toISOString(),
             endDate: training.endDate || new Date().toISOString(),
             location: training.location,
-            locationDisplay,
+            locationDisplay: locationDisplay,
             status: training.status,
             capacity: training.capacity || 0,
             registered: training.attendees?.length || 0,
             registrationStatus: training.registrationStatus || 'not_registered',
             instructor: training.instructor,
-            instructorDisplay,
-            category: training.type || 'Other', // Use type as category, default to 'Other'
+            instructorDisplay: instructorDisplay,
+            category: training.type || 'Other',
             mandatory: training.mandatory || false,
             attendees: training.attendees || [],
             tags: training.tags || []
           };
         });
         
-        console.log(`Processed ${processedTrainings.length} trainings`);
-        setTrainings(processedTrainings);
+        setTrainings(enhancedTrainings);
+        console.log('Updated training state with enhanced trainings:', enhancedTrainings);
       } else {
-        console.error('API returned error:', data.error);
-        throw new Error(data.error || 'Failed to load trainings');
+        throw new Error(data.error || 'Failed to fetch trainings');
       }
     } catch (error) {
       console.error('Error refreshing trainings:', error);
-      toast.error('Failed to refresh trainings. Please try again later.');
     } finally {
       setLoading(false);
     }
@@ -1344,6 +1366,97 @@ export default function TrainingsPage() {
   const goToPreviousPage = () => {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
+    }
+  };
+
+  // Add handler for editing a training
+  const handleEditTrainingClick = (training: Training) => {
+    // Format dates properly
+    const formattedTraining = {
+      ...training,
+      startDate: training.startDate,
+      endDate: training.endDate,
+      location: typeof training.location === 'string' 
+        ? { name: training.location, address: '' } 
+        : training.location,
+      instructor: typeof training.instructor === 'string'
+        ? { name: training.instructor, rank: '' }
+        : training.instructor
+    };
+    
+    setEditTraining(formattedTraining);
+    setShowDetailsModal(false);
+    setShowEditTrainingModal(true);
+  };
+  
+  // Add handler for submitting an updated training
+  const handleUpdateTraining = async () => {
+    try {
+      setLoading(true);
+      
+      // Get the auth token from localStorage
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('Authentication token not found');
+      }
+      
+      // Create the training data for update
+      const trainingData = {
+        ...editTraining
+      };
+      
+      const trainingId = editTraining.id || editTraining._id;
+      
+      if (!trainingId) {
+        throw new Error('Training ID is missing');
+      }
+      
+      // Call the API to update the training
+      const response = await fetch(`/api/trainings/${trainingId}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ 
+          training: trainingData 
+        })
+      });
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to update training: ${response.status} ${errorText}`);
+      }
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        toast.success('Training updated successfully!');
+        
+        // Close the modal
+        setShowEditTrainingModal(false);
+        
+        // Refresh the trainings using the dedicated refresh function
+        await refreshTrainings();
+        
+        // Log the action
+        auditService.logUserAction(
+          user?._id || '',
+          `${user?.firstName} ${user?.lastName}`,
+          user?.role || '',
+          'update',
+          'training',
+          trainingId,
+          `Updated training: ${trainingData.title}`
+        );
+      } else {
+        throw new Error(data.error || 'Failed to update training');
+      }
+    } catch (error) {
+      console.error('Error updating training:', error);
+      toast.error('Failed to update training. Please try again later.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -1953,6 +2066,18 @@ export default function TrainingsPage() {
                     Close
                   </Button>
                   
+                  {/* Staff Edit Button */}
+                  {user && user.role && (String(user.role).toLowerCase() === 'staff') && (
+                    <Button
+                      variant="secondary"
+                      className="bg-white text-gray-700 border border-gray-300 rounded-md px-4 h-9 flex items-center justify-center hover:bg-gray-50 transition-colors font-medium"
+                      onClick={() => handleEditTrainingClick(selectedTraining)}
+                    >
+                      <PencilIcon className="h-4 w-4 mr-2" />
+                      Edit
+                    </Button>
+                  )}
+                  
                   <div className="flex space-x-2">
                     <Button
                       variant="secondary"
@@ -1986,33 +2111,35 @@ export default function TrainingsPage() {
                   </div>
                 </div>
                 
-                {selectedTraining.status === 'upcoming' && (
-                  selectedTraining.registrationStatus === 'registered' ? (
-                    <Button
-                      variant="danger"
-                      className="bg-red-600 text-white border-0 rounded-md px-4 h-9 flex items-center justify-center hover:bg-red-700 transition-colors font-medium"
-                      onClick={() => {
-                        setTrainingToCancel(selectedTraining.id || '');
-                        setShowCancelConfirmation(true);
-                        setShowDetailsModal(false);
-                      }}
-                    >
-                      Cancel Registration
-                    </Button>
-                  ) : (
-                    <Button
-                      variant="primary"
-                      className="bg-green-600 text-white border border-green-700 rounded-md px-4 h-9 flex items-center justify-center hover:bg-green-700 transition-colors font-medium"
-                      onClick={() => {
-                        handleRegister(selectedTraining.id || '');
-                        setShowDetailsModal(false);
-                      }}
-                      disabled={selectedTraining.registered >= selectedTraining.capacity}
-                    >
-                      Register
-                    </Button>
-                  )
-                )}
+                <div>
+                  {selectedTraining.status === 'upcoming' && (
+                    selectedTraining.registrationStatus === 'registered' ? (
+                      <Button
+                        variant="danger"
+                        className="bg-red-600 text-white border-0 rounded-md px-4 h-9 flex items-center justify-center hover:bg-red-700 transition-colors font-medium"
+                        onClick={() => {
+                          setTrainingToCancel(selectedTraining.id || '');
+                          setShowCancelConfirmation(true);
+                          setShowDetailsModal(false);
+                        }}
+                      >
+                        Cancel Registration
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="primary"
+                        className="bg-green-600 text-white border border-green-700 rounded-md px-4 h-9 flex items-center justify-center hover:bg-green-700 transition-colors font-medium"
+                        onClick={() => {
+                          handleRegister(selectedTraining.id || '');
+                          setShowDetailsModal(false);
+                        }}
+                        disabled={selectedTraining.registered >= selectedTraining.capacity}
+                      >
+                        Register
+                      </Button>
+                    )
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -2243,6 +2370,217 @@ export default function TrainingsPage() {
                     aria-label="Create Training"
                   >
                     {loading ? 'Creating...' : 'Create Training'}
+                  </Button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add the Edit Training Modal */}
+      {showEditTrainingModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">Edit Training</h2>
+                <button
+                  onClick={() => setShowEditTrainingModal(false)}
+                  className="text-gray-500 hover:text-gray-700"
+                  aria-label="Close"
+                >
+                  <XCircleIcon className="h-6 w-6" />
+                </button>
+              </div>
+              
+              <form onSubmit={(e) => { e.preventDefault(); handleUpdateTraining(); }}>
+                <div className="space-y-4">
+                  <div>
+                    <label htmlFor="editTitle" className="block text-sm font-medium text-gray-700">Title</label>
+                    <input
+                      type="text"
+                      id="editTitle"
+                      name="editTitle"
+                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      required
+                      value={editTraining.title}
+                      onChange={(e) => setEditTraining({...editTraining, title: e.target.value})}
+                    />
+                  </div>
+                  
+                  <div>
+                    <label htmlFor="editDescription" className="block text-sm font-medium text-gray-700">Description</label>
+                    <textarea
+                      id="editDescription"
+                      name="editDescription"
+                      rows={3}
+                      className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                      value={editTraining.description}
+                      onChange={(e) => setEditTraining({...editTraining, description: e.target.value})}
+                    ></textarea>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label htmlFor="editType" className="block text-sm font-medium text-gray-700">Type</label>
+                      <select
+                        id="editType"
+                        name="editType"
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        value={editTraining.type || ''}
+                        onChange={(e) => setEditTraining({...editTraining, type: e.target.value})}
+                      >
+                        <option value="">Select Type</option>
+                        <option value="workshop">Workshop</option>
+                        <option value="seminar">Seminar</option>
+                        <option value="field_exercise">Field Exercise</option>
+                        <option value="combat_drill">Combat Drill</option>
+                        <option value="leadership">Leadership</option>
+                        <option value="technical">Technical</option>
+                      </select>
+                    </div>
+                    
+                    <div>
+                      <label htmlFor="editCapacity" className="block text-sm font-medium text-gray-700">Capacity</label>
+                      <input
+                        type="number"
+                        id="editCapacity"
+                        name="editCapacity"
+                        min="1"
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        value={editTraining.capacity}
+                        onChange={(e) => setEditTraining({...editTraining, capacity: parseInt(e.target.value, 10)})}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label htmlFor="editStartDate" className="block text-sm font-medium text-gray-700">Start Date</label>
+                      <input
+                        type="datetime-local"
+                        id="editStartDate"
+                        name="editStartDate"
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        value={new Date(editTraining.startDate || new Date()).toISOString().slice(0, 16)}
+                        onChange={(e) => setEditTraining({...editTraining, startDate: new Date(e.target.value).toISOString()})}
+                      />
+                    </div>
+                    
+                    <div>
+                      <label htmlFor="editEndDate" className="block text-sm font-medium text-gray-700">End Date</label>
+                      <input
+                        type="datetime-local"
+                        id="editEndDate"
+                        name="editEndDate"
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        value={new Date(editTraining.endDate || new Date()).toISOString().slice(0, 16)}
+                        onChange={(e) => setEditTraining({...editTraining, endDate: new Date(e.target.value).toISOString()})}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label htmlFor="editLocation" className="block text-sm font-medium text-gray-700">Location</label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-1">
+                      <input
+                        type="text"
+                        id="editLocationName"
+                        name="editLocationName"
+                        placeholder="Location Name"
+                        className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        value={typeof editTraining.location === 'object' ? editTraining.location.name || '' : ''}
+                        onChange={(e) => setEditTraining({
+                          ...editTraining, 
+                          location: typeof editTraining.location === 'object' 
+                            ? { ...editTraining.location, name: e.target.value } 
+                            : { name: e.target.value, address: '' }
+                        })}
+                      />
+                      <input
+                        type="text"
+                        id="editLocationAddress"
+                        name="editLocationAddress"
+                        placeholder="Address (Optional)"
+                        className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        value={typeof editTraining.location === 'object' ? editTraining.location.address || '' : ''}
+                        onChange={(e) => setEditTraining({
+                          ...editTraining, 
+                          location: typeof editTraining.location === 'object' 
+                            ? { ...editTraining.location, address: e.target.value } 
+                            : { name: '', address: e.target.value }
+                        })}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label htmlFor="editInstructor" className="block text-sm font-medium text-gray-700">Instructor</label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-1">
+                      <input
+                        type="text"
+                        id="editInstructorName"
+                        name="editInstructorName"
+                        placeholder="Instructor Name"
+                        className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        value={typeof editTraining.instructor === 'object' ? editTraining.instructor.name || '' : ''}
+                        onChange={(e) => setEditTraining({
+                          ...editTraining, 
+                          instructor: typeof editTraining.instructor === 'object' 
+                            ? { ...editTraining.instructor, name: e.target.value } 
+                            : { name: e.target.value, rank: '' }
+                        })}
+                      />
+                      <input
+                        type="text"
+                        id="editInstructorRank"
+                        name="editInstructorRank"
+                        placeholder="Rank (Optional)"
+                        className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        value={typeof editTraining.instructor === 'object' ? editTraining.instructor.rank || '' : ''}
+                        onChange={(e) => setEditTraining({
+                          ...editTraining, 
+                          instructor: typeof editTraining.instructor === 'object' 
+                            ? { ...editTraining.instructor, rank: e.target.value } 
+                            : { name: '', rank: e.target.value }
+                        })}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center">
+                    <input
+                      id="editMandatory"
+                      name="editMandatory"
+                      type="checkbox"
+                      className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                      checked={editTraining.mandatory || false}
+                      onChange={(e) => setEditTraining({...editTraining, mandatory: e.target.checked})}
+                    />
+                    <label htmlFor="editMandatory" className="ml-2 block text-sm text-gray-900">Mandatory training</label>
+                  </div>
+                </div>
+                
+                <div className="mt-6 flex justify-end space-x-3">
+                  <Button
+                    variant="secondary"
+                    type="button"
+                    className="bg-white text-gray-700 border border-gray-300 rounded-md px-4 h-10 flex items-center justify-center hover:bg-gray-50 transition-colors font-medium"
+                    onClick={() => setShowEditTrainingModal(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="primary"
+                    type="submit"
+                    className="bg-indigo-600 text-white border border-indigo-700 rounded-md px-4 h-10 flex items-center justify-center hover:bg-indigo-700 transition-colors font-medium"
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <div className="h-5 w-5 border-t-2 border-b-2 border-white rounded-full animate-spin mr-2"></div>
+                    ) : null}
+                    Update Training
                   </Button>
                 </div>
               </form>

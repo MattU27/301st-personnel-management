@@ -6,8 +6,8 @@ import { usePathname } from 'next/navigation';
 const Footer = () => {
   const pathname = usePathname();
 
-  // Always hide footer on homepage since it has its own footer
-  if (pathname === '/') {
+  // Hide footer on login, register and homepage pages
+  if (pathname === '/' || pathname === '/login' || pathname === '/register') {
     return null;
   }
 

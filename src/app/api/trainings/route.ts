@@ -247,10 +247,14 @@ export async function POST(request: Request) {
       // For completed trainings, it should be 'completed'
       let registrationStatus = 'registered';
       
-      if (startDate <= now && endDate >= now) {
+      // Set both dates to start of day for accurate comparison
+      const nowDate = new Date(now.setHours(0, 0, 0, 0));
+      const trainingEndDate = new Date(endDate.setHours(23, 59, 59, 999)); // End of the day
+      
+      if (startDate <= now && trainingEndDate >= now) {
         // Training is ongoing
         registrationStatus = 'registered'; // Default for registration is still 'registered'
-      } else if (endDate < now) {
+      } else if (trainingEndDate < nowDate) {
         // Training is completed, so they can't really register
         return NextResponse.json(
           { success: false, error: 'Cannot register for past trainings' },
