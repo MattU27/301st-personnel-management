@@ -11,20 +11,32 @@ import {
   UserPlusIcon,
   CheckCircleIcon,
   XCircleIcon,
-  BuildingOfficeIcon
+  BuildingOfficeIcon,
+  ChevronDownIcon,
+  ArrowPathIcon,
+  UserCircleIcon,
+  ChartBarIcon,
+  DocumentArrowDownIcon,
+  XMarkIcon,
+  InformationCircleIcon
 } from '@heroicons/react/24/outline';
 import Card from '@/components/Card';
 import Button from '@/components/Button';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import PersonnelModal from '@/components/PersonnelModal';
-import { Personnel, PersonnelStatus, CompanyType } from '@/types/personnel';
+import { Personnel, PersonnelStatus, CompanyType, RankType, UserRole } from '@/types/personnel';
 import ConfirmationDialog from '@/components/ConfirmationDialog';
 import PermissionGuard from '@/components/PermissionGuard';
 import { useRouter } from 'next/navigation';
 import { auditService } from '@/utils/auditService';
 import { AuditAction } from '@/models/AuditLog';
 import { getRankDisplayName, getCompanyDisplayName } from '@/utils/formatters';
+import { Fragment } from 'react';
+import { Dialog, Transition } from '@headlessui/react';
+import { z } from 'zod';
+import { toast } from 'react-hot-toast';
+import ApproveAccountsModal from './accounts/modal';
 
 const COMPANIES: CompanyType[] = ['Alpha', 'Bravo', 'Charlie', 'Headquarters', 'NERRSC (NERR-Signal Company)', 'NERRFAB (NERR-Field Artillery Battery)'];
 const STATUS_OPTIONS: PersonnelStatus[] = ['ready', 'standby', 'retired'];
@@ -149,6 +161,558 @@ const FilterDropdown = ({
   );
 };
 
+// Add new component for Personnel Account Form Modal
+interface PersonnelAccountModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (data: Partial<Personnel>) => Promise<void>;
+}
+
+const PersonnelAccountModal = ({ isOpen, onClose, onSave }: PersonnelAccountModalProps) => {
+  const { user } = useAuth();
+  const [activeTab, setActiveTab] = useState<'single' | 'bulk'>('single');
+  const [formData, setFormData] = useState<Partial<Personnel>>({
+    name: '',
+    email: '',
+    rank: '' as RankType,
+    company: '' as CompanyType,
+    serviceNumber: '',
+    phoneNumber: '',
+    status: 'standby' as PersonnelStatus,
+    role: 'reservist' as UserRole,
+    dateJoined: new Date().toISOString().split('T')[0],
+    trainings: [],
+    documents: []
+  });
+  const [bulkFile, setBulkFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Check if user has admin role
+  const isAdmin = user?.role === 'administrator' || user?.role === 'director';
+
+  // Validation schema for personnel form
+  const personnelSchema = z.object({
+    name: z.string().min(1, 'Name is required'),
+    email: z.string().email('Invalid email address').refine(
+      (email) => {
+        const allowedDomains = ['gmail.com', 'outlook.com', 'yahoo.com', 'mil.ph'];
+        const domain = email.split('@')[1]?.toLowerCase();
+        return allowedDomains.includes(domain);
+      },
+      { message: 'Only gmail.com, outlook.com, yahoo.com, and mil.ph domains are allowed' }
+    ),
+    rank: z.string().min(1, 'Rank is required'),
+    company: z.string().min(1, 'Company is required'),
+    serviceNumber: z.string().min(1, 'Service number is required'),
+    phoneNumber: z.string().optional(),
+  });
+
+  // Reset form when modal opens/closes
+  useEffect(() => {
+    if (isOpen) {
+      setActiveTab('single');
+      setFormData({
+        name: '',
+        email: '',
+        rank: '' as RankType,
+        company: '' as CompanyType,
+        serviceNumber: '',
+        phoneNumber: '',
+        status: 'standby' as PersonnelStatus,
+        role: 'reservist' as UserRole,
+        dateJoined: new Date().toISOString().split('T')[0],
+        trainings: [],
+        documents: []
+      });
+      setBulkFile(null);
+      setErrors({});
+      setIsSubmitting(false);
+      setIsUploading(false);
+    }
+  }, [isOpen]);
+
+  // Validate a field
+  const validateField = (name: string, value: any) => {
+    // Clear error for this field
+    setErrors(prev => ({ ...prev, [name]: '' }));
+    
+    // Validate the field
+    try {
+      if (personnelSchema.shape[name as keyof typeof personnelSchema.shape]) {
+        personnelSchema.shape[name as keyof typeof personnelSchema.shape].parse(value);
+      }
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        setErrors(prev => ({ ...prev, [name]: error.errors[0]?.message || `Invalid ${name}` }));
+      }
+    }
+  };
+
+  // Handle input change for single personnel form
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    validateField(name, value);
+  };
+
+  // Handle form submission for single personnel
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    // Validate all fields
+    let isValid = true;
+    const newErrors: Record<string, string> = {};
+    
+    Object.entries(formData).forEach(([key, value]) => {
+      if (personnelSchema.shape[key as keyof typeof personnelSchema.shape]) {
+        try {
+          personnelSchema.shape[key as keyof typeof personnelSchema.shape].parse(value);
+        } catch (error) {
+          if (error instanceof z.ZodError) {
+            isValid = false;
+            newErrors[key] = error.errors[0]?.message || `Invalid ${key}`;
+          }
+        }
+      }
+    });
+    
+    setErrors(newErrors);
+    
+    if (!isValid) {
+      setIsSubmitting(false);
+      return;
+    }
+    
+    try {
+      // Prepare data with required fields for API
+      const personnelData = {
+        ...formData,
+        dateJoined: new Date().toISOString().split('T')[0],
+        trainings: [],
+        documents: [],
+        status: 'standby' as PersonnelStatus,
+        role: 'reservist' as UserRole
+      };
+      
+      console.log('Submitting personnel data:', personnelData);
+      
+      // Call the onSave function with prepared data
+      await onSave(personnelData);
+      onClose();
+    } catch (error) {
+      console.error('Failed to save personnel:', error);
+      // Leave modal open so user can try again
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Handle bulk upload file change
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setBulkFile(e.target.files[0]);
+    }
+  };
+
+  // Handle bulk upload submission
+  const handleBulkUpload = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!bulkFile) return;
+    
+    setIsUploading(true);
+    
+    try {
+      const formData = new FormData();
+      formData.append('file', bulkFile);
+      
+      const response = await fetch('/api/personnel/bulk', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: formData
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        onClose();
+      } else {
+        throw new Error(result.error || 'Failed to upload personnel');
+      }
+    } catch (error) {
+      console.error('Failed to upload personnel:', error);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  // Download template for bulk upload
+  const downloadTemplate = () => {
+    // Create a CSV template
+    const headers = ['name', 'email', 'rank', 'company', 'serviceNumber', 'phoneNumber', 'status'];
+    const template = headers.join(',');
+    
+    // Create download link
+    const element = document.createElement('a');
+    const file = new Blob([template], {type: 'text/csv'});
+    element.href = URL.createObjectURL(file);
+    element.download = 'personnel_template.csv';
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+  };
+
+  return (
+    <Transition.Root show={isOpen} as={Fragment}>
+      <Dialog as="div" className="relative z-10" onClose={onClose}>
+        <Transition.Child
+          as={Fragment}
+          enter="ease-out duration-300"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="ease-in duration-200"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+        >
+          <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+        </Transition.Child>
+
+        <div className="fixed inset-0 z-10 overflow-y-auto">
+          <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+              enterTo="opacity-100 translate-y-0 sm:scale-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100 translate-y-0 sm:scale-100"
+              leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+            >
+              <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-3xl">
+                <div className="absolute right-0 top-0 pr-4 pt-4 block">
+                  <button
+                    type="button"
+                    className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none"
+                    onClick={onClose}
+                  >
+                    <span className="sr-only">Close</span>
+                    <XMarkIcon className="h-6 w-6" aria-hidden="true" />
+                  </button>
+                </div>
+
+                <div className="bg-white p-6">
+                  <div className="sm:flex sm:items-start">
+                    <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
+                      <Dialog.Title as="h3" className="text-lg font-semibold leading-6 text-gray-900">
+                        Add Personnel Account
+                      </Dialog.Title>
+                      
+                      {/* Admin-only warning for staff users */}
+                      {!isAdmin && (
+                        <div className="mt-4 p-3 bg-amber-50 border border-amber-300 rounded-md">
+                          <div className="flex">
+                            <div className="flex-shrink-0">
+                              <svg className="h-5 w-5 text-amber-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                              </svg>
+                            </div>
+                            <div className="ml-3">
+                              <h3 className="text-sm font-medium text-amber-800">Admin Access Required</h3>
+                              <div className="mt-1 text-sm text-amber-700">
+                                <p>Only users with administrator privileges can add personnel. Please contact an administrator for assistance.</p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Only show forms if user is admin */}
+                      {isAdmin ? (
+                        <>
+                          {/* Tab selection */}
+                          <div className="border-b border-gray-200 mt-4 mb-6">
+                            <div className="flex -mb-px">
+                              <button
+                                className={`py-2 px-4 text-sm font-medium ${
+                                  activeTab === 'single'
+                                    ? 'border-b-2 border-indigo-500 text-indigo-600'
+                                    : 'text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                }`}
+                                onClick={() => setActiveTab('single')}
+                              >
+                                Create a Personnel
+                              </button>
+                              <button
+                                className={`ml-8 py-2 px-4 text-sm font-medium ${
+                                  activeTab === 'bulk'
+                                    ? 'border-b-2 border-indigo-500 text-indigo-600'
+                                    : 'text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                }`}
+                                onClick={() => setActiveTab('bulk')}
+                              >
+                                Bulk Upload
+                              </button>
+                            </div>
+                          </div>
+                          
+                          {/* Single personnel form */}
+                          {activeTab === 'single' && (
+                            <form onSubmit={handleSubmit}>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                                    Full Name*
+                                  </label>
+                                  <input
+                                    type="text"
+                                    id="name"
+                                    name="name"
+                                    value={formData.name || ''}
+                                    onChange={handleChange}
+                                    className={`block w-full rounded-md border ${
+                                      errors.name ? 'border-red-300' : 'border-gray-300'
+                                    } shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2`}
+                                    required
+                                  />
+                                  {errors.name && (
+                                    <p className="mt-1 text-sm text-red-600">{errors.name}</p>
+                                  )}
+                                </div>
+                                
+                                <div>
+                                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                                    Email*
+                                  </label>
+                                  <input
+                                    type="email"
+                                    id="email"
+                                    name="email"
+                                    value={formData.email || ''}
+                                    onChange={handleChange}
+                                    className={`block w-full rounded-md border ${
+                                      errors.email ? 'border-red-300' : 'border-gray-300'
+                                    } shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2`}
+                                    required
+                                  />
+                                  {errors.email && (
+                                    <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+                                  )}
+                                  <p className="mt-1 text-xs text-gray-500">
+                                    Only gmail.com, outlook.com, yahoo.com, and mil.ph domains are accepted.
+                                  </p>
+                                </div>
+                                
+                                <div>
+                                  <label htmlFor="rank" className="block text-sm font-medium text-gray-700 mb-1">
+                                    Rank*
+                                  </label>
+                                  <select
+                                    id="rank"
+                                    name="rank"
+                                    value={formData.rank || ''}
+                                    onChange={handleChange}
+                                    className={`block w-full rounded-md border ${
+                                      errors.rank ? 'border-red-300' : 'border-gray-300'
+                                    } shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2`}
+                                    required
+                                  >
+                                    <option value="">Select Rank</option>
+                                    {['Private', 'Private First Class', 'Corporal', 'Sergeant', 'Second Lieutenant', 'First Lieutenant', 'Captain', 'Major', 'Lieutenant Colonel', 'Colonel', 'Brigadier General'].map((rank) => (
+                                      <option key={rank} value={rank}>
+                                        {rank}
+                                      </option>
+                                    ))}
+                                  </select>
+                                  {errors.rank && (
+                                    <p className="mt-1 text-sm text-red-600">{errors.rank}</p>
+                                  )}
+                                </div>
+                                
+                                <div>
+                                  <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-1">
+                                    Company*
+                                  </label>
+                                  <select
+                                    id="company"
+                                    name="company"
+                                    value={formData.company || ''}
+                                    onChange={handleChange}
+                                    className={`block w-full rounded-md border ${
+                                      errors.company ? 'border-red-300' : 'border-gray-300'
+                                    } shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2`}
+                                    required
+                                  >
+                                    <option value="">Select Company</option>
+                                    {['Alpha', 'Bravo', 'Charlie', 'Headquarters', 'NERRSC (NERR-Signal Company)', 'NERRFAB (NERR-Field Artillery Battery)'].map((company) => (
+                                      <option key={company} value={company}>
+                                        {company}
+                                      </option>
+                                    ))}
+                                  </select>
+                                  {errors.company && (
+                                    <p className="mt-1 text-sm text-red-600">{errors.company}</p>
+                                  )}
+                                </div>
+                                
+                                <div>
+                                  <label htmlFor="serviceNumber" className="block text-sm font-medium text-gray-700 mb-1">
+                                    Service Number*
+                                  </label>
+                                  <input
+                                    type="text"
+                                    id="serviceNumber"
+                                    name="serviceNumber"
+                                    value={formData.serviceNumber || ''}
+                                    onChange={handleChange}
+                                    className={`block w-full rounded-md border ${
+                                      errors.serviceNumber ? 'border-red-300' : 'border-gray-300'
+                                    } shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2`}
+                                    required
+                                  />
+                                  {errors.serviceNumber && (
+                                    <p className="mt-1 text-sm text-red-600">{errors.serviceNumber}</p>
+                                  )}
+                                </div>
+                                
+                                <div>
+                                  <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 mb-1">
+                                    Phone Number (Optional)
+                                  </label>
+                                  <input
+                                    type="text"
+                                    id="phoneNumber"
+                                    name="phoneNumber"
+                                    value={formData.phoneNumber || ''}
+                                    onChange={handleChange}
+                                    className="block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2"
+                                  />
+                                </div>
+                              </div>
+                              
+                              <div className="mt-6 flex justify-end space-x-3">
+                                <Button
+                                  variant="secondary"
+                                  onClick={onClose}
+                                  className="text-sm"
+                                >
+                                  Cancel
+                                </Button>
+                                <Button
+                                  type="submit"
+                                  variant="primary"
+                                  disabled={isSubmitting}
+                                  className="text-sm"
+                                >
+                                  {isSubmitting ? 'Adding Personnel...' : 'Add Personnel'}
+                                </Button>
+                              </div>
+                            </form>
+                          )}
+                          
+                          {/* Bulk upload form */}
+                          {activeTab === 'bulk' && (
+                            <div>
+                              <div className="mb-6 bg-blue-50 p-4 rounded-md">
+                                <div className="flex">
+                                  <div className="flex-shrink-0">
+                                    <svg className="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                                    </svg>
+                                  </div>
+                                  <div className="ml-3 flex-1 md:flex md:justify-between">
+                                    <p className="text-sm text-blue-700">
+                                      Upload a CSV file with personnel data. The file should have a header row with the following columns: name, email, rank, company, serviceNumber, phoneNumber, status.
+                                    </p>
+                                    <p className="mt-3 text-sm md:mt-0 md:ml-6">
+                                      <button
+                                        onClick={downloadTemplate}
+                                        className="whitespace-nowrap font-medium text-blue-700 hover:text-blue-600"
+                                      >
+                                        Download Template
+                                      </button>
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              <form onSubmit={handleBulkUpload}>
+                                <div className="mb-6">
+                                  <label htmlFor="bulk-file" className="block text-sm font-medium text-gray-700 mb-1">
+                                    Personnel CSV File*
+                                  </label>
+                                  <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                                    <div className="space-y-1 text-center">
+                                      <svg className="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                                        <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                      </svg>
+                                      <div className="flex text-sm text-gray-600">
+                                        <label
+                                          htmlFor="bulk-file"
+                                          className="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500"
+                                        >
+                                          <span>Upload a file</span>
+                                          <input id="bulk-file" name="bulk-file" type="file" accept=".csv" className="sr-only" onChange={handleFileChange} />
+                                        </label>
+                                        <p className="pl-1">or drag and drop</p>
+                                      </div>
+                                      <p className="text-xs text-gray-500">CSV file up to 10MB</p>
+                                    </div>
+                                  </div>
+                                  {bulkFile && (
+                                    <p className="mt-2 text-sm text-gray-600">
+                                      Selected file: {bulkFile.name}
+                                    </p>
+                                  )}
+                                </div>
+                                
+                                <div className="mt-6 flex justify-end space-x-3">
+                                  <Button
+                                    variant="secondary"
+                                    onClick={onClose}
+                                    className="text-sm"
+                                  >
+                                    Cancel
+                                  </Button>
+                                  <Button
+                                    type="submit"
+                                    variant="primary"
+                                    disabled={!bulkFile || isUploading}
+                                    className="text-sm"
+                                  >
+                                    {isUploading ? 'Uploading...' : 'Upload Personnel'}
+                                  </Button>
+                                </div>
+                              </form>
+                            </div>
+                          )}
+                        </>
+                      ) : (
+                        <div className="mt-6 flex justify-end">
+                          <Button
+                            variant="secondary"
+                            onClick={onClose}
+                            className="text-sm"
+                          >
+                            Close
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </Dialog.Panel>
+            </Transition.Child>
+          </div>
+        </div>
+      </Dialog>
+    </Transition.Root>
+  );
+};
+
 export default function PersonnelPage() {
   const { user, hasPermission, hasSpecificPermission } = useAuth();
   const router = useRouter();
@@ -170,11 +734,20 @@ export default function PersonnelPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [initialLoadComplete, setInitialLoadComplete] = useState(false);
   
+  // Add new state for add personnel modal
+  const [isAddPersonnelModalOpen, setIsAddPersonnelModalOpen] = useState(false);
+  
+  // Add state for approve accounts modal
+  const [showApproveModal, setShowApproveModal] = useState(false);
+  
   // Toast notification state
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
   // Track recently modified personnel for animations
   const [recentlyModified, setRecentlyModified] = useState<string | null>(null);
+  
+  // Track selected personnel for status update
+  const [selectedPersonnelForStatus, setSelectedPersonnelForStatus] = useState<Personnel | null>(null);
   
   // Function to apply filters to personnel data
   const applyFilters = (personnelData: Personnel[]) => {
@@ -260,20 +833,26 @@ export default function PersonnelPage() {
 
   // Helper function to normalize status values
   const normalizeStatus = (status: string): PersonnelStatus => {
-    const validStatuses: PersonnelStatus[] = ['active', 'pending', 'inactive', 'retired', 'standby', 'ready'];
+    const validStatuses: PersonnelStatus[] = ['ready', 'standby', 'retired'];
     
     // Return the status if it's already valid
     if (validStatuses.includes(status?.toLowerCase() as PersonnelStatus)) {
       return status.toLowerCase() as PersonnelStatus;
     }
     
-    // Map specific legacy statuses
-    if (status?.toLowerCase() === 'medical' || status?.toLowerCase() === 'leave') {
-      return 'inactive';
+    // Map other statuses to one of the three allowed statuses
+    const statusLower = status?.toLowerCase() || '';
+    
+    if (statusLower === 'active' || statusLower === 'pending') {
+      return 'standby';
     }
     
-    // Default fallback
-    return 'inactive';
+    if (statusLower === 'inactive' || statusLower === 'medical' || statusLower === 'leave') {
+      return 'retired';
+    }
+    
+    // Default fallback to retired
+    return 'retired';
   };
 
   // Client-side filtering effect
@@ -332,12 +911,9 @@ export default function PersonnelPage() {
   // Status filter options
   const statusOptions = [
     { value: 'All', label: 'All Status' },
-    { value: 'active', label: 'Active' },
-    { value: 'pending', label: 'Pending' },
-    { value: 'inactive', label: 'Inactive' },
-    { value: 'retired', label: 'Retired' },
+    { value: 'ready', label: 'Ready' },
     { value: 'standby', label: 'Standby' },
-    { value: 'ready', label: 'Ready' }
+    { value: 'retired', label: 'Retired' }
   ];
 
   // Modal handlers
@@ -395,57 +971,102 @@ export default function PersonnelPage() {
   };
 
   const handleDelete = async () => {
-    if (!personnelToDelete || !user || !user._id) return;
+    setIsDeleteConfirmationOpen(false);
+    if (!personnelToDelete) return;
     
-    setIsLoading(true);
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`/api/personnel?id=${personnelToDelete.id}`, {
+      // Make API call to delete personnel
+      const response = await fetch(`/api/personnel/${personnelToDelete.id}`, {
         method: 'DELETE',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
         }
       });
       
-      const result = await response.json();
-      
-      if (result.success) {
-        // Update local state
-        setAllPersonnel(prev => prev.filter(p => p.id !== personnelToDelete.id));
-        setFilteredPersonnel(prev => prev.filter(p => p.id !== personnelToDelete.id));
-        
-        // Show success message
-        setToast({
-          message: `${personnelToDelete.name} has been deleted successfully`,
-          type: 'success'
-        });
-        
-        // Log successful delete to audit system
-        auditService.logPersonnelAction(
-          user._id,
-          `${user.firstName || ''} ${user.lastName || ''}`.trim(),
-          user.role,
-          'delete' as AuditAction,
-          personnelToDelete.id,
-          personnelToDelete.name
-        ).catch(error => console.error('Failed to log personnel deletion:', error));
-      } else {
-        throw new Error(result.error || 'Failed to delete personnel');
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || 'Failed to delete personnel');
       }
-    } catch (error) {
-      console.error('Error deleting personnel:', error);
+      
+      // Remove from local state
+      setAllPersonnel(prev => prev.filter(p => p.id !== personnelToDelete.id));
       setToast({
-        message: 'Failed to delete personnel. Please try again.',
+        message: `Successfully deleted ${personnelToDelete.name}`,
+        type: 'success'
+      });
+      setPersonnelToDelete(null);
+    } catch (error) {
+      console.error('Delete error:', error);
+      setToast({
+        message: error instanceof Error ? error.message : 'Failed to delete personnel',
         type: 'error'
       });
-    } finally {
-      setIsLoading(false);
-      setIsDeleteConfirmationOpen(false);
-      setPersonnelToDelete(null);
     }
   };
 
+  // Handle status change
+  const handleStatusChange = async (person: Personnel, newStatus: PersonnelStatus) => {
+    try {
+      setSelectedPersonnelForStatus(null);
+      
+      // Make API call to update status
+      const response = await fetch('/api/personnel/status', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({
+          personnelId: person.id,
+          status: newStatus,
+          reason: 'Status updated from personnel dashboard'
+        })
+      });
+      
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to update status');
+      }
+      
+      // Update local state
+      setAllPersonnel(prev => prev.map(p => 
+        p.id === person.id 
+          ? {...p, status: newStatus as PersonnelStatus, lastUpdated: new Date().toLocaleDateString()}
+          : p
+      ));
+      
+      // Show success message
+      setToast({
+        message: `${person.name}'s status updated to ${newStatus}`,
+        type: 'success'
+      });
+      
+      // Highlight the updated row
+      setRecentlyModified(person.id.toString());
+      
+      // Find and add animation class to status badge
+      setTimeout(() => {
+        const statusBadge = document.querySelector(`[data-personnel-id="${person.id}"] .status-badge`);
+        if (statusBadge) {
+          statusBadge.classList.add('animate-status-update');
+          setTimeout(() => {
+            statusBadge.classList.remove('animate-status-update');
+          }, 1000);
+        }
+      }, 100);
+      
+      setTimeout(() => setRecentlyModified(null), 3000);
+      
+    } catch (error) {
+      console.error('Error updating status:', error);
+      setToast({
+        message: error instanceof Error ? error.message : 'Failed to update status',
+        type: 'error'
+      });
+    }
+  };
+
+  // Handle save (for edit/create modal)
   const handleSave = async (updatedData: Partial<Personnel>) => {
     if (!selectedPersonnel || !user || !user._id) return;
     
@@ -570,234 +1191,346 @@ export default function PersonnelPage() {
     }
   }, [currentPage, filteredPersonnel]);
 
-  // Content for users without permission
-  const LimitedAccessContent = () => (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <Card>
-        <div className="p-6">
-          <div className="flex items-center mb-4">
-            <div className="bg-indigo-100 rounded-full p-3 mr-4">
-              <UserGroupIcon className="h-6 w-6 text-indigo-600" />
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900">Personnel Management</h1>
-          </div>
-          
-          <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4">
-            <div className="flex">
-              <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <div className="ml-3">
-                <h3 className="text-sm font-medium text-yellow-800">Limited Access</h3>
-                <div className="mt-2 text-sm text-yellow-700">
-                  <p>
-                    You don't have permission to view personnel records. This feature is available to Staff, Admin, and Director roles.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div className="mt-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-4">Personnel Management Features</h2>
-            <ul className="space-y-3 text-sm">
-              <li className="flex items-start">
-                <span className="flex-shrink-0 h-5 w-5 text-gray-400">•</span>
-                <span className="ml-2 text-gray-600">View personnel records across your company or the entire organization</span>
-              </li>
-              <li className="flex items-start">
-                <span className="flex-shrink-0 h-5 w-5 text-gray-400">•</span>
-                <span className="ml-2 text-gray-600">Add, edit, and manage personnel information</span>
-              </li>
-              <li className="flex items-start">
-                <span className="flex-shrink-0 h-5 w-5 text-gray-400">•</span>
-                <span className="ml-2 text-gray-600">Track personnel status, training, and document verification</span>
-              </li>
-              <li className="flex items-start">
-                <span className="flex-shrink-0 h-5 w-5 text-gray-400">•</span>
-                <span className="ml-2 text-gray-600">Generate reports and analytics on personnel readiness</span>
-              </li>
-            </ul>
-          </div>
-          
-          <div className="mt-6">
-            <Button
-              variant="primary"
-              onClick={() => router.push('/dashboard')}
-            >
-              Return to Dashboard
-            </Button>
-          </div>
-        </div>
-      </Card>
-    </div>
-  );
+  // Add handler for saving new personnel
+  const handleAddPersonnel = async (data: Partial<Personnel>) => {
+    const { user } = useAuth();
+    const isAdmin = user?.role === 'administrator' || user?.role === 'director';
+    
+    // Don't proceed if user isn't admin
+    if (!isAdmin) {
+      setToast({
+        message: 'Unauthorized: Admin access required to add personnel',
+        type: 'error'
+      });
+      return;
+    }
+    
+    try {
+      const token = localStorage.getItem('token');
+      
+      // Format the data correctly for the API
+      const formattedData = {
+        ...data,
+        // Ensure dateJoined is in ISO format
+        dateJoined: data.dateJoined || new Date().toISOString().split('T')[0],
+        // Initialize empty arrays if not provided
+        trainings: data.trainings || [],
+        documents: data.documents || [],
+        // Ensure proper status
+        status: data.status || 'standby',
+        // Set default role if not provided
+        role: data.role || 'reservist' as UserRole
+      };
+      
+      console.log('Sending personnel data:', formattedData);
+      
+      // Make API call to add personnel
+      const response = await fetch('/api/personnel', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(formattedData)
+      });
+      
+      // Log the raw response for debugging
+      console.log('API response status:', response.status);
+      
+      const result = await response.json();
+      console.log('API response data:', result);
+      
+      if (result.success) {
+        // Show success message
+        setToast({
+          message: `${data.name} has been added successfully`,
+          type: 'success'
+        });
+        
+        // Refresh personnel list
+        const refreshPersonnel = async () => {
+          try {
+            const response = await fetch(`/api/personnel?pageSize=100`);
+            
+            if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            
+            if (data.success) {
+              // Process the data
+              let personnelData = data.data.personnel || [];
+              
+              // Map MongoDB _id to id for frontend compatibility and normalize statuses
+              personnelData = personnelData.map((person: any) => ({
+                ...person,
+                id: person._id || person.id,
+                status: normalizeStatus(person.status),
+                lastUpdated: person.lastUpdated ? new Date(person.lastUpdated).toLocaleDateString() : new Date().toLocaleDateString()
+              }));
+              
+              setAllPersonnel(personnelData);
+              
+              // Apply existing filters
+              applyFilters(personnelData);
+            } else {
+              console.error('Failed to refresh personnel list:', data.error || 'Unknown error');
+            }
+          } catch (error) {
+            console.error('Failed to fetch personnel:', error);
+          }
+        };
+        
+        refreshPersonnel();
+      } else {
+        // Show more detailed error message
+        const errorMessage = result.error || result.message || 'Failed to add personnel';
+        console.error('API returned error:', errorMessage);
+        setToast({
+          message: `Failed to add personnel: ${errorMessage}`,
+          type: 'error'
+        });
+      }
+    } catch (error) {
+      console.error('Failed to add personnel:', error);
+      setToast({
+        message: error instanceof Error 
+          ? `Error: ${error.message}` 
+          : 'Failed to add personnel. Please try again.',
+        type: 'error'
+      });
+    }
+  };
+
+  // Add permission check before opening the approve accounts modal
+  const handleOpenApproveAccountsModal = () => {
+    const canApproveAccounts = hasSpecificPermission('approve_reservist_accounts');
+    
+    if (!canApproveAccounts) {
+      setToast({
+        message: 'You do not have permission to approve account requests',
+        type: 'error'
+      });
+      return;
+    }
+    
+    setShowApproveModal(true);
+  };
 
   // Main content for users with permission
   const PersonnelContent = () => (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold mb-4 md:mb-0 text-white bg-indigo-600 py-2 px-4 rounded-lg shadow-md">Personnel Management</h1>
-        <div className="bg-white rounded-lg p-4 border border-gray-200 shadow-sm">
-          <div className="text-sm font-medium text-gray-600 mb-3">Filter Personnel</div>
-          <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
-            <SearchInput 
-              value={searchValue} 
-              onChange={handleSearchChange} 
-            />
+      {/* Header section with icon and title */}
+      <div className="bg-white rounded-lg shadow-sm mb-4 p-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center flex-grow">
+            <div className="bg-indigo-100 rounded-full p-2 mr-3">
+              <UserGroupIcon className="h-5 w-5 text-indigo-600" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-gray-900">Personnel Management</h1>
+              <p className="text-gray-500 text-xs mt-0.5">Add, update, and manage personnel records</p>
+            </div>
+          </div>
+          
+          <div className="flex space-x-2">
+            {/* Only show Add Personnel button for admin/director roles */}
+            {user && (user.role === 'administrator' || user.role === 'director') && (
+              <Button
+                variant="primary"
+                onClick={() => setIsAddPersonnelModalOpen(true)}
+                className="flex items-center bg-blue-600 hover:bg-blue-700 text-white shadow-sm whitespace-nowrap text-sm py-1.5"
+              >
+                <UserGroupIcon className="h-4 w-4 mr-1.5" />
+                Add Personnel Accounts
+              </Button>
+            )}
             
-            <FilterDropdown 
-              value={filterCompany} 
-              onChange={(e) => setFilterCompany(e.target.value as CompanyType | 'All')} 
-              options={companyOptions}
-              label="Filter by company"
-            />
-            
-            <FilterDropdown 
-              value={filterStatus} 
-              onChange={(e) => setFilterStatus(e.target.value as PersonnelStatus | 'All')} 
-              options={statusOptions}
-              label="Filter by status"
-            />
+            <Button
+              variant="primary"
+              onClick={handleOpenApproveAccountsModal}
+              className="flex items-center bg-green-600 hover:bg-green-700 text-white shadow-sm whitespace-nowrap text-sm py-1.5"
+            >
+              <UserCircleIcon className="h-4 w-4 mr-1.5" />
+              Approve Personnel Accounts
+            </Button>
           </div>
         </div>
       </div>
       
-      {/* Personnel table */}
-      <div className="bg-white shadow overflow-hidden sm:rounded-lg">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+      {/* Filter section */}
+      <div className="bg-white rounded-lg shadow-sm mb-4 p-3">
+        <div className="flex flex-row items-center justify-between">
+          <div className="flex items-center">
+            <span className="text-xs font-medium text-gray-700 mr-2">Search</span>
+            <SearchInput value={searchValue} onChange={handleSearchChange} />
+          </div>
+          
+          <div className="flex space-x-2">
+            <div className="flex items-center">
+              <span className="text-xs font-medium text-gray-700 mr-1">Company</span>
+              <FilterDropdown 
+                value={filterCompany} 
+                onChange={(e) => setFilterCompany(e.target.value as CompanyType | 'All')} 
+                options={companyOptions}
+                label="Filter by company"
+              />
+            </div>
+            
+            <div className="flex items-center">
+              <span className="text-xs font-medium text-gray-700 mr-1">Status</span>
+              <FilterDropdown 
+                value={filterStatus} 
+                onChange={(e) => setFilterStatus(e.target.value as PersonnelStatus | 'All')} 
+                options={statusOptions}
+                label="Filter by status"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      {/* Personnel table with modern design */}
+      <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
+            <tr>
+              <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Name
+              </th>
+              <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Rank
+              </th>
+              <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Company
+              </th>
+              <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Joined Date
+              </th>
+              <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Status
+              </th>
+              <th scope="col" className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Last Updated
+              </th>
+              <th scope="col" className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {isLoading ? (
               <tr>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Name
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Rank
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Company
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Last Updated
-                </th>
-                <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
+                <td colSpan={6} className="px-4 py-2 text-center text-sm text-gray-500">
+                  Loading...
+                </td>
               </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {isLoading ? (
-                <tr>
-                  <td colSpan={6} className="px-6 py-4 text-center text-sm text-gray-500">
-                    Loading...
+            ) : currentPersonnel.length > 0 ? (
+              currentPersonnel.map((person, index) => (
+                <tr 
+                  key={person.id}
+                  className={`${recentlyModified === person.id.toString() 
+                    ? 'animate-highlight' 
+                    : 'hover:bg-gray-50'}`}
+                  onClick={() => handleView(person)}
+                  data-personnel-id={person.id}
+                >
+                  <td className="px-4 py-1.5 whitespace-nowrap">
+                    <div className="text-sm font-medium text-gray-900">{person.name}</div>
                   </td>
-                </tr>
-              ) : currentPersonnel.length > 0 ? (
-                currentPersonnel.map((person, index) => (
-                  <tr 
-                    key={person.id}
-                    className={`${recentlyModified === person.id.toString() 
-                      ? 'animate-highlight' 
-                      : index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}
-                  >
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{person.name}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-500">{getRankDisplayName(person.rank)}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-500">{getCompanyDisplayName(person.company)}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-4 py-1.5 whitespace-nowrap">
+                    <div className="text-sm text-gray-500">{getRankDisplayName(person.rank)}</div>
+                  </td>
+                  <td className="px-4 py-1.5 whitespace-nowrap">
+                    <div className="text-sm text-gray-500">{getCompanyDisplayName(person.company)}</div>
+                  </td>
+                  <td className="px-4 py-1.5 whitespace-nowrap">
+                    <div className="text-sm text-gray-500">{new Date(person.dateJoined).toLocaleDateString()}</div>
+                  </td>
+                  <td className="px-4 py-1.5 whitespace-nowrap">
+                    <div className="flex items-center">
                       <span className={`status-badge ${
-                        // Map any statuses not in our official list to "inactive"
-                        ['ready', 'standby', 'active', 'pending', 'inactive', 'retired'].includes(person.status?.toLowerCase()) ?
+                        // Map any statuses not in our official list to "retired"
+                        ['ready', 'standby', 'retired'].includes(person.status?.toLowerCase()) ?
                           person.status?.toLowerCase() === 'ready' 
                             ? 'status-badge-ready' 
                             : person.status?.toLowerCase() === 'standby' 
                               ? 'status-badge-standby' 
-                              : person.status?.toLowerCase() === 'active'
-                                ? 'status-badge-active'
-                                : person.status?.toLowerCase() === 'pending'
-                                  ? 'status-badge-pending'
-                                  : person.status?.toLowerCase() === 'inactive'
-                                    ? 'status-badge-inactive'
-                                    : person.status?.toLowerCase() === 'retired'
-                                      ? 'status-badge-retired'
-                                      : 'status-badge-inactive'
-                        : 'status-badge-inactive'
+                              : 'status-badge-retired'
+                        : 'status-badge-retired'
                       }`}>
-                        {['ready', 'standby', 'active', 'pending', 'inactive', 'retired'].includes(person.status?.toLowerCase()) ?
+                        {['ready', 'standby', 'retired'].includes(person.status?.toLowerCase()) ?
                           person.status?.charAt(0).toUpperCase() + person.status?.slice(1).toLowerCase() :
-                          'Inactive'}
+                          'Retired'}
                       </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {person.lastUpdated}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <div className="flex justify-end space-x-2">
+                    </div>
+                  </td>
+                  <td className="px-4 py-1.5 whitespace-nowrap text-sm text-gray-500">
+                    {person.lastUpdated}
+                  </td>
+                  <td className="px-4 py-1.5 whitespace-nowrap text-right text-sm font-medium">
+                    <div className="flex justify-end space-x-1">
+                      <button
+                        className="p-1 rounded-full text-indigo-600 hover:bg-indigo-50"
+                        title="View details"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleView(person);
+                        }}
+                      >
+                        <EyeIcon className="h-4 w-4" />
+                      </button>
+                      
+                      <button
+                        className="p-1 rounded-full text-blue-600 hover:bg-blue-50"
+                        title="Edit personnel"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEdit(person);
+                        }}
+                      >
+                        <PencilSquareIcon className="h-4 w-4" />
+                      </button>
+                      
+                      {hasPermission('admin') && (
                         <button
-                          className="text-indigo-600 hover:text-indigo-900"
-                          title="View details"
-                          onClick={() => handleView(person)}
+                          className="p-1 rounded-full text-red-600 hover:bg-red-50"
+                          title="Delete"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteClick(person);
+                          }}
                         >
-                          <EyeIcon className="h-5 w-5" />
+                          <TrashIcon className="h-4 w-4" />
                         </button>
-                        {hasPermission('staff') && (
-                          <>
-                            <button
-                              className="text-blue-600 hover:text-blue-900"
-                              title="Edit"
-                              onClick={() => handleEdit(person)}
-                            >
-                              <PencilSquareIcon className="h-5 w-5" />
-                            </button>
-                            {hasPermission('admin') && (
-                              <button
-                                className="text-red-600 hover:text-red-900"
-                                title="Delete"
-                                onClick={() => handleDeleteClick(person)}
-                              >
-                                <TrashIcon className="h-5 w-5" />
-                              </button>
-                            )}
-                          </>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={6} className="px-6 py-4 text-center text-sm text-gray-500">
-                    No personnel records found matching your criteria.
+                      )}
+                    </div>
                   </td>
                 </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={6} className="px-4 py-2 text-center text-sm text-gray-500">
+                  No personnel records found matching your criteria.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
       
-      {/* Pagination */}
-      <div className="flex justify-between items-center mt-4">
-        <div className="text-sm text-gray-700">
+      {/* Pagination with updated design */}
+      <div className="mt-3 flex justify-between items-center bg-white p-2 rounded-lg shadow-sm">
+        <div className="text-xs text-gray-700">
           Showing <span className="font-medium">
             {currentPage === 1 ? "1" : `${(currentPage - 1) * ITEMS_PER_PAGE + 1}`} to {Math.min(currentPage * ITEMS_PER_PAGE, filteredPersonnel.length)}
           </span> of{' '}
           <span className="font-medium">{filteredPersonnel.length}</span> personnel
         </div>
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-1">
           <button
-            className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="relative inline-flex items-center px-2 py-1 border border-gray-300 text-xs font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={() => {
               setCurrentPage(prev => Math.max(1, prev - 1));
               window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -807,55 +1540,46 @@ export default function PersonnelPage() {
             Previous
           </button>
           
-          {/* Page numbers */}
-          <div className="flex items-center">
-            <span className="px-3 py-2 text-sm font-medium text-gray-700">
-              Page {currentPage} of {totalPages}
-            </span>
-            
-            {/* Only show page number buttons if there are multiple pages */}
-            {totalPages > 1 && (
-              <div className="hidden sm:flex space-x-1">
-                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                  // Calculate which page numbers to show
-                  let pageNum;
-                  if (totalPages <= 5) {
-                    // If 5 or fewer pages, show all
-                    pageNum = i + 1;
-                  } else if (currentPage <= 3) {
-                    // If near beginning, show first 5 pages
-                    pageNum = i + 1;
-                  } else if (currentPage >= totalPages - 2) {
-                    // If near end, show last 5 pages
-                    pageNum = totalPages - 4 + i;
-                  } else {
-                    // Otherwise show current page and 2 on each side
-                    pageNum = currentPage - 2 + i;
-                  }
-                  
-                  return (
-                    <button
-                      key={pageNum}
-                      onClick={() => {
-                        setCurrentPage(pageNum);
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                      }}
-                      className={`inline-flex items-center px-3 py-2 border text-sm font-medium rounded-md ${
-                        currentPage === pageNum
-                          ? 'bg-indigo-50 border-indigo-500 text-indigo-600'
-                          : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
-                      }`}
-                    >
-                      {pageNum}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
+          {/* Pagination numbers */}
+          <div className="hidden sm:flex space-x-1">
+            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+              // Calculate which page numbers to show
+              let pageNum;
+              if (totalPages <= 5) {
+                // If 5 or fewer pages, show all
+                pageNum = i + 1;
+              } else if (currentPage <= 3) {
+                // If near beginning, show first 5 pages
+                pageNum = i + 1;
+              } else if (currentPage >= totalPages - 2) {
+                // If near end, show last 5 pages
+                pageNum = totalPages - 4 + i;
+              } else {
+                // Otherwise show current page and 2 on each side
+                pageNum = currentPage - 2 + i;
+              }
+              
+              return (
+                <button
+                  key={pageNum}
+                  onClick={() => {
+                    setCurrentPage(pageNum);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className={`inline-flex items-center px-2 py-1 border text-xs font-medium rounded-md ${
+                    currentPage === pageNum
+                      ? 'bg-indigo-50 border-indigo-500 text-indigo-600'
+                      : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  {pageNum}
+                </button>
+              );
+            })}
           </div>
           
           <button
-            className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="relative inline-flex items-center px-2 py-1 border border-gray-300 text-xs font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             onClick={() => {
               setCurrentPage(prev => Math.min(totalPages, prev + 1));
               window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -867,29 +1591,55 @@ export default function PersonnelPage() {
         </div>
       </div>
 
-      {/* Add Personnel button (only for Staff and above) */}
-      {hasPermission('staff') && (
-        <div className="mt-6">
-          <Button
-            variant="primary"
-            onClick={() => {
-              // Reset the selected personnel to null for creating a new record
-              setSelectedPersonnel(null);
-              setModalMode('edit');
-              setIsModalOpen(true);
-              
-              // Small delay to ensure state is updated before modal opens
-              setTimeout(() => {
-                console.log("Opening modal for new personnel");
-              }, 100);
-            }}
-            className="flex items-center shadow-md hover:shadow-lg transition-shadow duration-300"
-          >
-            <UserPlusIcon className="h-5 w-5 mr-2" />
-            Add Personnel
-          </Button>
+      {/* Personnel Statistics - Added at arrow location */}
+      <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Summary Statistics Card */}
+        <div className="bg-white rounded-lg shadow-sm p-3">
+          <h3 className="text-xs font-semibold text-gray-700 mb-2 flex items-center">
+            <ChartBarIcon className="h-3 w-3 mr-1 text-indigo-600" /> Personnel Statistics
+          </h3>
+          <div className="grid grid-cols-3 gap-2 text-center">
+            <div className="bg-blue-50 rounded-md p-1.5">
+              <div className="text-xs font-medium text-blue-700">Ready</div>
+              <div className="text-lg font-bold text-blue-800">
+                {allPersonnel.filter(p => p.status === 'ready').length}
+              </div>
+            </div>
+            <div className="bg-yellow-50 rounded-md p-1.5">
+              <div className="text-xs font-medium text-yellow-700">Standby</div>
+              <div className="text-lg font-bold text-yellow-800">
+                {allPersonnel.filter(p => p.status === 'standby').length}
+              </div>
+            </div>
+            <div className="bg-gray-50 rounded-md p-1.5">
+              <div className="text-xs font-medium text-gray-700">Retired</div>
+              <div className="text-lg font-bold text-gray-800">
+                {allPersonnel.filter(p => p.status === 'retired').length}
+              </div>
+            </div>
+          </div>
         </div>
-      )}
+
+        {/* Company Distribution Card */}
+        <div className="bg-white rounded-lg shadow-sm p-3">
+          <h3 className="text-xs font-semibold text-gray-700 mb-2 flex items-center">
+            <BuildingOfficeIcon className="h-3 w-3 mr-1 text-indigo-600" /> Company Distribution
+          </h3>
+          <div className="grid grid-cols-2 gap-2">
+            {COMPANIES.slice(0, 4).map(company => {
+              const count = allPersonnel.filter(p => p.company === company).length;
+              return (
+                <div key={company} className="flex justify-between items-center text-xs px-2 py-1 bg-indigo-50 rounded break-words">
+                  <span className="font-medium text-indigo-700 pr-1 overflow-hidden">
+                    {company}
+                  </span>
+                  <span className="font-bold text-indigo-800 flex-shrink-0">{count}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
 
       {/* Personnel Modal */}
       <PersonnelModal
@@ -898,6 +1648,19 @@ export default function PersonnelPage() {
         personnel={selectedPersonnel}
         mode={modalMode}
         onSave={handleSave}
+      />
+
+      {/* Add Personnel Account Modal */}
+      <PersonnelAccountModal
+        isOpen={isAddPersonnelModalOpen}
+        onClose={() => setIsAddPersonnelModalOpen(false)}
+        onSave={handleAddPersonnel}
+      />
+
+      {/* Approve Accounts Modal */}
+      <ApproveAccountsModal
+        isOpen={showApproveModal}
+        onClose={() => setShowApproveModal(false)}
       />
 
       <ConfirmationDialog
@@ -935,6 +1698,19 @@ export default function PersonnelPage() {
           onSave={handleSave}
         />
       )}
+
+      {/* Add Personnel Account Modal */}
+      <PersonnelAccountModal
+        isOpen={isAddPersonnelModalOpen}
+        onClose={() => setIsAddPersonnelModalOpen(false)}
+        onSave={handleAddPersonnel}
+      />
+
+      {/* Approve Accounts Modal */}
+      <ApproveAccountsModal
+        isOpen={showApproveModal}
+        onClose={() => setShowApproveModal(false)}
+      />
 
       {/* Delete confirmation */}
       <ConfirmationDialog

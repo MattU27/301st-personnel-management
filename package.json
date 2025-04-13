@@ -19,6 +19,7 @@
     "@types/nodemailer": "^6.4.17",
     "axios": "^1.8.2",
     "bcryptjs": "^3.0.2",
+    "bson": "^6.10.3",
     "chart.js": "^4.4.8",
     "dotenv": "^16.4.7",
     "jose": "^6.0.10",

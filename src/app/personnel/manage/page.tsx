@@ -1,69 +1,78 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
-import Card from '@/components/Card';
-import Button from '@/components/Button';
-import { toast } from 'react-hot-toast';
+import { useState } from 'react';
 import { 
   UserGroupIcon, 
-  UserIcon,
   UserPlusIcon,
-  ChevronDownIcon
+  CheckCircleIcon,
+  XCircleIcon,
+  ArrowLeftIcon,
+  CloudArrowUpIcon
 } from '@heroicons/react/24/outline';
+import Card from '@/components/Card';
+import Button from '@/components/Button';
+import Link from 'next/link';
+import { useAuth } from '@/contexts/AuthContext';
+import { Personnel, RankType, CompanyType, PersonnelStatus } from '@/types/personnel';
+import { useRouter } from 'next/navigation';
+import { z } from 'zod';
 
-// Personnel interface
-interface Personnel {
-  id: string;
-  name: string;
-  rank: string;
-  company: string;
-  status: string;
-  email: string;
-  phone?: string;
-  dateJoined: string;
-  lastUpdated: string;
+// Validation schema
+const personnelSchema = z.object({
+  name: z.string().min(1, 'Name is required'),
+  email: z.string().email('Invalid email address'),
+  rank: z.string().min(1, 'Rank is required'),
+  company: z.string().min(1, 'Company is required'),
+  serviceNumber: z.string().min(1, 'Service number is required'),
+  phoneNumber: z.string().optional(),
+});
+
+// Toast notification component
+interface ToastProps {
+  message: string;
+  type: 'success' | 'error';
+  onClose: () => void;
 }
 
-// Sample data
-const MOCK_PERSONNEL: Personnel[] = [
-  {
-    id: '1',
-    name: 'John Smith',
-    rank: 'Private First Class',
-    company: 'Alpha',
-    status: 'Ready',
-    email: 'john.smith@army.mil.ph',
-    phone: '09123456789',
-    dateJoined: '2023-04-15',
-    lastUpdated: '2024-03-01'
-  },
-  {
-    id: '2',
-    name: 'Sarah Johnson',
-    rank: 'Corporal',
-    company: 'Bravo',
-    status: 'Standby',
-    email: 'sarah.johnson@army.mil.ph',
-    phone: '09234567890',
-    dateJoined: '2022-07-22',
-    lastUpdated: '2024-02-15'
-  },
-  {
-    id: '3',
-    name: 'Michael Davis',
-    rank: 'Sergeant',
-    company: 'Charlie',
-    status: 'Ready',
-    email: 'michael.davis@army.mil.ph',
-    dateJoined: '2021-09-10',
-    lastUpdated: '2024-01-20'
-  }
+const Toast = ({ message, type, onClose }: ToastProps) => {
+  return (
+    <div className="fixed bottom-4 right-4 z-50 animate-fade-in-up">
+      <div className={`flex items-center p-4 rounded-lg shadow-lg ${
+        type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+      }`}>
+        {type === 'success' ? (
+          <CheckCircleIcon className="h-5 w-5 mr-2" />
+        ) : (
+          <XCircleIcon className="h-5 w-5 mr-2" />
+        )}
+        <span>{message}</span>
+        <button 
+          onClick={onClose}
+          className="ml-4 text-gray-500 hover:text-gray-700"
+        >
+          <XCircleIcon className="h-4 w-4" />
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// Valid ranks and companies
+const RANKS: RankType[] = [
+  'Private',
+  'Private First Class',
+  'Corporal',
+  'Sergeant',
+  'Second Lieutenant',
+  'First Lieutenant',
+  'Captain',
+  'Major',
+  'Lieutenant Colonel', 
+  'Colonel',
+  'Brigadier General'
 ];
 
-// Company options
-const COMPANIES = [
+const COMPANIES: CompanyType[] = [
   'Alpha',
   'Bravo',
   'Charlie',
@@ -72,552 +81,472 @@ const COMPANIES = [
   'NERRFAB (NERR-Field Artillery Battery)'
 ];
 
-// Rank options
-const RANKS = [
-  'Private',
-  'Private First Class',
-  'Corporal',
-  'Sergeant',
-  'Staff Sergeant',
-  'Technical Sergeant',
-  'Master Sergeant',
-  'First Master Sergeant',
-  'Chief Master Sergeant',
-  'Second Lieutenant',
-  'First Lieutenant',
-  'Captain',
-  'Major',
-  'Lieutenant Colonel',
-  'Colonel',
-  'Brigadier General',
-  'Major General',
-  'Lieutenant General',
-  'General'
-];
-
-// Status options
-const STATUS_OPTIONS = [
-  'Ready',
-  'Standby',
-  'Retired'
-];
-
-export default function ManagePersonnelPage() {
-  const { user, isAuthenticated, isLoading, hasSpecificPermission } = useAuth();
+export default function AddPersonnelAccounts() {
+  const { user } = useAuth();
   const router = useRouter();
-  const [personnel, setPersonnel] = useState<Personnel[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [companyFilter, setCompanyFilter] = useState('All');
-  const [statusFilter, setStatusFilter] = useState('All');
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingPersonnel, setEditingPersonnel] = useState<Personnel | null>(null);
-  const [formData, setFormData] = useState({
-    name: '',
-    rank: '',
-    company: '',
-    status: '',
-    email: '',
-    phone: '',
-    dateJoined: ''
-  });
-
-  // Check if user has permission to manage personnel
-  const canManagePersonnel = hasSpecificPermission('update_personnel_records');
   
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      router.push('/login');
-      return;
-    }
+  // State for single personnel addition
+  const [formData, setFormData] = useState<Partial<Personnel>>({
+    name: '',
+    email: '',
+    rank: '' as RankType,
+    company: '' as CompanyType,
+    serviceNumber: '',
+    phoneNumber: '',
+    status: 'standby' as PersonnelStatus,
+    role: 'reservist',
+    dateJoined: new Date().toISOString().split('T')[0],
+    trainings: [],
+    documents: []
+  });
+  
+  // State for bulk addition
+  const [bulkFile, setBulkFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [activeTab, setActiveTab] = useState<'single' | 'bulk'>('single');
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-    if (!isLoading && user && !['staff', 'admin', 'director'].includes(user.role)) {
-      router.push('/dashboard');
-      toast.error('You do not have permission to access this page');
-      return;
-    }
+  // Toast notification state
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
 
-    // Fetch personnel data
-    fetchPersonnelData();
-  }, [isLoading, isAuthenticated, user, router]);
-
-  const fetchPersonnelData = async () => {
-    setLoading(true);
-    try {
-      // In a real implementation, this would be an API call
-      // For now, use the mock data
-      setPersonnel(MOCK_PERSONNEL);
-      
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 500));
-    } catch (error) {
-      console.error('Error fetching personnel data:', error);
-      toast.error('Failed to load personnel data');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleAddPersonnel = () => {
-    setEditingPersonnel(null);
-    setFormData({
-      name: '',
-      rank: '',
-      company: '',
-      status: '',
-      email: '',
-      phone: '',
-      dateJoined: new Date().toISOString().split('T')[0]
-    });
-    setIsModalOpen(true);
-  };
-
-  const handleEditPersonnel = (person: Personnel) => {
-    setEditingPersonnel(person);
-    setFormData({
-      name: person.name,
-      rank: person.rank,
-      company: person.company,
-      status: person.status,
-      email: person.email,
-      phone: person.phone || '',
-      dateJoined: person.dateJoined
-    });
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  // Handle input change for single personnel form
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData(prev => ({ ...prev, [name]: value }));
+    validateField(name, value);
   };
 
+  // Validate a field
+  const validateField = (name: string, value: any) => {
+    // Clear error for this field
+    setErrors(prev => ({ ...prev, [name]: '' }));
+    
+    // Validate the field
+    try {
+      if (personnelSchema.shape[name as keyof typeof personnelSchema.shape]) {
+        personnelSchema.shape[name as keyof typeof personnelSchema.shape].parse(value);
+      }
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        setErrors(prev => ({ ...prev, [name]: error.errors[0]?.message || `Invalid ${name}` }));
+      }
+    }
+  };
+
+  // Handle form submission for single personnel
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
     
-    // Basic validation
-    if (!formData.name || !formData.rank || !formData.company || !formData.status || !formData.email) {
-      toast.error('Please fill in all required fields');
+    // Validate all fields
+    let isValid = true;
+    const newErrors: Record<string, string> = {};
+    
+    Object.entries(formData).forEach(([key, value]) => {
+      if (personnelSchema.shape[key as keyof typeof personnelSchema.shape]) {
+        try {
+          personnelSchema.shape[key as keyof typeof personnelSchema.shape].parse(value);
+        } catch (error) {
+          if (error instanceof z.ZodError) {
+            isValid = false;
+            newErrors[key] = error.errors[0]?.message || `Invalid ${key}`;
+          }
+        }
+      }
+    });
+    
+    setErrors(newErrors);
+    
+    if (!isValid) {
+      setIsSubmitting(false);
       return;
     }
-
+    
     try {
-      // For demo purposes, we'll just update the local state
-      if (editingPersonnel) {
-        // Update existing personnel
-        const updatedPersonnel = personnel.map(p => 
-          p.id === editingPersonnel.id ? 
-          { 
-            ...p, 
-            name: formData.name,
-            rank: formData.rank,
-            company: formData.company,
-            status: formData.status,
-            email: formData.email,
-            phone: formData.phone,
-            lastUpdated: new Date().toISOString().split('T')[0]
-          } : p
-        );
-        setPersonnel(updatedPersonnel);
-        toast.success('Personnel updated successfully');
-      } else {
-        // Add new personnel
-        const newPersonnel: Personnel = {
-          id: Date.now().toString(), // Generate a temporary ID
-          name: formData.name,
-          rank: formData.rank,
-          company: formData.company,
-          status: formData.status,
-          email: formData.email,
-          phone: formData.phone,
-          dateJoined: formData.dateJoined,
-          lastUpdated: new Date().toISOString().split('T')[0]
-        };
-        setPersonnel([...personnel, newPersonnel]);
-        toast.success('Personnel added successfully');
-      }
+      // Make API call to add personnel
+      const response = await fetch('/api/personnel', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(formData)
+      });
       
-      // Close the modal
-      setIsModalOpen(false);
+      const result = await response.json();
+      
+      if (result.success) {
+        // Show success message
+        setToast({
+          message: `${formData.name} has been added successfully`,
+          type: 'success'
+        });
+        
+        // Clear form data
+        setFormData({
+          name: '',
+          email: '',
+          rank: '' as RankType,
+          company: '' as CompanyType,
+          serviceNumber: '',
+          phoneNumber: '',
+          status: 'standby' as PersonnelStatus,
+          role: 'reservist',
+          dateJoined: new Date().toISOString().split('T')[0],
+          trainings: [],
+          documents: []
+        });
+      } else {
+        throw new Error(result.error || 'Failed to add personnel');
+      }
     } catch (error) {
-      console.error('Error saving personnel:', error);
-      toast.error('Failed to save personnel data');
+      console.error('Failed to add personnel:', error);
+      setToast({
+        message: 'Failed to add personnel. Please try again.',
+        type: 'error'
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  // Filter personnel based on search term and filters
-  const filteredPersonnel = personnel
-    .filter(person => 
-      (searchTerm === '' || 
-        person.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        person.email.toLowerCase().includes(searchTerm.toLowerCase())
-      ) &&
-      (companyFilter === 'All' || person.company === companyFilter) &&
-      (statusFilter === 'All' || person.status === statusFilter)
-    );
+  // Handle bulk upload file change
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setBulkFile(e.target.files[0]);
+    }
+  };
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
-      </div>
-    );
-  }
+  // Handle bulk upload submission
+  const handleBulkUpload = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!bulkFile) return;
+    
+    setIsUploading(true);
+    
+    try {
+      const formData = new FormData();
+      formData.append('file', bulkFile);
+      
+      const response = await fetch('/api/personnel/bulk', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: formData
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        setToast({
+          message: `Successfully added ${result.data.inserted || 0} personnel records`,
+          type: 'success'
+        });
+        
+        // Reset file input
+        setBulkFile(null);
+        const fileInput = document.getElementById('bulk-file') as HTMLInputElement;
+        if (fileInput) fileInput.value = '';
+      } else {
+        throw new Error(result.error || 'Failed to upload personnel');
+      }
+    } catch (error) {
+      console.error('Failed to upload personnel:', error);
+      setToast({
+        message: 'Failed to upload personnel. Please try again.',
+        type: 'error'
+      });
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
-  if (!user) {
-    return null;
-  }
-
-  if (!canManagePersonnel) {
-    return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Card>
-          <div className="p-6 text-center">
-            <UserIcon className="mx-auto h-12 w-12 text-gray-400" />
-            <h3 className="mt-2 text-base font-semibold text-gray-900">Access Denied</h3>
-            <p className="mt-1 text-sm text-gray-500">
-              You do not have permission to manage personnel records.
-            </p>
-            <div className="mt-6">
-              <Button
-                variant="primary"
-                onClick={() => router.push('/dashboard')}
-              >
-                Return to Dashboard
-              </Button>
-            </div>
-          </div>
-        </Card>
-      </div>
-    );
-  }
+  // Download template for bulk upload
+  const downloadTemplate = () => {
+    // Create a CSV template
+    const headers = ['name', 'email', 'rank', 'company', 'serviceNumber', 'phoneNumber', 'status'];
+    const template = headers.join(',');
+    
+    // Create download link
+    const element = document.createElement('a');
+    const file = new Blob([template], {type: 'text/csv'});
+    element.href = URL.createObjectURL(file);
+    element.download = 'personnel_template.csv';
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+  };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="space-y-6">
-        <div className="bg-white shadow rounded-lg p-6">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-            <div className="flex items-center">
-              <div className="bg-indigo-100 rounded-full p-3">
-                <UserGroupIcon className="h-8 w-8 text-indigo-600" />
-              </div>
-              <div className="ml-4">
-                <h2 className="text-lg font-medium text-gray-900">Personnel Management</h2>
-                <p className="text-sm text-gray-500">
-                  Add, update, and manage personnel records
-                </p>
-              </div>
-            </div>
-            <div className="mt-4 md:mt-0">
-              <Button 
-                variant="primary"
-                onClick={handleAddPersonnel}
-                className="flex items-center"
-              >
-                <UserPlusIcon className="h-5 w-5 mr-2" />
-                Add Personnel
-              </Button>
-            </div>
-          </div>
+    <div className="min-h-screen bg-gray-100 pb-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header with back button */}
+        <div className="flex items-center mb-4">
+          <Button
+            variant="secondary"
+            onClick={() => router.push('/personnel')}
+            className="mr-4 flex items-center text-sm py-1.5"
+          >
+            <ArrowLeftIcon className="h-4 w-4 mr-1" />
+            Back to Personnel
+          </Button>
+          <h1 className="text-2xl font-bold text-gray-900">Add Personnel Accounts</h1>
         </div>
-
-        <div className="bg-white shadow rounded-lg p-6">
-          <div className="flex flex-col md:flex-row gap-4 mb-6">
-            <div className="w-full md:w-1/3">
-              <label htmlFor="search" className="block text-xs font-medium text-gray-700 mb-1">
-                Search
-              </label>
-              <input
-                type="text"
-                id="search"
-                placeholder="Search by name or email"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              />
+        
+        <Card>
+          <div className="p-6">
+            {/* Tab selection */}
+            <div className="border-b border-gray-200 mb-6">
+              <div className="flex -mb-px">
+                <button
+                  className={`py-2 px-4 text-sm font-medium ${
+                    activeTab === 'single'
+                      ? 'border-b-2 border-indigo-500 text-indigo-600'
+                      : 'text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                  onClick={() => setActiveTab('single')}
+                >
+                  Add Single Personnel
+                </button>
+                <button
+                  className={`ml-8 py-2 px-4 text-sm font-medium ${
+                    activeTab === 'bulk'
+                      ? 'border-b-2 border-indigo-500 text-indigo-600'
+                      : 'text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                  onClick={() => setActiveTab('bulk')}
+                >
+                  Bulk Upload
+                </button>
+              </div>
             </div>
-            <div className="w-full md:w-1/3">
-              <label htmlFor="companyFilter" className="block text-xs font-medium text-gray-700 mb-1">
-                Company
-              </label>
-              <select
-                id="companyFilter"
-                value={companyFilter}
-                onChange={(e) => setCompanyFilter(e.target.value)}
-                className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              >
-                <option value="All">All Companies</option>
-                {COMPANIES.map((company) => (
-                  <option key={company} value={company}>{company}</option>
-                ))}
-              </select>
-            </div>
-            <div className="w-full md:w-1/3">
-              <label htmlFor="statusFilter" className="block text-xs font-medium text-gray-700 mb-1">
-                Status
-              </label>
-              <select
-                id="statusFilter"
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              >
-                <option value="All">All Statuses</option>
-                {STATUS_OPTIONS.map((status) => (
-                  <option key={status} value={status}>{status}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Name
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Rank
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Company
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Email
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Date Joined
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Last Updated
-                  </th>
-                  <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {filteredPersonnel.length === 0 ? (
-                  <tr>
-                    <td colSpan={8} className="px-6 py-4 text-center text-sm text-gray-500">
-                      No personnel records found
-                    </td>
-                  </tr>
-                ) : (
-                  filteredPersonnel.map((person) => (
-                    <tr key={person.id}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        {person.name}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {person.rank}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {person.company}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          person.status === 'Ready' ? 'bg-green-100 text-green-800' :
-                          person.status === 'Standby' ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-gray-100 text-gray-800'
-                        }`}>
-                          {person.status}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {person.email}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {person.dateJoined}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {person.lastUpdated}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <Button 
-                          variant="secondary"
-                          size="sm"
-                          onClick={() => handleEditPersonnel(person)}
-                        >
-                          Edit
-                        </Button>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      {/* Add/Edit Personnel Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-10 overflow-y-auto">
-          <div className="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-            <div className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-              <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
-                <div className="sm:flex sm:items-start">
-                  <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-indigo-100 sm:mx-0 sm:h-10 sm:w-10">
-                    <UserIcon className="h-6 w-6 text-indigo-600" aria-hidden="true" />
+            
+            {/* Single personnel form */}
+            {activeTab === 'single' && (
+              <form onSubmit={handleSubmit}>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                      Full Name*
+                    </label>
+                    <input
+                      type="text"
+                      id="name"
+                      name="name"
+                      value={formData.name || ''}
+                      onChange={handleChange}
+                      className={`block w-full rounded-md border ${
+                        errors.name ? 'border-red-300' : 'border-gray-300'
+                      } shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2`}
+                      required
+                    />
+                    {errors.name && (
+                      <p className="mt-1 text-sm text-red-600">{errors.name}</p>
+                    )}
                   </div>
-                  <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
-                    <h3 className="text-base font-semibold leading-6 text-gray-900">
-                      {editingPersonnel ? 'Edit Personnel' : 'Add New Personnel'}
-                    </h3>
-                    <div className="mt-4">
-                      <form onSubmit={handleSubmit}>
-                        <div className="grid grid-cols-1 gap-4">
-                          <div>
-                            <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                              Full Name <span className="text-red-500">*</span>
-                            </label>
-                            <input
-                              type="text"
-                              name="name"
-                              id="name"
-                              required
-                              value={formData.name}
-                              onChange={handleInputChange}
-                              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                            />
-                          </div>
-                          
-                          <div>
-                            <label htmlFor="rank" className="block text-sm font-medium text-gray-700">
-                              Rank <span className="text-red-500">*</span>
-                            </label>
-                            <select
-                              name="rank"
-                              id="rank"
-                              required
-                              value={formData.rank}
-                              onChange={handleInputChange}
-                              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                            >
-                              <option value="">Select Rank</option>
-                              {RANKS.map((rank) => (
-                                <option key={rank} value={rank}>{rank}</option>
-                              ))}
-                            </select>
-                          </div>
-                          
-                          <div>
-                            <label htmlFor="company" className="block text-sm font-medium text-gray-700">
-                              Company <span className="text-red-500">*</span>
-                            </label>
-                            <select
-                              name="company"
-                              id="company"
-                              required
-                              value={formData.company}
-                              onChange={handleInputChange}
-                              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                            >
-                              <option value="">Select Company</option>
-                              {COMPANIES.map((company) => (
-                                <option key={company} value={company}>{company}</option>
-                              ))}
-                            </select>
-                          </div>
-                          
-                          <div>
-                            <label htmlFor="status" className="block text-sm font-medium text-gray-700">
-                              Status <span className="text-red-500">*</span>
-                            </label>
-                            <select
-                              name="status"
-                              id="status"
-                              required
-                              value={formData.status}
-                              onChange={handleInputChange}
-                              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                            >
-                              <option value="">Select Status</option>
-                              {STATUS_OPTIONS.map((status) => (
-                                <option key={status} value={status}>{status}</option>
-                              ))}
-                            </select>
-                          </div>
-                          
-                          <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                              Email <span className="text-red-500">*</span>
-                            </label>
-                            <input
-                              type="email"
-                              name="email"
-                              id="email"
-                              required
-                              value={formData.email}
-                              onChange={handleInputChange}
-                              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                            />
-                          </div>
-                          
-                          <div>
-                            <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
-                              Phone
-                            </label>
-                            <input
-                              type="tel"
-                              name="phone"
-                              id="phone"
-                              value={formData.phone}
-                              onChange={handleInputChange}
-                              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                            />
-                          </div>
-                          
-                          <div>
-                            <label htmlFor="dateJoined" className="block text-sm font-medium text-gray-700">
-                              Date Joined <span className="text-red-500">*</span>
-                            </label>
-                            <input
-                              type="date"
-                              name="dateJoined"
-                              id="dateJoined"
-                              required
-                              value={formData.dateJoined}
-                              onChange={handleInputChange}
-                              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                            />
-                          </div>
-                        </div>
-                      </form>
+                  
+                  <div>
+                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                      Email*
+                    </label>
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      value={formData.email || ''}
+                      onChange={handleChange}
+                      className={`block w-full rounded-md border ${
+                        errors.email ? 'border-red-300' : 'border-gray-300'
+                      } shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2`}
+                      required
+                    />
+                    {errors.email && (
+                      <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+                    )}
+                  </div>
+                  
+                  <div>
+                    <label htmlFor="rank" className="block text-sm font-medium text-gray-700 mb-1">
+                      Rank*
+                    </label>
+                    <select
+                      id="rank"
+                      name="rank"
+                      value={formData.rank || ''}
+                      onChange={handleChange}
+                      className={`block w-full rounded-md border ${
+                        errors.rank ? 'border-red-300' : 'border-gray-300'
+                      } shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2`}
+                      required
+                    >
+                      <option value="">Select Rank</option>
+                      {RANKS.map((rank) => (
+                        <option key={rank} value={rank}>
+                          {rank}
+                        </option>
+                      ))}
+                    </select>
+                    {errors.rank && (
+                      <p className="mt-1 text-sm text-red-600">{errors.rank}</p>
+                    )}
+                  </div>
+                  
+                  <div>
+                    <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-1">
+                      Company*
+                    </label>
+                    <select
+                      id="company"
+                      name="company"
+                      value={formData.company || ''}
+                      onChange={handleChange}
+                      className={`block w-full rounded-md border ${
+                        errors.company ? 'border-red-300' : 'border-gray-300'
+                      } shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2`}
+                      required
+                    >
+                      <option value="">Select Company</option>
+                      {COMPANIES.map((company) => (
+                        <option key={company} value={company}>
+                          {company}
+                        </option>
+                      ))}
+                    </select>
+                    {errors.company && (
+                      <p className="mt-1 text-sm text-red-600">{errors.company}</p>
+                    )}
+                  </div>
+                  
+                  <div>
+                    <label htmlFor="serviceNumber" className="block text-sm font-medium text-gray-700 mb-1">
+                      Service Number*
+                    </label>
+                    <input
+                      type="text"
+                      id="serviceNumber"
+                      name="serviceNumber"
+                      value={formData.serviceNumber || ''}
+                      onChange={handleChange}
+                      className={`block w-full rounded-md border ${
+                        errors.serviceNumber ? 'border-red-300' : 'border-gray-300'
+                      } shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2`}
+                      required
+                    />
+                    {errors.serviceNumber && (
+                      <p className="mt-1 text-sm text-red-600">{errors.serviceNumber}</p>
+                    )}
+                  </div>
+                  
+                  <div>
+                    <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 mb-1">
+                      Phone Number (Optional)
+                    </label>
+                    <input
+                      type="text"
+                      id="phoneNumber"
+                      name="phoneNumber"
+                      value={formData.phoneNumber || ''}
+                      onChange={handleChange}
+                      className="block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2"
+                    />
+                  </div>
+                </div>
+                
+                <div className="mt-6">
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    disabled={isSubmitting}
+                    className="w-full md:w-auto"
+                  >
+                    {isSubmitting ? 'Adding Personnel...' : 'Add Personnel'}
+                  </Button>
+                </div>
+              </form>
+            )}
+            
+            {/* Bulk upload form */}
+            {activeTab === 'bulk' && (
+              <div>
+                <div className="mb-6 bg-blue-50 p-4 rounded-md">
+                  <div className="flex">
+                    <div className="flex-shrink-0">
+                      <svg className="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                      </svg>
+                    </div>
+                    <div className="ml-3 flex-1 md:flex md:justify-between">
+                      <p className="text-sm text-blue-700">
+                        Upload a CSV file with personnel data. The file should have a header row with the following columns: name, email, rank, company, serviceNumber, phoneNumber, status.
+                      </p>
+                      <p className="mt-3 text-sm md:mt-0 md:ml-6">
+                        <button
+                          onClick={downloadTemplate}
+                          className="whitespace-nowrap font-medium text-blue-700 hover:text-blue-600"
+                        >
+                          Download Template
+                        </button>
+                      </p>
                     </div>
                   </div>
                 </div>
+                
+                <form onSubmit={handleBulkUpload}>
+                  <div className="mb-6">
+                    <label htmlFor="bulk-file" className="block text-sm font-medium text-gray-700 mb-1">
+                      Personnel CSV File*
+                    </label>
+                    <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                      <div className="space-y-1 text-center">
+                        <svg className="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                          <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                        <div className="flex text-sm text-gray-600">
+                          <label
+                            htmlFor="bulk-file"
+                            className="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500"
+                          >
+                            <span>Upload a file</span>
+                            <input id="bulk-file" name="bulk-file" type="file" accept=".csv" className="sr-only" onChange={handleFileChange} />
+                          </label>
+                          <p className="pl-1">or drag and drop</p>
+                        </div>
+                        <p className="text-xs text-gray-500">CSV file up to 10MB</p>
+                      </div>
+                    </div>
+                    {bulkFile && (
+                      <p className="mt-2 text-sm text-gray-600">
+                        Selected file: {bulkFile.name}
+                      </p>
+                    )}
+                  </div>
+                  
+                  <div className="mt-6">
+                    <Button
+                      type="submit"
+                      variant="primary"
+                      disabled={!bulkFile || isUploading}
+                      className="w-full md:w-auto"
+                    >
+                      {isUploading ? 'Uploading...' : 'Upload Personnel'}
+                    </Button>
+                  </div>
+                </form>
               </div>
-              <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                <button
-                  type="button"
-                  className="inline-flex w-full justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 sm:ml-3 sm:w-auto"
-                  onClick={handleSubmit}
-                >
-                  {editingPersonnel ? 'Update' : 'Add'}
-                </button>
-                <button
-                  type="button"
-                  className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
-                  onClick={handleCloseModal}
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
+            )}
           </div>
-        </div>
+        </Card>
+      </div>
+      
+      {/* Toast notification */}
+      {toast && (
+        <Toast 
+          message={toast.message} 
+          type={toast.type} 
+          onClose={() => setToast(null)} 
+        />
       )}
     </div>
   );

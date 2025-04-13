@@ -522,3 +522,25 @@ input:focus, select:focus, textarea:focus {
   color: #4f46e5 !important;
   text-decoration: underline;
 }
+
+/* Status update animation */
+@keyframes status-pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+  }
+  
+  70% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+  }
+  
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+  }
+}
+
+.animate-status-update {
+  animation: status-pulse 1s ease-in-out;
+}
