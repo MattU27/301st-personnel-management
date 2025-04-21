@@ -49,12 +49,12 @@ export default function MarkdownEditor({ value, onChange }: MarkdownEditorProps)
             <textarea
               value={value}
               onChange={handleTextChange}
-              rows={15}
+              rows={8}
               className="w-full p-4 focus:outline-none focus:ring-0 resize-none"
-              placeholder="Write your policy content using Markdown..."
+              placeholder="Write your announcement content using Markdown..."
             />
           </Tab.Panel>
-          <Tab.Panel className="p-4 prose max-w-none min-h-[384px] overflow-auto">
+          <Tab.Panel className="p-4 prose max-w-none min-h-[220px] overflow-auto">
             {value ? (
               <div className="markdown-preview text-gray-900">
                 <ReactMarkdown>{value}</ReactMarkdown>

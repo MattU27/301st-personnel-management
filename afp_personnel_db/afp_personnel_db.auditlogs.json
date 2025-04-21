@@ -7891,4 +7891,1975 @@
   "ipAddress": "::1",
   "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
   "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67fb3729a898eb7a6b54ef00"
+  },
+  "timestamp": {
+    "$date": "2025-04-13T04:01:45.650Z"
+  },
+  "userId": {
+    "$oid": "67f011f547a45741ecca05d9"
+  },
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "login",
+  "resource": "user",
+  "details": "User login successful",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67fb377daadc4d6b95037cdc"
+  },
+  "timestamp": {
+    "$date": "2025-04-13T04:03:09.369Z"
+  },
+  "userId": {
+    "$oid": "67f89d274ba8bbe8d094b0be"
+  },
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "login",
+  "resource": "user",
+  "details": "User login successful",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67fb378faadc4d6b95037d0b"
+  },
+  "timestamp": {
+    "$date": "2025-04-13T04:03:27.792Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "logout",
+  "resource": "user",
+  "resourceId": "67f89d274ba8bbe8d094b0be",
+  "details": "Captain Gerimiah Almero (NERRSC (NERR-Signal Company)) logged out",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67fdf4a982150da212a479ad"
+  },
+  "timestamp": {
+    "$date": "2025-04-15T05:54:49.663Z"
+  },
+  "userId": {
+    "$oid": "67f89d274ba8bbe8d094b0be"
+  },
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "login",
+  "resource": "user",
+  "details": "User login successful",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67fdf65f82150da212a479fc"
+  },
+  "timestamp": {
+    "$date": "2025-04-15T06:02:07.598Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67fdf66482150da212a47a05"
+  },
+  "timestamp": {
+    "$date": "2025-04-15T06:02:12.124Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67fdf68282150da212a47a0a"
+  },
+  "timestamp": {
+    "$date": "2025-04-15T06:02:42.953Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "create",
+  "resource": "training",
+  "resourceId": {
+    "$oid": "67fdf68282150da212a47a08"
+  },
+  "details": "Created new training: DASDADSADSA",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67fdf68382150da212a47a0f"
+  },
+  "timestamp": {
+    "$date": "2025-04-15T06:02:43.001Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "create",
+  "resource": "training",
+  "resourceId": "67fdf68282150da212a47a08",
+  "details": "Created new training: DASDADSADSA",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67fdf68782150da212a47a18"
+  },
+  "timestamp": {
+    "$date": "2025-04-15T06:02:47.283Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "register",
+  "resource": "training",
+  "resourceId": {
+    "$oid": "67fdf68282150da212a47a08"
+  },
+  "details": "registered for training: DASDADSADSA",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67fdf68d82150da212a47a22"
+  },
+  "timestamp": {
+    "$date": "2025-04-15T06:02:53.688Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "cancel",
+  "resource": "training",
+  "resourceId": {
+    "$oid": "67fdf68282150da212a47a08"
+  },
+  "details": "cancelled registration for training: DASDADSADSA",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67fdf69682150da212a47a29"
+  },
+  "timestamp": {
+    "$date": "2025-04-15T06:03:02.502Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67fdf69b82150da212a47a2d"
+  },
+  "timestamp": {
+    "$date": "2025-04-15T06:03:07.667Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67fdf6ae82150da212a47a36"
+  },
+  "timestamp": {
+    "$date": "2025-04-15T06:03:26.468Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67fdf6bb82150da212a47a55"
+  },
+  "timestamp": {
+    "$date": "2025-04-15T06:03:39.774Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "logout",
+  "resource": "user",
+  "resourceId": "67f89d274ba8bbe8d094b0be",
+  "details": "Captain Gerimiah Almero (NERRSC (NERR-Signal Company)) logged out",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67fdf75d82150da212a47a5c"
+  },
+  "timestamp": {
+    "$date": "2025-04-15T06:06:21.089Z"
+  },
+  "userId": {
+    "$oid": "67f89d274ba8bbe8d094b0be"
+  },
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "login",
+  "resource": "user",
+  "details": "User login successful",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67fdf76182150da212a47a7b"
+  },
+  "timestamp": {
+    "$date": "2025-04-15T06:06:25.150Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "logout",
+  "resource": "user",
+  "resourceId": "67f89d274ba8bbe8d094b0be",
+  "details": "Captain Gerimiah Almero (NERRSC (NERR-Signal Company)) logged out",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67fdfaf382150da212a47a81"
+  },
+  "timestamp": {
+    "$date": "2025-04-15T06:21:39.426Z"
+  },
+  "userId": {
+    "$oid": "67f89d274ba8bbe8d094b0be"
+  },
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "login",
+  "resource": "user",
+  "details": "User login successful",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67fdfafc82150da212a47aa0"
+  },
+  "timestamp": {
+    "$date": "2025-04-15T06:21:48.620Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "logout",
+  "resource": "user",
+  "resourceId": "67f89d274ba8bbe8d094b0be",
+  "details": "Captain Gerimiah Almero (NERRSC (NERR-Signal Company)) logged out",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67fe038b74b35d6ba0532133"
+  },
+  "timestamp": {
+    "$date": "2025-04-15T06:58:19.911Z"
+  },
+  "userId": {
+    "$oid": "67f89d274ba8bbe8d094b0be"
+  },
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "login",
+  "resource": "user",
+  "details": "User login successful",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67fe03a074b35d6ba0532161"
+  },
+  "timestamp": {
+    "$date": "2025-04-15T06:58:40.635Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67fe076274b35d6ba0532178"
+  },
+  "timestamp": {
+    "$date": "2025-04-15T07:14:42.513Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "logout",
+  "resource": "user",
+  "resourceId": "67f89d274ba8bbe8d094b0be",
+  "details": "Captain Gerimiah Almero (NERRSC (NERR-Signal Company)) logged out",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67fe077674b35d6ba053217e"
+  },
+  "timestamp": {
+    "$date": "2025-04-15T07:15:02.253Z"
+  },
+  "userId": {
+    "$oid": "67f89d274ba8bbe8d094b0be"
+  },
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "login",
+  "resource": "user",
+  "details": "User login successful",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67fe077874b35d6ba053219d"
+  },
+  "timestamp": {
+    "$date": "2025-04-15T07:15:04.516Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67fe077a74b35d6ba05321a4"
+  },
+  "timestamp": {
+    "$date": "2025-04-15T07:15:06.209Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "logout",
+  "resource": "user",
+  "resourceId": "67f89d274ba8bbe8d094b0be",
+  "details": "Captain Gerimiah Almero (NERRSC (NERR-Signal Company)) logged out",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff0e30e6cb3f8ff180794b"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T01:56:00.622Z"
+  },
+  "userId": {
+    "$oid": "67f011f547a45741ecca05d9"
+  },
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "login",
+  "resource": "user",
+  "details": "User login successful",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff0e4de6cb3f8ff18079a8"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T01:56:29.365Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff0e4ee6cb3f8ff18079ac"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T01:56:30.259Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "logout",
+  "resource": "user",
+  "resourceId": "67f011f547a45741ecca05d9",
+  "details": "Colonel Super Director (Headquarters) logged out",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff13aee6cb3f8ff18079b5"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T02:19:26.925Z"
+  },
+  "userId": {
+    "$oid": "67f89d274ba8bbe8d094b0be"
+  },
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "login",
+  "resource": "user",
+  "details": "User login successful",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff15cbe6cb3f8ff1807b88"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T02:28:27.899Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff15cde6cb3f8ff1807b8c"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T02:28:29.789Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff169ce6cb3f8ff1807bfe"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T02:31:56.910Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "logout",
+  "resource": "user",
+  "resourceId": "67f89d274ba8bbe8d094b0be",
+  "details": "Captain Gerimiah Almero (NERRSC (NERR-Signal Company)) logged out",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff16a8e6cb3f8ff1807c04"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T02:32:08.859Z"
+  },
+  "userId": {
+    "$oid": "67f011f547a45741ecca05d9"
+  },
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "login",
+  "resource": "user",
+  "details": "User login successful",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff16aee6cb3f8ff1807c23"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T02:32:14.844Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "logout",
+  "resource": "user",
+  "resourceId": "67f011f547a45741ecca05d9",
+  "details": "Colonel Super Director (Headquarters) logged out",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff16b9e6cb3f8ff1807c29"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T02:32:25.465Z"
+  },
+  "userId": {
+    "$oid": "67f011f547a45741ecca05d9"
+  },
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "login",
+  "resource": "user",
+  "details": "User login successful",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff16bfe6cb3f8ff1807c4c"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T02:32:31.283Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "view",
+  "resource": "system",
+  "details": "Viewed page: /trainings",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff16c6e6cb3f8ff1807c55"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T02:32:38.361Z"
+  },
+  "userId": "67f011f547a45741ecca05d9",
+  "userName": "Super Director",
+  "userRole": "director",
+  "action": "logout",
+  "resource": "user",
+  "resourceId": "67f011f547a45741ecca05d9",
+  "details": "Colonel Super Director (Headquarters) logged out",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff16cce6cb3f8ff1807c5b"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T02:32:44.394Z"
+  },
+  "userId": {
+    "$oid": "67f8a0ea4ba8bbe8d094b0dd"
+  },
+  "userName": "John Matthew Banto",
+  "userRole": "administrator",
+  "action": "login",
+  "resource": "user",
+  "details": "User login successful",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff16cfe6cb3f8ff1807c7a"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T02:32:47.435Z"
+  },
+  "userId": "67f8a0ea4ba8bbe8d094b0dd",
+  "userName": "John Matthew Banto",
+  "userRole": "administrator",
+  "action": "logout",
+  "resource": "user",
+  "resourceId": "67f8a0ea4ba8bbe8d094b0dd",
+  "details": "Lieutenant General John Matthew Banto (NERRFAB (NERR-Field Artillery Battery)) logged out",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff16d9e6cb3f8ff1807c80"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T02:32:57.080Z"
+  },
+  "userId": {
+    "$oid": "67f89d274ba8bbe8d094b0be"
+  },
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "login",
+  "resource": "user",
+  "details": "User login successful",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff16e5e6cb3f8ff1807ca1"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T02:33:09.466Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "personnel",
+  "resourceId": "67efd5bb8e395126edf28293",
+  "details": "View personnel record: Angelica Aquino",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff16e6e6cb3f8ff1807ca3"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T02:33:10.602Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "update",
+  "resource": "personnel",
+  "resourceId": "67efd5bb8e395126edf28293",
+  "details": "Update personnel record: Angelica Aquino",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff16efe6cb3f8ff1807ca5"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T02:33:19.915Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "personnel",
+  "resourceId": "67efd5bb8e395126edf2825f",
+  "details": "View personnel record: Cristina Co",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff17fde6cb3f8ff1807cdc"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T02:37:49.828Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "personnel",
+  "resourceId": "67efd5bb8e395126edf28293",
+  "details": "View personnel record: Angelica Aquino",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff1873e6cb3f8ff1807ce5"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T02:39:47.434Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "personnel",
+  "resourceId": "67efd5bb8e395126edf2828b",
+  "details": "View personnel record: Fernando Aquino",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff1fdee6cb3f8ff1807d4b"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T03:11:26.202Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "personnel",
+  "resourceId": "67efd5bb8e395126edf28261",
+  "details": "View personnel record: Carmen Galang",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff23d6e6cb3f8ff1807dc3"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T03:28:22.396Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "personnel",
+  "resourceId": "67efd5bb8e395126edf2828a",
+  "details": "View personnel record: Luis Pascual",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff24cee6cb3f8ff1807dd4"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T03:32:30.091Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "personnel",
+  "resourceId": "67efd5bb8e395126edf28284",
+  "details": "View personnel record: Lourdes Castro",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff2552e6cb3f8ff1807dda"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T03:34:42.441Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "update",
+  "resource": "personnel",
+  "resourceId": "67efd5bb8e395126edf28289",
+  "details": "Update personnel record: Pedro Garcia",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff25c5e6cb3f8ff1807de9"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T03:36:37.424Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "update",
+  "resource": "personnel",
+  "resourceId": "67efd5bb8e395126edf28291",
+  "details": "Update personnel record: Ana Dela Cruz",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff25cae6cb3f8ff1807deb"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T03:36:42.138Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "update",
+  "resource": "personnel",
+  "resourceId": "67efd5bb8e395126edf28291",
+  "details": "Update personnel record: Ana Dela Cruz",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff261be6cb3f8ff1807df0"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T03:38:03.565Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "personnel",
+  "resourceId": "67efd5bb8e395126edf28293",
+  "details": "View personnel record: Angelica Aquino",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff261ce6cb3f8ff1807df2"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T03:38:04.353Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "update",
+  "resource": "personnel",
+  "resourceId": "67efd5bb8e395126edf28293",
+  "details": "Update personnel record: Angelica Aquino",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff262ce6cb3f8ff1807df4"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T03:38:20.908Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "update",
+  "resource": "personnel",
+  "resourceId": "67efd5bb8e395126edf28291",
+  "details": "Update personnel record: Ana Dela Cruz",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff265fe6cb3f8ff1807df9"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T03:39:11.581Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "personnel",
+  "resourceId": "67efd5bb8e395126edf28293",
+  "details": "View personnel record: Angelica Aquino",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff2662e6cb3f8ff1807dfb"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T03:39:14.832Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "personnel",
+  "resourceId": "67efd5bb8e395126edf28293",
+  "details": "View personnel record: Angelica Aquino",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff2663e6cb3f8ff1807dfd"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T03:39:15.934Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "personnel",
+  "resourceId": "67efd5bb8e395126edf28293",
+  "details": "View personnel record: Angelica Aquino",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff270ce6cb3f8ff1807e04"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T03:42:04.678Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "personnel",
+  "resourceId": "67efd5bb8e395126edf28270",
+  "details": "View personnel record: Ana Pascual",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff270ee6cb3f8ff1807e06"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T03:42:06.977Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "personnel",
+  "resourceId": "67efd5bb8e395126edf28270",
+  "details": "View personnel record: Ana Pascual",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff2717e6cb3f8ff1807e08"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T03:42:15.775Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "personnel",
+  "resourceId": "67efd5bb8e395126edf2825f",
+  "details": "View personnel record: Cristina Co",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff2805e6cb3f8ff1807e16"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T03:46:13.708Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "personnel",
+  "resourceId": "67efd5bb8e395126edf28270",
+  "details": "View personnel record: Ana Pascual",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff280be6cb3f8ff1807e18"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T03:46:19.742Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "personnel",
+  "resourceId": "67efd5bb8e395126edf28280",
+  "details": "View personnel record: Beatriz Navarro",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff285be6cb3f8ff1807e1e"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T03:47:39.524Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "update",
+  "resource": "personnel",
+  "resourceId": "67efd5bb8e395126edf28292",
+  "details": "Update personnel record: Juan Del Rosario",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff295be6cb3f8ff1807e37"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T03:51:55.698Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "personnel",
+  "resourceId": "67efd5bb8e395126edf2828b",
+  "details": "View personnel record: Fernando Aquino",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff2a16e6cb3f8ff1807e40"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T03:55:02.848Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "personnel",
+  "resourceId": "67efd5bb8e395126edf2828e",
+  "details": "View personnel record: Juan Reyes",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff2d50e6cb3f8ff1807e87"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T04:08:48.497Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "personnel",
+  "resourceId": "67efd5bb8e395126edf28266",
+  "details": "View personnel record: Josefina Fernandez",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff2d51e6cb3f8ff1807e89"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T04:08:49.162Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "personnel",
+  "resourceId": "67ff2cd1c2ecb29dd55ac41b",
+  "details": "View personnel record: Josefa Garcia",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff2d58e6cb3f8ff1807e8f"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T04:08:56.991Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "update",
+  "resource": "personnel",
+  "resourceId": "67ff2d4bf6a4b5ea9892ae13",
+  "details": "Update personnel record: Teresa Pascual",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff2d6ee6cb3f8ff1807e93"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T04:09:18.941Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "update",
+  "resource": "personnel",
+  "resourceId": "67ff2d4bf6a4b5ea9892ae13",
+  "details": "Update personnel record: Teresa Pascual",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff2d7ce6cb3f8ff1807e95"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T04:09:32.914Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "update",
+  "resource": "personnel",
+  "resourceId": "67ff2d4bf6a4b5ea9892ae13",
+  "details": "Update personnel record: Teresa Pascual",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff2d85e6cb3f8ff1807e9c"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T04:09:41.927Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "update",
+  "resource": "personnel",
+  "resourceId": "67ff2d4bf6a4b5ea9892ae13",
+  "details": "Update personnel record: Teresa Pascual",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff2d91e6cb3f8ff1807e9f"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T04:09:53.893Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "update",
+  "resource": "personnel",
+  "resourceId": "67ff2d4bf6a4b5ea9892ae13",
+  "details": "Update personnel record: Teresa Pascual",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff2e23e6cb3f8ff1807ea6"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T04:12:19.047Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "update",
+  "resource": "personnel",
+  "resourceId": "67ff2d4bf6a4b5ea9892ae13",
+  "details": "Update personnel record: Teresa Pascual",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff2e3ee6cb3f8ff1807eaa"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T04:12:46.470Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "personnel",
+  "resourceId": "67ff2d4bf6a4b5ea9892ae13",
+  "details": "View personnel record: Teresa Pascual",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff2e3fe6cb3f8ff1807eac"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T04:12:47.108Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "personnel",
+  "resourceId": "67ff2d4bf6a4b5ea9892ae13",
+  "details": "View personnel record: Teresa Pascual",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff2e40e6cb3f8ff1807eae"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T04:12:48.046Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "update",
+  "resource": "personnel",
+  "resourceId": "67ff2d4bf6a4b5ea9892ae13",
+  "details": "Update personnel record: Teresa Pascual",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff2e51e6cb3f8ff1807eb1"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T04:13:05.557Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "personnel",
+  "resourceId": "67efd5bb8e395126edf28273",
+  "details": "View personnel record: Josefina Ramos",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff2e95e6cb3f8ff1807eb7"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T04:14:13.056Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "update",
+  "resource": "personnel",
+  "resourceId": "67ff2d4bf6a4b5ea9892ae13",
+  "details": "Update personnel record: Teresa Pascual",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff2e97e6cb3f8ff1807eb9"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T04:14:15.326Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "update",
+  "resource": "personnel",
+  "resourceId": "67ff2d4bf6a4b5ea9892ae13",
+  "details": "Update personnel record: Teresa Pascual",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff3159e6cb3f8ff1807ed5"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T04:26:01.286Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "update",
+  "resource": "personnel",
+  "resourceId": "67ff2d4bf6a4b5ea9892ae13",
+  "details": "Update personnel record: Teresa Pascual",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff3161e6cb3f8ff1807ed8"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T04:26:09.889Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "update",
+  "resource": "personnel",
+  "resourceId": "67ff2d4bf6a4b5ea9892ae13",
+  "details": "Update personnel record: Teresa Pascual",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff31a7e6cb3f8ff1807edc"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T04:27:19.855Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "update",
+  "resource": "personnel",
+  "resourceId": "67ff2d4bf6a4b5ea9892ae13",
+  "details": "Update personnel record: Teresa Pascual",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff31c0e6cb3f8ff1807ee1"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T04:27:44.923Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "update",
+  "resource": "personnel",
+  "resourceId": "67ff2d4bf6a4b5ea9892ae13",
+  "details": "Update personnel record: Teresa Pascual",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff31c6e6cb3f8ff1807ee3"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T04:27:50.395Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "update",
+  "resource": "personnel",
+  "resourceId": "67ff2d4bf6a4b5ea9892ae13",
+  "details": "Update personnel record: Teresa Pascual",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff322be6cb3f8ff1807eed"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T04:29:31.487Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "update",
+  "resource": "personnel",
+  "resourceId": "67ff2d4bf6a4b5ea9892ae13",
+  "details": "Update personnel record: Teresa Pascual",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff322ce6cb3f8ff1807eef"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T04:29:32.830Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "update",
+  "resource": "personnel",
+  "resourceId": "67ff2d4bf6a4b5ea9892ae13",
+  "details": "Update personnel record: Teresa Pascual",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff3279e6cb3f8ff1807ef6"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T04:30:49.226Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "update",
+  "resource": "personnel",
+  "resourceId": "67ff2d4bf6a4b5ea9892ae13",
+  "details": "Update personnel record: Teresa Pascual",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff329ce6cb3f8ff1807efb"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T04:31:24.647Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "personnel",
+  "resourceId": "67ff2d4bf6a4b5ea9892ae13",
+  "details": "View personnel record: Teresa Pascual",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff3303e6cb3f8ff1807f27"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T04:33:07.233Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "update",
+  "resource": "personnel",
+  "resourceId": "67ff2d4bf6a4b5ea9892ae13",
+  "details": "Update personnel record: Teresa Pascual",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff3318e6cb3f8ff1807f2a"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T04:33:28.526Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "personnel",
+  "resourceId": "67ff2d4bf6a4b5ea9892ae0a",
+  "details": "View personnel record: Antonio Fernandez",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff332ae6cb3f8ff1807f2c"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T04:33:46.469Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "personnel",
+  "resourceId": "67ff2d4bf6a4b5ea9892ae13",
+  "details": "View personnel record: Teresa Pascual",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff33dfe6cb3f8ff1807f37"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T04:36:47.633Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "personnel",
+  "resourceId": "67ff2d4bf6a4b5ea9892ae13",
+  "details": "View personnel record: Teresa Pascual",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff341ee6cb3f8ff1807f40"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T04:37:50.826Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "update",
+  "resource": "personnel",
+  "resourceId": "67ff2d4bf6a4b5ea9892ae13",
+  "details": "Update personnel record: Teresa Pascual",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff3464e6cb3f8ff1807f44"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T04:39:00.063Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "update",
+  "resource": "personnel",
+  "resourceId": "67ff2d4bf6a4b5ea9892ae13",
+  "details": "Update personnel record: Teresa Pascual",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff34e5e6cb3f8ff1807f65"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T04:41:09.430Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "update",
+  "resource": "personnel",
+  "resourceId": "67ff2d4bf6a4b5ea9892ae13",
+  "details": "Update personnel record: Teresa Pascual",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff3587e6cb3f8ff1807f71"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T04:43:51.288Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "update",
+  "resource": "personnel",
+  "resourceId": "67ff2d4bf6a4b5ea9892ae13",
+  "details": "Update personnel record: Teresa Pascual",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff3592e6cb3f8ff1807f78"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T04:44:02.319Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "update",
+  "resource": "personnel",
+  "resourceId": "67ff2d4bf6a4b5ea9892ae13",
+  "details": "Update personnel record: Teresa Pascual",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff3598e6cb3f8ff1807f7c"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T04:44:08.203Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "update",
+  "resource": "personnel",
+  "resourceId": "67ff2d4bf6a4b5ea9892ae13",
+  "details": "Update personnel record: Teresa Pascual",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff35c6e6cb3f8ff1807f81"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T04:44:54.426Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "update",
+  "resource": "personnel",
+  "resourceId": "67ff2d4bf6a4b5ea9892ae13",
+  "details": "Update personnel record: Teresa Pascual",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff3652e6cb3f8ff1807f8b"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T04:47:14.033Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "update",
+  "resource": "personnel",
+  "resourceId": "67ff2d4bf6a4b5ea9892ae13",
+  "details": "Update personnel record: Teresa Pascual",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff3665e6cb3f8ff1807f8f"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T04:47:33.787Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "update",
+  "resource": "personnel",
+  "resourceId": "67ff2d4bf6a4b5ea9892ae13",
+  "details": "Update personnel record: Teresa Pascual",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff3707e6cb3f8ff1807f96"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T04:50:15.587Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "update",
+  "resource": "personnel",
+  "resourceId": "67ff2d4bf6a4b5ea9892ae13",
+  "details": "Update personnel record: Teresa Pascual",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff370be6cb3f8ff1807f9c"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T04:50:19.018Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "update",
+  "resource": "personnel",
+  "resourceId": "67ff2d4bf6a4b5ea9892ae13",
+  "details": "Update personnel record: Teresa Pascual",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff385de6cb3f8ff1807fab"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T04:55:57.234Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "update",
+  "resource": "personnel",
+  "resourceId": "67ff2d4bf6a4b5ea9892ae13",
+  "details": "Update personnel record: Teresa Pascual",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff3866e6cb3f8ff1807faf"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T04:56:06.658Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "view",
+  "resource": "personnel",
+  "resourceId": "67ff2d4bf6a4b5ea9892ae13",
+  "details": "View personnel record: Teresa Pascual",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff539d563c60e5e333a768"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T06:52:13.077Z"
+  },
+  "userId": {
+    "$oid": "67f89d274ba8bbe8d094b0be"
+  },
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "login",
+  "resource": "user",
+  "details": "User login successful",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff53a4563c60e5e333a797"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T06:52:20.700Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "update",
+  "resource": "personnel",
+  "resourceId": "67ff2d4bf6a4b5ea9892ae13",
+  "details": "Update personnel record: Teresa Pascual",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff53ab563c60e5e333a799"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T06:52:27.176Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "update",
+  "resource": "personnel",
+  "resourceId": "67ff2d4bf6a4b5ea9892ae13",
+  "details": "Update personnel record: Teresa Pascual",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff53ae563c60e5e333a79b"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T06:52:30.413Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "update",
+  "resource": "personnel",
+  "resourceId": "67ff2d4bf6a4b5ea9892ae13",
+  "details": "Update personnel record: Teresa Pascual",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
+},
+{
+  "_id": {
+    "$oid": "67ff53d1563c60e5e333a79d"
+  },
+  "timestamp": {
+    "$date": "2025-04-16T06:53:05.530Z"
+  },
+  "userId": "67f89d274ba8bbe8d094b0be",
+  "userName": "Gerimiah Almero",
+  "userRole": "staff",
+  "action": "update",
+  "resource": "personnel",
+  "resourceId": "67ff2d4bf6a4b5ea9892ae13",
+  "details": "Update personnel record: Teresa Pascual",
+  "ipAddress": "::1",
+  "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0",
+  "__v": 0
 }]

@@ -347,7 +347,7 @@ export default function Home() {
       </nav>
 
       {/* US Army-style hero with full-width image */}
-      <div ref={homeRef} className="relative min-h-screen">
+      <div ref={homeRef} className="relative min-h-screen bg-[#092140]">
         {/* Full background image */}
         <div className="absolute inset-0">
           <img
@@ -394,9 +394,9 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Benefits banner with unique Philippines-focused messaging */}
-      <div className="bg-[#092140] py-10 transform -skew-y-1">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center transform skew-y-1">
+      {/* Benefits banner with unique Philippines-focused messaging - Remove skew transformation which might cause spacing issues */}
+      <div className="bg-[#092140] py-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-2xl md:text-3xl font-bold text-white tracking-wide uppercase animate-pulse">
             SECURE. EFFICIENT. INTEGRATED.<br/>
             PERSONNEL MANAGEMENT SYSTEM.

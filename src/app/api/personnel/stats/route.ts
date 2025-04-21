@@ -36,10 +36,27 @@ export async function GET(request: Request) {
     // Get all personnel
     const allPersonnel = await Personnel.find().lean();
     
-    // Count personnel by status
-    const activeCount = allPersonnel.filter(p => p.status === 'active').length;
-    const inactiveCount = allPersonnel.filter(p => p.status === 'inactive').length;
-    const pendingCount = allPersonnel.filter(p => p.status === 'pending').length;
+    // Count personnel by status - use case-insensitive check for status values
+    const readyCount = allPersonnel.filter(p => 
+      p.status === 'ready' || 
+      p.status === 'Ready' || 
+      p.status?.toLowerCase() === 'ready'
+    ).length;
+    
+    const standbyCount = allPersonnel.filter(p => 
+      p.status === 'standby' || 
+      p.status === 'Standby' || 
+      p.status?.toLowerCase() === 'standby'
+    ).length;
+    
+    const retiredCount = allPersonnel.filter(p => 
+      p.status === 'retired' || 
+      p.status === 'Retired' || 
+      p.status?.toLowerCase() === 'retired'
+    ).length;
+    
+    // Legacy active count alias - for backward compatibility
+    const activeCount = readyCount;
     
     // Count personnel by role
     const adminCount = allPersonnel.filter(p => p.role === 'admin').length;
@@ -92,20 +109,24 @@ export async function GET(request: Request) {
           ? Math.round((completedRegistrations / totalRegistrations) * 100) 
           : 0;
         
-        // Count active personnel
-        const activePersonnel = personnel.filter(p => p.status === 'active').length;
+        // Count ready personnel (instead of active)
+        const readyPersonnel = personnel.filter(p => 
+          p.status === 'ready' || 
+          p.status === 'Ready' || 
+          p.status?.toLowerCase() === 'ready'
+        ).length;
         
         // Calculate overall readiness score for company
         const readinessScore = Math.round(
           (documentsCompletePercentage * 0.3) + 
           (trainingsCompletePercentage * 0.5) + 
-          ((activePersonnel / personnel.length) * 100 * 0.2)
+          ((readyPersonnel / personnel.length) * 100 * 0.2)
         );
         
         return {
           company,
           personnel: personnel.length,
-          readyPersonnel: activePersonnel,
+          readyPersonnel: readyPersonnel,
           documentsComplete: documentsCompletePercentage,
           trainingsComplete: trainingsCompletePercentage,
           readinessScore: Math.min(readinessScore, 100)
@@ -117,8 +138,9 @@ export async function GET(request: Request) {
     const stats = {
       total: allPersonnel.length,
       active: activeCount,
-      inactive: inactiveCount,
-      pending: pendingCount,
+      readyPersonnel: readyCount,
+      standby: standbyCount,
+      retired: retiredCount,
       byRole: {
         admin: adminCount,
         director: directorCount,

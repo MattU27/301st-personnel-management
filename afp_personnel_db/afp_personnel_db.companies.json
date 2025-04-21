@@ -7,8 +7,8 @@
   "description": "Infantry unit specializing in frontline operations and rapid deployment.",
   "location": "Camp Aguinaldo, Quezon City",
   "commandingOfficer": "LTC Roberto Cruz",
-  "totalPersonnel": 45,
-  "activePersonnel": 38,
+  "totalPersonnel": 29,
+  "activePersonnel": 19,
   "readinessScore": 87,
   "documentsComplete": 92,
   "trainingsComplete": 85,
@@ -16,9 +16,10 @@
     "$date": "2025-04-04T12:50:59.492Z"
   },
   "updatedAt": {
-    "$date": "2025-04-04T12:50:59.492Z"
+    "$date": "2025-04-16T03:34:55.248Z"
   },
-  "__v": 0
+  "__v": 0,
+  "hidden": false
 },
 {
   "_id": {
@@ -29,8 +30,8 @@
   "description": "Combat support unit providing artillery and tactical assistance.",
   "location": "Fort Bonifacio, Taguig City",
   "commandingOfficer": "MAJ Elena Santos",
-  "totalPersonnel": 52,
-  "activePersonnel": 48,
+  "totalPersonnel": 1,
+  "activePersonnel": 1,
   "readinessScore": 92,
   "documentsComplete": 96,
   "trainingsComplete": 90,
@@ -38,9 +39,10 @@
     "$date": "2025-04-04T12:50:59.492Z"
   },
   "updatedAt": {
-    "$date": "2025-04-04T12:50:59.492Z"
+    "$date": "2025-04-16T03:34:55.252Z"
   },
-  "__v": 0
+  "__v": 0,
+  "hidden": false
 },
 {
   "_id": {
@@ -51,8 +53,8 @@
   "description": "Specialized unit focusing on urban combat and close-quarters operations.",
   "location": "Camp Lapu-Lapu, Cebu City",
   "commandingOfficer": "MAJ Antonio Reyes",
-  "totalPersonnel": 38,
-  "activePersonnel": 32,
+  "totalPersonnel": 3,
+  "activePersonnel": 2,
   "readinessScore": 76,
   "documentsComplete": 82,
   "trainingsComplete": 74,
@@ -60,9 +62,10 @@
     "$date": "2025-04-04T12:50:59.493Z"
   },
   "updatedAt": {
-    "$date": "2025-04-04T12:50:59.493Z"
+    "$date": "2025-04-16T03:34:55.255Z"
   },
-  "__v": 0
+  "__v": 0,
+  "hidden": false
 },
 {
   "_id": {
@@ -73,8 +76,8 @@
   "description": "Reconnaissance and surveillance unit operating in high-risk environments.",
   "location": "Camp General Emilio Aguinaldo, Cavite",
   "commandingOfficer": "MAJ Francisco Magsaysay",
-  "totalPersonnel": 35,
-  "activePersonnel": 30,
+  "totalPersonnel": 0,
+  "activePersonnel": 0,
   "readinessScore": 79,
   "documentsComplete": 84,
   "trainingsComplete": 77,
@@ -82,9 +85,10 @@
     "$date": "2025-04-04T12:50:59.493Z"
   },
   "updatedAt": {
-    "$date": "2025-04-04T12:50:59.493Z"
+    "$date": "2025-04-16T03:34:55.258Z"
   },
-  "__v": 0
+  "__v": 0,
+  "hidden": false
 },
 {
   "_id": {
@@ -95,8 +99,8 @@
   "description": "Support unit providing logistics and supply chain management.",
   "location": "Camp General Servillano Aquino, Tarlac",
   "commandingOfficer": "CPT Maria Lourdes Tan",
-  "totalPersonnel": 40,
-  "activePersonnel": 34,
+  "totalPersonnel": 0,
+  "activePersonnel": 0,
   "readinessScore": 80,
   "documentsComplete": 85,
   "trainingsComplete": 78,
@@ -104,31 +108,33 @@
     "$date": "2025-04-04T12:50:59.493Z"
   },
   "updatedAt": {
-    "$date": "2025-04-04T12:50:59.493Z"
+    "$date": "2025-04-16T03:34:55.262Z"
   },
-  "__v": 0
+  "__v": 0,
+  "hidden": false
 },
 {
   "_id": {
     "$oid": "67efd5b3c7528c0dfb15442e"
   },
   "name": "Headquarters",
-  "code": "HQ",
+  "code": "HEADQUARTERS",
   "description": "Command and control center for all operations and strategic planning.",
   "location": "Camp Aguinaldo, Quezon City",
   "commandingOfficer": "COL Manuel Gomez",
-  "totalPersonnel": 24,
-  "activePersonnel": 22,
-  "readinessScore": 94,
-  "documentsComplete": 98,
-  "trainingsComplete": 92,
+  "totalPersonnel": 1,
+  "activePersonnel": 1,
+  "readinessScore": 20,
+  "documentsComplete": 0,
+  "trainingsComplete": 0,
   "createdAt": {
     "$date": "2025-04-04T12:50:59.493Z"
   },
   "updatedAt": {
-    "$date": "2025-04-04T12:50:59.493Z"
+    "$date": "2025-04-16T04:06:43.998Z"
   },
-  "__v": 0
+  "__v": 0,
+  "hidden": false
 },
 {
   "_id": {
@@ -139,18 +145,19 @@
   "description": "Communications and signal intelligence unit supporting tactical operations.",
   "location": "Fort Magsaysay, Nueva Ecija",
   "commandingOfficer": "MAJ Rodrigo Duterte",
-  "totalPersonnel": 32,
-  "activePersonnel": 27,
-  "readinessScore": 85,
-  "documentsComplete": 88,
-  "trainingsComplete": 84,
+  "totalPersonnel": 2,
+  "activePersonnel": 1,
+  "readinessScore": 10,
+  "documentsComplete": 0,
+  "trainingsComplete": 0,
   "createdAt": {
     "$date": "2025-04-04T12:50:59.493Z"
   },
   "updatedAt": {
-    "$date": "2025-04-04T12:50:59.493Z"
+    "$date": "2025-04-16T04:06:43.998Z"
   },
-  "__v": 0
+  "__v": 0,
+  "hidden": false
 },
 {
   "_id": {
@@ -161,18 +168,19 @@
   "description": "Artillery support unit specializing in long-range fire support.",
   "location": "Fort Magsaysay, Nueva Ecija",
   "commandingOfficer": "MAJ Paolo Santiago",
-  "totalPersonnel": 28,
-  "activePersonnel": 24,
-  "readinessScore": 82,
-  "documentsComplete": 84,
-  "trainingsComplete": 81,
+  "totalPersonnel": 1,
+  "activePersonnel": 1,
+  "readinessScore": 20,
+  "documentsComplete": 0,
+  "trainingsComplete": 0,
   "createdAt": {
     "$date": "2025-04-04T12:50:59.493Z"
   },
   "updatedAt": {
-    "$date": "2025-04-04T12:50:59.493Z"
+    "$date": "2025-04-16T04:06:43.998Z"
   },
-  "__v": 0
+  "__v": 0,
+  "hidden": false
 },
 {
   "_id": {
@@ -183,8 +191,8 @@
   "description": "Specialized infantry unit focused on jungle and mountain warfare.",
   "location": "Camp Capinpin, Tanay, Rizal",
   "commandingOfficer": "MAJ Ricardo Dalisay",
-  "totalPersonnel": 42,
-  "activePersonnel": 37,
+  "totalPersonnel": 0,
+  "activePersonnel": 0,
   "readinessScore": 88,
   "documentsComplete": 90,
   "trainingsComplete": 86,
@@ -192,9 +200,10 @@
     "$date": "2025-04-04T12:50:59.493Z"
   },
   "updatedAt": {
-    "$date": "2025-04-04T12:50:59.493Z"
+    "$date": "2025-04-16T03:34:55.273Z"
   },
-  "__v": 0
+  "__v": 0,
+  "hidden": false
 },
 {
   "_id": {
@@ -205,8 +214,8 @@
   "description": "Rapid response unit trained for immediate deployment in crisis situations.",
   "location": "Camp General Arturo Enrile, Malagutay, Zamboanga City",
   "commandingOfficer": "MAJ Fernando Basco",
-  "totalPersonnel": 38,
-  "activePersonnel": 33,
+  "totalPersonnel": 0,
+  "activePersonnel": 0,
   "readinessScore": 86,
   "documentsComplete": 88,
   "trainingsComplete": 85,
@@ -214,9 +223,10 @@
     "$date": "2025-04-04T12:50:59.493Z"
   },
   "updatedAt": {
-    "$date": "2025-04-04T12:50:59.493Z"
+    "$date": "2025-04-16T03:34:55.276Z"
   },
-  "__v": 0
+  "__v": 0,
+  "hidden": false
 },
 {
   "_id": {
@@ -227,8 +237,8 @@
   "description": "Security and defense unit specializing in base protection and perimeter control.",
   "location": "Camp General Mateo Capinpin, Tanay, Rizal",
   "commandingOfficer": "CPT Josefina Lopez",
-  "totalPersonnel": 36,
-  "activePersonnel": 31,
+  "totalPersonnel": 0,
+  "activePersonnel": 0,
   "readinessScore": 82,
   "documentsComplete": 85,
   "trainingsComplete": 80,
@@ -236,9 +246,10 @@
     "$date": "2025-04-04T12:50:59.493Z"
   },
   "updatedAt": {
-    "$date": "2025-04-04T12:50:59.493Z"
+    "$date": "2025-04-16T03:34:55.278Z"
   },
-  "__v": 0
+  "__v": 0,
+  "hidden": false
 },
 {
   "_id": {
@@ -249,8 +260,8 @@
   "description": "Medical support unit providing healthcare services to military personnel.",
   "location": "V. Luna Medical Center, Quezon City",
   "commandingOfficer": "LTC Dr. Benjamin Abalos",
-  "totalPersonnel": 45,
-  "activePersonnel": 42,
+  "totalPersonnel": 0,
+  "activePersonnel": 0,
   "readinessScore": 93,
   "documentsComplete": 97,
   "trainingsComplete": 91,
@@ -258,9 +269,10 @@
     "$date": "2025-04-04T12:50:59.493Z"
   },
   "updatedAt": {
-    "$date": "2025-04-04T12:50:59.493Z"
+    "$date": "2025-04-16T03:34:55.281Z"
   },
-  "__v": 0
+  "__v": 0,
+  "hidden": false
 },
 {
   "_id": {
@@ -271,8 +283,8 @@
   "description": "Specialized unit for construction, demolition, and field fortifications.",
   "location": "Fort Bonifacio, Taguig City",
   "commandingOfficer": "LTC Eduardo Villanueva",
-  "totalPersonnel": 60,
-  "activePersonnel": 53,
+  "totalPersonnel": 0,
+  "activePersonnel": 0,
   "readinessScore": 88,
   "documentsComplete": 91,
   "trainingsComplete": 87,
@@ -280,9 +292,10 @@
     "$date": "2025-04-04T12:50:59.493Z"
   },
   "updatedAt": {
-    "$date": "2025-04-04T12:50:59.493Z"
+    "$date": "2025-04-16T03:34:55.284Z"
   },
-  "__v": 0
+  "__v": 0,
+  "hidden": false
 },
 {
   "_id": {
@@ -293,8 +306,8 @@
   "description": "Intelligence gathering and analysis unit supporting operational planning.",
   "location": "Camp Aguinaldo, Quezon City",
   "commandingOfficer": "COL Antonio Parlade",
-  "totalPersonnel": 30,
-  "activePersonnel": 28,
+  "totalPersonnel": 0,
+  "activePersonnel": 0,
   "readinessScore": 92,
   "documentsComplete": 95,
   "trainingsComplete": 90,
@@ -302,9 +315,10 @@
     "$date": "2025-04-04T12:50:59.494Z"
   },
   "updatedAt": {
-    "$date": "2025-04-04T12:50:59.494Z"
+    "$date": "2025-04-16T03:34:55.286Z"
   },
-  "__v": 0
+  "__v": 0,
+  "hidden": false
 },
 {
   "_id": {
@@ -315,8 +329,8 @@
   "description": "Elite paratrooper unit specialized in air assault and airborne operations.",
   "location": "Fort Magsaysay, Nueva Ecija",
   "commandingOfficer": "MAJ Alexander Santos",
-  "totalPersonnel": 48,
-  "activePersonnel": 43,
+  "totalPersonnel": 0,
+  "activePersonnel": 0,
   "readinessScore": 90,
   "documentsComplete": 93,
   "trainingsComplete": 88,
@@ -324,7 +338,8 @@
     "$date": "2025-04-04T12:50:59.494Z"
   },
   "updatedAt": {
-    "$date": "2025-04-04T12:50:59.494Z"
+    "$date": "2025-04-16T03:34:55.289Z"
   },
-  "__v": 0
+  "__v": 0,
+  "hidden": false
 }]

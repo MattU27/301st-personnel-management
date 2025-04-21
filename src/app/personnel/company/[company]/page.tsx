@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
@@ -183,12 +184,13 @@ const COMPANY_DATA: Record<string, {
 interface CompanyPageProps {
   params: {
     company: string;
-  };
+  }
 }
 
 export default function CompanyPersonnelPage({ params }: CompanyPageProps) {
+  // Access params directly since Next.js still supports this for migration
   const { company } = params;
-  const { user, isAuthenticated, isLoading, hasSpecificPermission } = useAuth();
+  const { user, isAuthenticated, isLoading, hasSpecificPermission, getToken } = useAuth();
   const router = useRouter();
   const [companyData, setCompanyData] = useState<typeof COMPANY_DATA[keyof typeof COMPANY_DATA] | null>(null);
   const [loading, setLoading] = useState(true);
@@ -217,8 +219,77 @@ export default function CompanyPersonnelPage({ params }: CompanyPageProps) {
   const fetchCompanyData = async () => {
     setLoading(true);
     try {
-      // In a real implementation, this would be an API call
-      // For now, use the mock data
+      // Get token for authentication
+      const token = await getToken();
+      
+      if (!token) {
+        throw new Error('Authentication failed');
+      }
+      
+      // First get the company details from the companies API
+      const response = await fetch(`/api/companies/statistics`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch company data');
+      }
+      
+      const data = await response.json();
+      
+      if (data.success && Array.isArray(data.data)) {
+        // Find the matching company based on url slug
+        const normalizedCompany = company.replace(/-/g, ' ').toLowerCase();
+        const companyData = data.data.find((c: any) => 
+          c.name.toLowerCase().replace(/\(|\)/g, '').includes(normalizedCompany)
+        );
+        
+        if (companyData) {
+          // Now get personnel data for this company
+          const personnelResponse = await fetch(`/api/personnel/company/${companyData.name}`, {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+          
+          if (personnelResponse.ok) {
+            const personnelData = await personnelResponse.json();
+            
+            if (personnelData.success && Array.isArray(personnelData.data)) {
+              // Combine the company data with personnel data
+              setCompanyData({
+                ...companyData,
+                personnel: personnelData.data
+              });
+            } else {
+              // If we failed to get personnel data, still show company info
+              setCompanyData({
+                ...companyData,
+                personnel: []
+              });
+            }
+          } else {
+            // If personnel API fails, use company data with empty personnel array
+            setCompanyData({
+              ...companyData,
+              personnel: []
+            });
+          }
+        } else {
+          // In case no matching company is found
+          toast.error('Company not found');
+          router.push('/companies');
+        }
+      } else {
+        throw new Error('Invalid response format');
+      }
+    } catch (error) {
+      console.error('Error fetching company data:', error);
+      toast.error('Failed to load company data');
+      
+      // Fallback to mock data if API call fails
       const normalizedCompany = company.toLowerCase();
       
       if (COMPANY_DATA[normalizedCompany]) {
@@ -227,12 +298,6 @@ export default function CompanyPersonnelPage({ params }: CompanyPageProps) {
         toast.error('Company not found');
         router.push('/companies');
       }
-      
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 500));
-    } catch (error) {
-      console.error('Error fetching company data:', error);
-      toast.error('Failed to load company data');
     } finally {
       setLoading(false);
     }

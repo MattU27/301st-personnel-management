@@ -8,7 +8,10 @@ import {
   XMarkIcon, 
   UserCircleIcon,
   ArrowRightOnRectangleIcon,
-  ChevronDownIcon 
+  ChevronDownIcon,
+  ServerStackIcon,
+  ChartBarIcon,
+  MegaphoneIcon
 } from '@heroicons/react/24/outline';
 import { useAuth } from '@/contexts/AuthContext';
 import ConfirmationDialog from './ConfirmationDialog';
@@ -390,6 +393,54 @@ const Navbar = () => {
           cancelText="Cancel"
           type="warning"
         />
+      )}
+
+      {/* Admin Only Links */}
+      {user && ['admin', 'administrator', 'director'].includes(user.role) && (
+        <>
+          <Link href="/database" legacyBehavior>
+            <a
+              className={`flex items-center px-4 py-2 text-sm rounded-md ${
+                pathname === '/database'
+                  ? 'text-white bg-indigo-900'
+                  : 'text-indigo-300 hover:text-white hover:bg-indigo-800'
+              }`}
+            >
+              <ServerStackIcon className="h-5 w-5 mr-2" />
+              Database
+            </a>
+          </Link>
+
+          {/* Reports */}
+          <Link href="/reports" legacyBehavior>
+            <a
+              className={`flex items-center px-4 py-2 text-sm rounded-md ${
+                pathname === '/reports'
+                  ? 'text-white bg-indigo-900'
+                  : 'text-indigo-300 hover:text-white hover:bg-indigo-800'
+              }`}
+            >
+              <ChartBarIcon className="h-5 w-5 mr-2" />
+              Reports
+            </a>
+          </Link>
+          
+          {/* Announcements - For staff, admin and director */}
+          {user && ['staff', 'admin', 'administrator', 'director'].includes(user.role) && (
+            <Link href="/announcements" legacyBehavior>
+              <a
+                className={`flex items-center px-4 py-2 text-sm rounded-md ${
+                  pathname === '/announcements' || pathname.startsWith('/announcements/')
+                    ? 'text-white bg-indigo-900'
+                    : 'text-indigo-300 hover:text-white hover:bg-indigo-800'
+                }`}
+              >
+                <MegaphoneIcon className="h-5 w-5 mr-2" />
+                Announcements
+              </a>
+            </Link>
+          )}
+        </>
       )}
     </nav>
   );

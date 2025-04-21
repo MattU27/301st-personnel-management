@@ -3,6 +3,11 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import axios from 'axios';
+import { 
+  isValidEmailFormat, 
+  isAllowedAlternativeEmailDomain, 
+  getAlternativeEmailDomainsErrorMessage 
+} from '@/utils/validation';
 
 export default function PasswordRecoveryPage() {
   const [step, setStep] = useState<'method' | 'serviceId' | 'email' | 'success'>('method');
@@ -37,13 +42,43 @@ export default function PasswordRecoveryPage() {
         setIsLoading(false);
         setStep('success');
         setSuccessMessage(response.data.message || 'If your Service ID is registered in our system, you will receive a password reset link at your registered email address.');
+      } else if (process.env.NODE_ENV !== 'production' && response.data.devToken) {
+        // Handle development mode response with token
+        setIsLoading(false);
+        
+        // For development, show the token and reset URL
+        setStep('success');
+        setSuccessMessage(
+          `DEVELOPMENT MODE: Email sending failed, but you can use this link to reset your password: 
+          <a href="${response.data.devResetUrl}" class="text-blue-600 underline">${response.data.devResetUrl}</a>`
+        );
       } else {
         setError(response.data.error || 'Password recovery failed. Please try again.');
+        
+        // If we're in development mode and there are details, show them
+        if (process.env.NODE_ENV !== 'production' && response.data.details) {
+          setError(`${response.data.error} - Details: ${response.data.details}`);
+        }
+        
         setIsLoading(false);
       }
     } catch (error: any) {
       setIsLoading(false);
-      setError(error.response?.data?.error || 'Password recovery failed. Please try again.');
+      
+      console.error('Password reset error:', error);
+      
+      if (error.response?.data?.error) {
+        setError(error.response.data.error);
+        
+        // If we're in development mode and there are details, show them
+        if (process.env.NODE_ENV !== 'production' && error.response.data.details) {
+          setError(`${error.response.data.error} - Details: ${error.response.data.details}`);
+        }
+      } else if (error.message) {
+        setError(`Request failed: ${error.message}`);
+      } else {
+        setError('Password recovery failed. Please try again.');
+      }
     }
   };
 
@@ -58,10 +93,16 @@ export default function PasswordRecoveryPage() {
       return;
     }
 
-    // Simple email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    // Validate email format
+    if (!isValidEmailFormat(email)) {
       setError('Please enter a valid email address');
+      setIsLoading(false);
+      return;
+    }
+
+    // Validate allowed email domains
+    if (!isAllowedAlternativeEmailDomain(email)) {
+      setError(getAlternativeEmailDomainsErrorMessage());
       setIsLoading(false);
       return;
     }
@@ -74,13 +115,43 @@ export default function PasswordRecoveryPage() {
         setIsLoading(false);
         setStep('success');
         setSuccessMessage(response.data.message || 'If your email is registered in our system, you will receive a password reset link.');
+      } else if (process.env.NODE_ENV !== 'production' && response.data.devToken) {
+        // Handle development mode response with token
+        setIsLoading(false);
+        
+        // For development, show the token and reset URL
+        setStep('success');
+        setSuccessMessage(
+          `DEVELOPMENT MODE: Email sending failed, but you can use this link to reset your password: 
+          <a href="${response.data.devResetUrl}" class="text-blue-600 underline">${response.data.devResetUrl}</a>`
+        );
       } else {
         setError(response.data.error || 'Password recovery failed. Please try again.');
+        
+        // If we're in development mode and there are details, show them
+        if (process.env.NODE_ENV !== 'production' && response.data.details) {
+          setError(`${response.data.error} - Details: ${response.data.details}`);
+        }
+        
         setIsLoading(false);
       }
     } catch (error: any) {
       setIsLoading(false);
-      setError(error.response?.data?.error || 'Password recovery failed. Please try again.');
+      
+      console.error('Password reset error:', error);
+      
+      if (error.response?.data?.error) {
+        setError(error.response.data.error);
+        
+        // If we're in development mode and there are details, show them
+        if (process.env.NODE_ENV !== 'production' && error.response.data.details) {
+          setError(`${error.response.data.error} - Details: ${error.response.data.details}`);
+        }
+      } else if (error.message) {
+        setError(`Request failed: ${error.message}`);
+      } else {
+        setError('Password recovery failed. Please try again.');
+      }
     }
   };
 
@@ -284,7 +355,7 @@ export default function PasswordRecoveryPage() {
                 )}
                 
                 <div className="mb-8">
-                  <label htmlFor="email-recovery" className="block text-base font-medium text-gray-700 mb-2">
+                  <label htmlFor="email" className="block text-base font-medium text-gray-700 mb-2">
                     Alternative Email
                   </label>
                   <div className="relative">
@@ -294,7 +365,7 @@ export default function PasswordRecoveryPage() {
                       </svg>
                     </div>
                     <input
-                      id="email-recovery"
+                      id="email"
                       name="email"
                       type="email"
                       value={email}
@@ -305,8 +376,24 @@ export default function PasswordRecoveryPage() {
                     />
                   </div>
                   <p className="mt-2 text-sm text-gray-500">
-                    Enter the personal email you provided during registration
+                    We'll send a password reset link to this email address
                   </p>
+                  
+                  {/* Allowed email domains */}
+                  <div className="mt-4">
+                    <p className="text-sm font-medium text-gray-700 mb-2">Accepted email providers:</p>
+                    <div className="flex flex-wrap gap-2">
+                      <span className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-medium">
+                        Gmail
+                      </span>
+                      <span className="px-3 py-1 bg-purple-50 text-purple-700 rounded-full text-xs font-medium">
+                        Yahoo
+                      </span>
+                      <span className="px-3 py-1 bg-green-50 text-green-700 rounded-full text-xs font-medium">
+                        Outlook
+                      </span>
+                    </div>
+                  </div>
                 </div>
                 
                 <div className="flex items-center justify-between">
@@ -337,24 +424,30 @@ export default function PasswordRecoveryPage() {
             )}
 
             {step === 'success' && (
-              <div className="p-8">
-                <div className="flex items-center justify-center mb-8 text-green-500">
-                  <svg className="h-20 w-20" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              <div className="p-8 text-center">
+                <div className="mb-6">
+                  <svg className="h-16 w-16 text-green-500 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
-                <h3 className="text-2xl font-medium text-center text-gray-900 mb-6">Password Reset Link Sent</h3>
-                <p className="text-gray-600 text-center mb-10 text-lg">
-                  {successMessage}
+                <h3 className="text-xl font-medium text-gray-900 mb-4">Check Your Email</h3>
+                <div 
+                  className="text-gray-600 mb-8"
+                  dangerouslySetInnerHTML={{ __html: successMessage }}
+                ></div>
+                <p className="text-sm text-gray-500 mb-6">
+                  {process.env.NODE_ENV === 'production' ? (
+                    "If you don't receive an email within a few minutes, please check your spam folder."
+                  ) : (
+                    "This is a development environment. Check the server console for email details if you don't see a reset link above."
+                  )}
                 </p>
-                <div className="flex justify-center">
-                  <Link 
-                    href="/login"
-                    className="inline-flex items-center px-8 py-3 border border-transparent text-lg font-medium rounded-lg text-white bg-[#092140] hover:bg-[#0a2d5a] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#092140] transition-all duration-300 shadow-md hover:shadow-lg"
-                  >
-                    Return to Login
-                  </Link>
-                </div>
+                <button
+                  onClick={() => setStep('method')}
+                  className="w-full bg-[#092140] text-white py-3 px-4 rounded-lg hover:bg-[#0c2c54] focus:outline-none focus:ring-2 focus:ring-[#092140] focus:ring-opacity-50 transition duration-200"
+                >
+                  Start Over
+                </button>
               </div>
             )}
           </div>

@@ -17,7 +17,7 @@ export interface IToken extends mongoose.Document {
 
 // Add static methods to the interface
 export interface ITokenModel extends mongoose.Model<IToken> {
-  generatePasswordResetToken(userId: mongoose.Types.ObjectId): Promise<string>;
+  generatePasswordResetToken(userId: mongoose.Types.ObjectId | string): Promise<string>;
 }
 
 const TokenSchema = new mongoose.Schema({
@@ -29,6 +29,7 @@ const TokenSchema = new mongoose.Schema({
   token: {
     type: String,
     required: true,
+    index: true, // Add index for faster lookups
   },
   type: {
     type: String,
@@ -38,6 +39,7 @@ const TokenSchema = new mongoose.Schema({
   expiresAt: {
     type: Date,
     required: true,
+    index: true, // Add index for expiration queries
   },
   createdAt: {
     type: Date,
@@ -47,39 +49,75 @@ const TokenSchema = new mongoose.Schema({
 
 // Check if token is still valid
 TokenSchema.methods.isValid = function(): boolean {
-  return this.expiresAt > new Date();
+  try {
+    const now = new Date();
+    const isValid = this.expiresAt > now;
+    console.log('Token validity check:', {
+      token: this.token ? this.token.substring(0, 8) + '...' : 'undefined',
+      expiresAt: this.expiresAt,
+      currentTime: now,
+      isValid: isValid
+    });
+    return isValid;
+  } catch (error) {
+    console.error('Error validating token:', error);
+    // Default to invalid if there's an error
+    return false;
+  }
 };
 
 // Static method to generate a password reset token
-TokenSchema.statics.generatePasswordResetToken = async function(userId: mongoose.Types.ObjectId): Promise<string> {
+TokenSchema.statics.generatePasswordResetToken = async function(userId: mongoose.Types.ObjectId | string): Promise<string> {
   if (!userId) {
     console.error('No userId provided for token generation');
     throw new Error('User ID is required to generate a token');
   }
 
   try {
-    console.log(`Generating password reset token for user: ${userId}`);
+    // Ensure userId is a proper ObjectId
+    const userIdObj = userId instanceof mongoose.Types.ObjectId 
+      ? userId 
+      : new mongoose.Types.ObjectId(userId.toString());
+      
+    console.log(`Generating password reset token for user: ${userIdObj.toString()}`);
     
     // Delete any existing password reset tokens for this user
-    await this.deleteMany({
-      userId,
-      type: TokenType.PASSWORD_RESET,
-    });
+    try {
+      const deleteResult = await this.deleteMany({
+        userId: userIdObj,
+        type: TokenType.PASSWORD_RESET,
+      });
+      console.log(`Deleted ${deleteResult.deletedCount} existing tokens for user ${userIdObj}`);
+    } catch (deleteError) {
+      console.error('Error deleting existing tokens:', deleteError);
+      // Continue with token generation even if deletion fails
+    }
 
     // Generate a new token
     const token = crypto.randomBytes(32).toString('hex');
     
-    // Create expiration date (1 hour from now)
+    // Create expiration date (24 hours from now)
     const expiresAt = new Date();
-    expiresAt.setHours(expiresAt.getHours() + 1);
+    expiresAt.setHours(expiresAt.getHours() + 24);
 
     // Save the token
-    await this.create({
-      userId,
-      token,
-      type: TokenType.PASSWORD_RESET,
-      expiresAt,
-    });
+    try {
+      const newToken = await this.create({
+        userId: userIdObj,
+        token,
+        type: TokenType.PASSWORD_RESET,
+        expiresAt,
+      });
+      console.log(`New token created successfully:`, {
+        id: newToken._id,
+        userId: newToken.userId.toString(),
+        token: token.substring(0, 8) + '...',
+        expiresAt
+      });
+    } catch (createError) {
+      console.error('Error creating new token:', createError);
+      throw createError;
+    }
 
     return token;
   } catch (error) {

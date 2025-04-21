@@ -3,7 +3,7 @@
 import { Fragment, useState, useEffect } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
-import { Personnel, Training, Document, RankType, CompanyType } from '@/types/personnel';
+import { Personnel, Training, Document, RankType, CompanyType, UserRole } from '@/types/personnel';
 import { z } from 'zod';
 import { getRankDisplayName, getCompanyDisplayName } from '@/utils/formatters';
 
@@ -14,6 +14,9 @@ interface PersonnelModalProps {
   mode: 'view' | 'edit';
   onSave?: (data: Partial<Personnel>) => Promise<void>;
 }
+
+// Define the required fields at the top of the file or right before the component
+const REQUIRED_FIELDS = ['name', 'email', 'rank', 'company', 'status', 'dateJoined'];
 
 // Validation schema for personnel
 const personnelSchema = z.object({
@@ -69,7 +72,7 @@ export default function PersonnelModal({
       setFormData({
         ...personnel,
         rank: getRankDisplayName(personnel.rank),
-        company: getCompanyDisplayName(personnel.company as any)
+        company: getCompanyDisplayName(personnel.company)
       });
     } else {
       // Initialize with default values for a new personnel record
@@ -109,47 +112,96 @@ export default function PersonnelModal({
     validateField(name, value);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Validate all fields
-    let isValid = true;
+    // Validate all required fields
+    let hasErrors = false;
     const newErrors: Record<string, string> = {};
     
-    Object.entries(formData).forEach(([key, value]) => {
-      if (personnelSchema.shape[key as keyof typeof personnelSchema.shape]) {
-        try {
-          personnelSchema.shape[key as keyof typeof personnelSchema.shape].parse(value);
-        } catch (error) {
-          if (error instanceof z.ZodError) {
-            isValid = false;
-            newErrors[key] = error.errors[0]?.message || `Invalid ${key}`;
-          }
-        }
+    for (const field of REQUIRED_FIELDS) {
+      if (!formData[field as keyof typeof formData]) {
+        newErrors[field] = `${field.charAt(0).toUpperCase() + field.slice(1)} is required`;
+        hasErrors = true;
       }
-    });
+    }
     
-    setErrors(newErrors);
-    
-    if (!isValid) {
+    if (hasErrors) {
+      setErrors(newErrors);
       setIsSubmitting(false);
       return;
     }
     
     try {
-      // Add animation before submitting
-      const saveButton = document.querySelector('button[type="submit"]');
-      if (saveButton) {
-        saveButton.innerHTML = '<span class="flex items-center"><svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Saving...</span>';
+      // Helper function to ensure role is a valid enum value
+      const getNormalizedRole = (role: any): UserRole => {
+        // If 'user' is provided, convert to 'reservist'
+        if (role === 'user') return 'reservist';
+        
+        // Check if the role is one of the valid enum values
+        const validRoles: UserRole[] = ['staff', 'administrator', 'director', 'reservist', 'enlisted'];
+        if (role && validRoles.includes(role as UserRole)) {
+          return role as UserRole;
+        }
+        
+        // Default to 'reservist' if no valid role is provided
+        return 'reservist';
+      };
+      
+      // Special handling for company field to avoid MongoDB ObjectId cast errors
+      const dataToSubmit = { 
+        ...formData,
+        // Make sure the dateJoined field is properly formatted
+        dateJoined: formData.dateJoined ? new Date(formData.dateJoined).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+        // Pass the company value as companyName to avoid ObjectId issues
+        companyName: formData.company,
+        // Ensure status is properly set 
+        status: formData.status || 'standby',
+        // Fix the role field using the helper function
+        role: getNormalizedRole(formData.role),
+        // Ensure all required fields have values
+        email: formData.email?.trim(),
+        name: formData.name?.trim(),
+        rank: formData.rank,
+      };
+      
+      console.log('Submitting personnel data with company handling:', dataToSubmit);
+      
+      // Save the personnel data
+      if (onSave) {
+        await onSave(dataToSubmit);
+        // Only close if no errors were thrown
+        onClose();
+      }
+    } catch (error) {
+      console.error('Error saving personnel:', error);
+      
+      // Display a more specific error message
+      let errorMessage = 'Failed to save personnel. Please try again.';
+      
+      if (error instanceof Error) {
+        // Check if the error is related to the company field
+        if (error.message.includes('ObjectId') && error.message.includes('company')) {
+          errorMessage = 'Invalid company format. Please select a valid company.';
+        } else if (error.message.includes('Validation error')) {
+          errorMessage = 'Validation error: Please ensure all required fields are filled correctly.';
+        } else if (error.message.includes('duplicate key')) {
+          if (error.message.includes('email')) {
+            errorMessage = 'A personnel record with this email already exists.';
+          } else if (error.message.includes('serviceNumber')) {
+            errorMessage = 'A personnel record with this service number already exists.';
+          } else {
+            errorMessage = 'A duplicate record already exists.';
+          }
+        } else {
+          errorMessage = error.message;
+        }
       }
       
-      if (onSave) {
-        await onSave(formData);
-      }
-      onClose();
-    } catch (error) {
-      console.error('Failed to save personnel:', error);
+      setErrors({
+        submit: errorMessage
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -202,6 +254,44 @@ export default function PersonnelModal({
                     </Dialog.Title>
                     
                     <form onSubmit={handleSubmit}>
+                      {/* Display general error if any */}
+                      {errors.general && (
+                        <div className="mb-4 p-3 bg-red-50 border border-red-300 rounded-md">
+                          <div className="flex">
+                            <div className="flex-shrink-0">
+                              <svg className="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                              </svg>
+                            </div>
+                            <div className="ml-3">
+                              <h3 className="text-sm font-medium text-red-800">Error</h3>
+                              <div className="mt-1 text-sm text-red-700">
+                                {errors.general}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Display submit error if any */}
+                      {errors.submit && (
+                        <div className="mb-4 p-3 bg-red-50 border border-red-300 rounded-md">
+                          <div className="flex">
+                            <div className="flex-shrink-0">
+                              <svg className="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                              </svg>
+                            </div>
+                            <div className="ml-3">
+                              <h3 className="text-sm font-medium text-red-800">Save Error</h3>
+                              <div className="mt-1 text-sm text-red-700">
+                                {errors.submit}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div>
                           <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
@@ -315,12 +405,9 @@ export default function PersonnelModal({
                             required
                           >
                             <option value="">Select a status</option>
-                            <option value="active">Active</option>
-                            <option value="pending">Pending</option>
-                            <option value="inactive">Inactive</option>
-                            <option value="retired">Retired</option>
-                            <option value="standby">Standby</option>
                             <option value="ready">Ready</option>
+                            <option value="standby">Standby</option>
+                            <option value="retired">Retired</option>
                           </select>
                           {errors.status && (
                             <p className="mt-1 text-sm text-red-600">{errors.status}</p>
@@ -351,11 +438,12 @@ export default function PersonnelModal({
                             type="date"
                             id="dateJoined"
                             name="dateJoined"
-                            value={formData.dateJoined || ''}
+                            value={formData.dateJoined ? new Date(formData.dateJoined).toISOString().split('T')[0] : ''}
                             onChange={handleChange}
                             className={`block w-full rounded-md border ${
                               errors.dateJoined ? 'border-red-300' : 'border-gray-300'
                             } shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2`}
+                            max={new Date().toISOString().split('T')[0]}
                             disabled={mode === 'view'}
                             required
                           />

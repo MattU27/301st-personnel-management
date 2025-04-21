@@ -25,7 +25,7 @@ const Card: React.FC<CardProps> = ({
   const Heading = headingLevel;
   
   // Base classes
-  const baseClasses = 'rounded-lg shadow-md overflow-hidden bg-white';
+  const baseClasses = 'rounded-lg shadow-md bg-white overflow-hidden';
   const hoverClasses = interactive ? 'hover:shadow-lg transition-shadow cursor-pointer' : '';
   const focusClasses = interactive ? 'focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2' : '';
   

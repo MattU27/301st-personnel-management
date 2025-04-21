@@ -47,8 +47,9 @@ export async function GET(request: Request) {
     
     // 1. Personnel analytics
     const totalPersonnelCount = await Personnel.countDocuments();
-    const activePersonnelCount = await Personnel.countDocuments({ status: PersonnelStatus.ACTIVE });
-    const pendingPersonnelCount = await Personnel.countDocuments({ status: PersonnelStatus.PENDING });
+    const activePersonnelCount = await Personnel.countDocuments({ status: PersonnelStatus.READY });
+    const standbyPersonnelCount = await Personnel.countDocuments({ status: PersonnelStatus.STANDBY });
+    const retiredPersonnelCount = await Personnel.countDocuments({ status: PersonnelStatus.RETIRED });
     
     // 2. Company readiness data
     const companies = await Company.find().select('name readinessScore totalPersonnel activePersonnel documentsComplete trainingsComplete');
@@ -162,7 +163,8 @@ export async function GET(request: Request) {
         personnel: {
           total: totalPersonnelCount,
           active: activePersonnelCount,
-          pending: pendingPersonnelCount,
+          standby: standbyPersonnelCount,
+          retired: retiredPersonnelCount,
           activeRate: totalPersonnelCount > 0 ? Math.round((activePersonnelCount / totalPersonnelCount) * 100) : 0
         },
         companies: companies.map(company => ({

@@ -28,9 +28,6 @@ interface Personnel {
 const STATUS_OPTIONS = [
   { value: 'Ready', label: 'Ready', color: 'status-badge status-badge-ready' },
   { value: 'Standby', label: 'Standby', color: 'status-badge status-badge-standby' },
-  { value: 'Active', label: 'Active', color: 'status-badge status-badge-active' },
-  { value: 'Pending', label: 'Pending', color: 'status-badge status-badge-pending' },
-  { value: 'Inactive', label: 'Inactive', color: 'status-badge status-badge-inactive' },
   { value: 'Retired', label: 'Retired', color: 'status-badge status-badge-retired' }
 ];
 

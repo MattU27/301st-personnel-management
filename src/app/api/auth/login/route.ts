@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { dbConnect } from '@/utils/dbConnect';
+import { connectDB } from '@/lib/db';
 import User from '@/models/User';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
@@ -11,8 +12,15 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-for-jwt-signing';
 
 export async function POST(request: Request) {
   try {
-    // Connect to MongoDB
-    await dbConnect();
+    // Connect to MongoDB - try both connection methods to ensure we're connected
+    try {
+      await connectDB();
+      console.log('Connected to database via connectDB');
+    } catch (e) {
+      console.log('Failed to connect via connectDB, trying dbConnect...');
+      await dbConnect();
+      console.log('Connected to database via dbConnect');
+    }
     
     // Get login credentials from request body
     const { email, password } = await request.json();
@@ -28,18 +36,49 @@ export async function POST(request: Request) {
       );
     }
     
-    // Check if user exists
-    const userCollection = await mongoose.connection.collection('users');
-    const user = await userCollection.findOne({ email: email.toLowerCase() });
-    if (!user) {
-      console.log(`User not found: ${email}`);
-      return NextResponse.json(
-        { success: false, error: 'Invalid credentials' },
-        { status: 401 }
-      );
-    }
+    // Find user with mongoose model - explicitly select password
+    console.log('Finding user via mongoose model...');
+    let user = await User.findOne({
+      $or: [
+        { email: email.toLowerCase() },
+        { alternativeEmail: email.toLowerCase() }
+      ]
+    }).select('+password');
     
+    // Fallback to direct collection query if mongoose model fails
+    if (!user) {
+      console.log('User not found via mongoose, trying direct collection access...');
+      const userCollection = await mongoose.connection.collection('users');
+      const rawUser = await userCollection.findOne({
+        $or: [
+          { email: email.toLowerCase() },
+          { alternativeEmail: email.toLowerCase() }
+        ]
+      });
+      
+      if (rawUser) {
+        console.log('User found via direct collection access');
+        // Convert to mongoose model if found directly
+        user = await User.hydrate(rawUser);
+      } else {
+        console.log(`User not found with email: ${email}`);
+        return NextResponse.json(
+          { success: false, error: 'Invalid credentials' },
+          { status: 401 }
+        );
+      }
+    }
+
     console.log(`User found: ${email}`);
+    console.log('User details:', { 
+      id: user._id, 
+      email: user.email,
+      alternativeEmail: user.alternativeEmail,
+      usedEmail: user.email.toLowerCase() === email.toLowerCase() ? 'primary' : 'alternative',
+      passwordExists: !!user.password,
+      passwordStartsWith: user.password ? user.password.substring(0, 10) : 'none',
+      passwordLength: user.password ? user.password.length : 0
+    });
     
     // Check if user is deactivated
     if (user.status === 'deactivated' || user.status === 'inactive') {
@@ -50,22 +89,41 @@ export async function POST(request: Request) {
       );
     }
     
-    // Compare password
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    
-    if (!isPasswordValid) {
-      console.log(`Invalid password for user: ${email}`);
+    // Compare password - use the User model method if available
+    try {
+      console.log('Comparing password...');
+      let isPasswordValid;
+      
+      // Try using the User model's comparePassword method
+      if (typeof user.comparePassword === 'function') {
+        console.log('Using User.comparePassword method');
+        isPasswordValid = await user.comparePassword(password);
+      } else {
+        // Fallback to direct bcrypt comparison
+        console.log('Using direct bcrypt.compare');
+        isPasswordValid = await bcrypt.compare(password, user.password);
+      }
+      
+      console.log('Password comparison result:', isPasswordValid);
+      
+      if (!isPasswordValid) {
+        console.log(`Invalid password for user: ${email}`);
+        return NextResponse.json(
+          { success: false, error: 'Invalid credentials' },
+          { status: 401 }
+        );
+      }
+    } catch (passwordError) {
+      console.error('Error during password comparison:', passwordError);
       return NextResponse.json(
-        { success: false, error: 'Invalid credentials' },
-        { status: 401 }
+        { success: false, error: 'Error validating credentials' },
+        { status: 500 }
       );
     }
     
     // Update last login date
-    await userCollection.updateOne(
-      { _id: user._id },
-      { $set: { lastLogin: new Date() } }
-    );
+    user.lastLogin = new Date();
+    await user.save();
     
     // Create user object without password
     const userWithoutPassword = {
@@ -137,9 +195,20 @@ export async function POST(request: Request) {
     return response;
   } catch (error: any) {
     console.error('Login error:', error);
-    return NextResponse.json(
-      { success: false, error: error.message || 'Login failed' },
-      { status: 500 }
-    );
+    
+    // Return more detailed error information
+    const status = error.status || 500;
+    const errorDetails = {
+      success: false, 
+      error: error.message || 'Login failed',
+      details: process.env.NODE_ENV === 'development' ? {
+        stack: error.stack,
+        name: error.name
+      } : undefined
+    };
+    
+    console.error('Responding with error:', errorDetails);
+    
+    return NextResponse.json(errorDetails, { status });
   }
 } 

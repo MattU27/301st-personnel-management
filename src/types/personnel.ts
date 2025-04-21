@@ -1,4 +1,4 @@
-export type UserRole = 'reservist' | 'enlisted' | 'staff' | 'administrator' | 'director';
+export type UserRole = 'staff' | 'administrator' | 'super_administrator';
 
 export type RankType = 
   | 'Private'
@@ -21,7 +21,7 @@ export type CompanyType =
   | 'NERRSC (NERR-Signal Company)' 
   | 'NERRFAB (NERR-Field Artillery Battery)';
 
-export type PersonnelStatus = 'active' | 'pending' | 'inactive' | 'retired' | 'standby' | 'ready';
+export type PersonnelStatus = 'ready' | 'standby' | 'retired';
 
 export type SecurityClassification = 'Unclassified' | 'Confidential' | 'Secret' | 'Top Secret';
 
@@ -30,6 +30,7 @@ export interface Personnel {
   name: string;
   rank: RankType;
   company: CompanyType;
+  companyName?: string;
   status: PersonnelStatus;
   lastUpdated: string;
   email: string;

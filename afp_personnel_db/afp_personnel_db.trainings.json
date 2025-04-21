@@ -1,1 +1,44 @@
-[]
+[{
+  "_id": {
+    "$oid": "67fdf68282150da212a47a08"
+  },
+  "title": "DASDADSADSA",
+  "description": "DASDASDSADAS",
+  "type": "seminar",
+  "startDate": {
+    "$date": "2025-04-15T06:02:12.073Z"
+  },
+  "endDate": {
+    "$date": "2025-04-16T22:02:00.000Z"
+  },
+  "location": {
+    "name": "DWADWADWAD",
+    "address": "AWDAWDWAD"
+  },
+  "instructor": {
+    "name": "mr. hahaha",
+    "rank": "General"
+  },
+  "status": "upcoming",
+  "capacity": 40,
+  "registered": 0,
+  "eligibleRanks": [],
+  "eligibleCompanies": [],
+  "mandatory": false,
+  "attendees": [],
+  "createdBy": {
+    "$oid": "67f89d274ba8bbe8d094b0be"
+  },
+  "tags": [
+    "3"
+  ],
+  "certificationOffered": false,
+  "materials": [],
+  "createdAt": {
+    "$date": "2025-04-15T06:02:42.940Z"
+  },
+  "updatedAt": {
+    "$date": "2025-04-15T06:02:53.687Z"
+  },
+  "__v": 2
+}]

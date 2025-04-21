@@ -37,6 +37,8 @@ import { Dialog, Transition } from '@headlessui/react';
 import { z } from 'zod';
 import { toast } from 'react-hot-toast';
 import ApproveAccountsModal from './accounts/modal';
+import SyncStatusButton from '@/components/SyncStatusButton';
+import mongoose from 'mongoose';
 
 const COMPANIES: CompanyType[] = ['Alpha', 'Bravo', 'Charlie', 'Headquarters', 'NERRSC (NERR-Signal Company)', 'NERRFAB (NERR-Field Artillery Battery)'];
 const STATUS_OPTIONS: PersonnelStatus[] = ['ready', 'standby', 'retired'];
@@ -304,7 +306,8 @@ const PersonnelAccountModal = ({ isOpen, onClose, onSave }: PersonnelAccountModa
       onClose();
     } catch (error) {
       console.error('Failed to save personnel:', error);
-      // Leave modal open so user can try again
+      // Using toast from react-hot-toast instead of setToast
+      toast.error(error instanceof Error ? `Failed to save personnel: ${error.message}` : 'Failed to save personnel. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -366,350 +369,332 @@ const PersonnelAccountModal = ({ isOpen, onClose, onSave }: PersonnelAccountModa
     document.body.removeChild(element);
   };
 
+  if (!isOpen) return null;
+
   return (
-    <Transition.Root show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-10" onClose={onClose}>
-        <Transition.Child
-          as={Fragment}
-          enter="ease-out duration-300"
-          enterFrom="opacity-0"
-          enterTo="opacity-100"
-          leave="ease-in duration-200"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
-        >
-          <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
-        </Transition.Child>
+    <div className="fixed inset-0 z-50 overflow-y-auto">
+      <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        {/* Background overlay */}
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onClick={onClose} />
 
-        <div className="fixed inset-0 z-10 overflow-y-auto">
-          <div className="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
-            <Transition.Child
-              as={Fragment}
-              enter="ease-out duration-300"
-              enterFrom="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-              enterTo="opacity-100 translate-y-0 sm:scale-100"
-              leave="ease-in duration-200"
-              leaveFrom="opacity-100 translate-y-0 sm:scale-100"
-              leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+        {/* Modal panel */}
+        <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-3xl sm:w-full">
+          {/* Close button */}
+          <div className="absolute right-0 top-0 pr-4 pt-4 block">
+            <button
+              type="button"
+              className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none"
+              onClick={onClose}
             >
-              <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-3xl">
-                <div className="absolute right-0 top-0 pr-4 pt-4 block">
-                  <button
-                    type="button"
-                    className="rounded-md bg-white text-gray-400 hover:text-gray-500 focus:outline-none"
-                    onClick={onClose}
-                  >
-                    <span className="sr-only">Close</span>
-                    <XMarkIcon className="h-6 w-6" aria-hidden="true" />
-                  </button>
-                </div>
+              <span className="sr-only">Close</span>
+              <XMarkIcon className="h-6 w-6" aria-hidden="true" />
+            </button>
+          </div>
 
-                <div className="bg-white p-6">
-                  <div className="sm:flex sm:items-start">
-                    <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
-                      <Dialog.Title as="h3" className="text-lg font-semibold leading-6 text-gray-900">
-                        Add Personnel Account
-                      </Dialog.Title>
-                      
-                      {/* Admin-only warning for staff users */}
-                      {!isAdmin && (
-                        <div className="mt-4 p-3 bg-amber-50 border border-amber-300 rounded-md">
-                          <div className="flex">
-                            <div className="flex-shrink-0">
-                              <svg className="h-5 w-5 text-amber-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                              </svg>
-                            </div>
-                            <div className="ml-3">
-                              <h3 className="text-sm font-medium text-amber-800">Admin Access Required</h3>
-                              <div className="mt-1 text-sm text-amber-700">
-                                <p>Only users with administrator privileges can add personnel. Please contact an administrator for assistance.</p>
-                              </div>
-                            </div>
+          {/* Modal content */}
+          <div className="bg-white p-6">
+            <div className="sm:flex sm:items-start">
+              <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
+                <h3 className="text-lg font-semibold leading-6 text-gray-900">
+                  Add Personnel Account
+                </h3>
+                
+                {/* Admin-only warning for staff users */}
+                {!isAdmin && (
+                  <div className="mt-4 p-3 bg-amber-50 border border-amber-300 rounded-md">
+                    <div className="flex">
+                      <div className="flex-shrink-0">
+                        <svg className="h-5 w-5 text-amber-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      <div className="ml-3">
+                        <h3 className="text-sm font-medium text-amber-800">Admin Access Required</h3>
+                        <div className="mt-1 text-sm text-amber-700">
+                          <p>Only users with administrator privileges can add personnel. Please contact an administrator for assistance.</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Only show forms if user is admin */}
+                {isAdmin ? (
+                  <>
+                    {/* Tab selection */}
+                    <div className="border-b border-gray-200 mt-4 mb-6">
+                      <div className="flex -mb-px">
+                        <button
+                          className={`py-2 px-4 text-sm font-medium ${
+                            activeTab === 'single'
+                              ? 'border-b-2 border-indigo-500 text-indigo-600'
+                              : 'text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                          }`}
+                          onClick={() => setActiveTab('single')}
+                        >
+                          Create a Personnel
+                        </button>
+                        <button
+                          className={`ml-8 py-2 px-4 text-sm font-medium ${
+                            activeTab === 'bulk'
+                              ? 'border-b-2 border-indigo-500 text-indigo-600'
+                              : 'text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                          }`}
+                          onClick={() => setActiveTab('bulk')}
+                        >
+                          Bulk Upload
+                        </button>
+                      </div>
+                    </div>
+                    
+                    {/* Single personnel form */}
+                    {activeTab === 'single' && (
+                      <form onSubmit={handleSubmit}>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div>
+                            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                              Full Name*
+                            </label>
+                            <input
+                              type="text"
+                              id="name"
+                              name="name"
+                              value={formData.name || ''}
+                              onChange={handleChange}
+                              className={`block w-full rounded-md border ${
+                                errors.name ? 'border-red-300' : 'border-gray-300'
+                              } shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2`}
+                              required
+                            />
+                            {errors.name && (
+                              <p className="mt-1 text-sm text-red-600">{errors.name}</p>
+                            )}
+                          </div>
+                          
+                          <div>
+                            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                              Email*
+                            </label>
+                            <input
+                              type="email"
+                              id="email"
+                              name="email"
+                              value={formData.email || ''}
+                              onChange={handleChange}
+                              className={`block w-full rounded-md border ${
+                                errors.email ? 'border-red-300' : 'border-gray-300'
+                              } shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2`}
+                              required
+                            />
+                            {errors.email && (
+                              <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+                            )}
+                            <p className="mt-1 text-xs text-gray-500">
+                              Only gmail.com, outlook.com, yahoo.com, and mil.ph domains are accepted.
+                            </p>
+                          </div>
+                          
+                          <div>
+                            <label htmlFor="rank" className="block text-sm font-medium text-gray-700 mb-1">
+                              Rank*
+                            </label>
+                            <select
+                              id="rank"
+                              name="rank"
+                              value={formData.rank || ''}
+                              onChange={handleChange}
+                              className={`block w-full rounded-md border ${
+                                errors.rank ? 'border-red-300' : 'border-gray-300'
+                              } shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2`}
+                              required
+                            >
+                              <option value="">Select Rank</option>
+                              {['Private', 'Private First Class', 'Corporal', 'Sergeant', 'Second Lieutenant', 'First Lieutenant', 'Captain', 'Major', 'Lieutenant Colonel', 'Colonel', 'Brigadier General'].map((rank) => (
+                                <option key={rank} value={rank}>
+                                  {rank}
+                                </option>
+                              ))}
+                            </select>
+                            {errors.rank && (
+                              <p className="mt-1 text-sm text-red-600">{errors.rank}</p>
+                            )}
+                          </div>
+                          
+                          <div>
+                            <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-1">
+                              Company*
+                            </label>
+                            <select
+                              id="company"
+                              name="company"
+                              value={formData.company || ''}
+                              onChange={handleChange}
+                              className={`block w-full rounded-md border ${
+                                errors.company ? 'border-red-300' : 'border-gray-300'
+                              } shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2`}
+                              required
+                            >
+                              <option value="">Select Company</option>
+                              {['Alpha', 'Bravo', 'Charlie', 'Headquarters', 'NERRSC (NERR-Signal Company)', 'NERRFAB (NERR-Field Artillery Battery)'].map((company) => (
+                                <option key={company} value={company}>
+                                  {company}
+                                </option>
+                              ))}
+                            </select>
+                            {errors.company && (
+                              <p className="mt-1 text-sm text-red-600">{errors.company}</p>
+                            )}
+                          </div>
+                          
+                          <div>
+                            <label htmlFor="serviceNumber" className="block text-sm font-medium text-gray-700 mb-1">
+                              Service Number*
+                            </label>
+                            <input
+                              type="text"
+                              id="serviceNumber"
+                              name="serviceNumber"
+                              value={formData.serviceNumber || ''}
+                              onChange={handleChange}
+                              className={`block w-full rounded-md border ${
+                                errors.serviceNumber ? 'border-red-300' : 'border-gray-300'
+                              } shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2`}
+                              required
+                            />
+                            {errors.serviceNumber && (
+                              <p className="mt-1 text-sm text-red-600">{errors.serviceNumber}</p>
+                            )}
+                          </div>
+                          
+                          <div>
+                            <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 mb-1">
+                              Phone Number (Optional)
+                            </label>
+                            <input
+                              type="text"
+                              id="phoneNumber"
+                              name="phoneNumber"
+                              value={formData.phoneNumber || ''}
+                              onChange={handleChange}
+                              className="block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2"
+                            />
                           </div>
                         </div>
-                      )}
-                      
-                      {/* Only show forms if user is admin */}
-                      {isAdmin ? (
-                        <>
-                          {/* Tab selection */}
-                          <div className="border-b border-gray-200 mt-4 mb-6">
-                            <div className="flex -mb-px">
-                              <button
-                                className={`py-2 px-4 text-sm font-medium ${
-                                  activeTab === 'single'
-                                    ? 'border-b-2 border-indigo-500 text-indigo-600'
-                                    : 'text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                                }`}
-                                onClick={() => setActiveTab('single')}
-                              >
-                                Create a Personnel
-                              </button>
-                              <button
-                                className={`ml-8 py-2 px-4 text-sm font-medium ${
-                                  activeTab === 'bulk'
-                                    ? 'border-b-2 border-indigo-500 text-indigo-600'
-                                    : 'text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                                }`}
-                                onClick={() => setActiveTab('bulk')}
-                              >
-                                Bulk Upload
-                              </button>
-                            </div>
-                          </div>
-                          
-                          {/* Single personnel form */}
-                          {activeTab === 'single' && (
-                            <form onSubmit={handleSubmit}>
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                                    Full Name*
-                                  </label>
-                                  <input
-                                    type="text"
-                                    id="name"
-                                    name="name"
-                                    value={formData.name || ''}
-                                    onChange={handleChange}
-                                    className={`block w-full rounded-md border ${
-                                      errors.name ? 'border-red-300' : 'border-gray-300'
-                                    } shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2`}
-                                    required
-                                  />
-                                  {errors.name && (
-                                    <p className="mt-1 text-sm text-red-600">{errors.name}</p>
-                                  )}
-                                </div>
-                                
-                                <div>
-                                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                                    Email*
-                                  </label>
-                                  <input
-                                    type="email"
-                                    id="email"
-                                    name="email"
-                                    value={formData.email || ''}
-                                    onChange={handleChange}
-                                    className={`block w-full rounded-md border ${
-                                      errors.email ? 'border-red-300' : 'border-gray-300'
-                                    } shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2`}
-                                    required
-                                  />
-                                  {errors.email && (
-                                    <p className="mt-1 text-sm text-red-600">{errors.email}</p>
-                                  )}
-                                  <p className="mt-1 text-xs text-gray-500">
-                                    Only gmail.com, outlook.com, yahoo.com, and mil.ph domains are accepted.
-                                  </p>
-                                </div>
-                                
-                                <div>
-                                  <label htmlFor="rank" className="block text-sm font-medium text-gray-700 mb-1">
-                                    Rank*
-                                  </label>
-                                  <select
-                                    id="rank"
-                                    name="rank"
-                                    value={formData.rank || ''}
-                                    onChange={handleChange}
-                                    className={`block w-full rounded-md border ${
-                                      errors.rank ? 'border-red-300' : 'border-gray-300'
-                                    } shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2`}
-                                    required
-                                  >
-                                    <option value="">Select Rank</option>
-                                    {['Private', 'Private First Class', 'Corporal', 'Sergeant', 'Second Lieutenant', 'First Lieutenant', 'Captain', 'Major', 'Lieutenant Colonel', 'Colonel', 'Brigadier General'].map((rank) => (
-                                      <option key={rank} value={rank}>
-                                        {rank}
-                                      </option>
-                                    ))}
-                                  </select>
-                                  {errors.rank && (
-                                    <p className="mt-1 text-sm text-red-600">{errors.rank}</p>
-                                  )}
-                                </div>
-                                
-                                <div>
-                                  <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-1">
-                                    Company*
-                                  </label>
-                                  <select
-                                    id="company"
-                                    name="company"
-                                    value={formData.company || ''}
-                                    onChange={handleChange}
-                                    className={`block w-full rounded-md border ${
-                                      errors.company ? 'border-red-300' : 'border-gray-300'
-                                    } shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2`}
-                                    required
-                                  >
-                                    <option value="">Select Company</option>
-                                    {['Alpha', 'Bravo', 'Charlie', 'Headquarters', 'NERRSC (NERR-Signal Company)', 'NERRFAB (NERR-Field Artillery Battery)'].map((company) => (
-                                      <option key={company} value={company}>
-                                        {company}
-                                      </option>
-                                    ))}
-                                  </select>
-                                  {errors.company && (
-                                    <p className="mt-1 text-sm text-red-600">{errors.company}</p>
-                                  )}
-                                </div>
-                                
-                                <div>
-                                  <label htmlFor="serviceNumber" className="block text-sm font-medium text-gray-700 mb-1">
-                                    Service Number*
-                                  </label>
-                                  <input
-                                    type="text"
-                                    id="serviceNumber"
-                                    name="serviceNumber"
-                                    value={formData.serviceNumber || ''}
-                                    onChange={handleChange}
-                                    className={`block w-full rounded-md border ${
-                                      errors.serviceNumber ? 'border-red-300' : 'border-gray-300'
-                                    } shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2`}
-                                    required
-                                  />
-                                  {errors.serviceNumber && (
-                                    <p className="mt-1 text-sm text-red-600">{errors.serviceNumber}</p>
-                                  )}
-                                </div>
-                                
-                                <div>
-                                  <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700 mb-1">
-                                    Phone Number (Optional)
-                                  </label>
-                                  <input
-                                    type="text"
-                                    id="phoneNumber"
-                                    name="phoneNumber"
-                                    value={formData.phoneNumber || ''}
-                                    onChange={handleChange}
-                                    className="block w-full rounded-md border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2"
-                                  />
-                                </div>
-                              </div>
-                              
-                              <div className="mt-6 flex justify-end space-x-3">
-                                <Button
-                                  variant="secondary"
-                                  onClick={onClose}
-                                  className="text-sm"
-                                >
-                                  Cancel
-                                </Button>
-                                <Button
-                                  type="submit"
-                                  variant="primary"
-                                  disabled={isSubmitting}
-                                  className="text-sm"
-                                >
-                                  {isSubmitting ? 'Adding Personnel...' : 'Add Personnel'}
-                                </Button>
-                              </div>
-                            </form>
-                          )}
-                          
-                          {/* Bulk upload form */}
-                          {activeTab === 'bulk' && (
-                            <div>
-                              <div className="mb-6 bg-blue-50 p-4 rounded-md">
-                                <div className="flex">
-                                  <div className="flex-shrink-0">
-                                    <svg className="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                                    </svg>
-                                  </div>
-                                  <div className="ml-3 flex-1 md:flex md:justify-between">
-                                    <p className="text-sm text-blue-700">
-                                      Upload a CSV file with personnel data. The file should have a header row with the following columns: name, email, rank, company, serviceNumber, phoneNumber, status.
-                                    </p>
-                                    <p className="mt-3 text-sm md:mt-0 md:ml-6">
-                                      <button
-                                        onClick={downloadTemplate}
-                                        className="whitespace-nowrap font-medium text-blue-700 hover:text-blue-600"
-                                      >
-                                        Download Template
-                                      </button>
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
-                              
-                              <form onSubmit={handleBulkUpload}>
-                                <div className="mb-6">
-                                  <label htmlFor="bulk-file" className="block text-sm font-medium text-gray-700 mb-1">
-                                    Personnel CSV File*
-                                  </label>
-                                  <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
-                                    <div className="space-y-1 text-center">
-                                      <svg className="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
-                                        <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                      </svg>
-                                      <div className="flex text-sm text-gray-600">
-                                        <label
-                                          htmlFor="bulk-file"
-                                          className="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500"
-                                        >
-                                          <span>Upload a file</span>
-                                          <input id="bulk-file" name="bulk-file" type="file" accept=".csv" className="sr-only" onChange={handleFileChange} />
-                                        </label>
-                                        <p className="pl-1">or drag and drop</p>
-                                      </div>
-                                      <p className="text-xs text-gray-500">CSV file up to 10MB</p>
-                                    </div>
-                                  </div>
-                                  {bulkFile && (
-                                    <p className="mt-2 text-sm text-gray-600">
-                                      Selected file: {bulkFile.name}
-                                    </p>
-                                  )}
-                                </div>
-                                
-                                <div className="mt-6 flex justify-end space-x-3">
-                                  <Button
-                                    variant="secondary"
-                                    onClick={onClose}
-                                    className="text-sm"
-                                  >
-                                    Cancel
-                                  </Button>
-                                  <Button
-                                    type="submit"
-                                    variant="primary"
-                                    disabled={!bulkFile || isUploading}
-                                    className="text-sm"
-                                  >
-                                    {isUploading ? 'Uploading...' : 'Upload Personnel'}
-                                  </Button>
-                                </div>
-                              </form>
-                            </div>
-                          )}
-                        </>
-                      ) : (
-                        <div className="mt-6 flex justify-end">
+                        
+                        <div className="mt-6 flex justify-end space-x-3">
                           <Button
                             variant="secondary"
                             onClick={onClose}
                             className="text-sm"
                           >
-                            Close
+                            Cancel
+                          </Button>
+                          <Button
+                            type="submit"
+                            variant="primary"
+                            disabled={isSubmitting}
+                            className="text-sm"
+                          >
+                            {isSubmitting ? 'Adding Personnel...' : 'Add Personnel'}
                           </Button>
                         </div>
-                      )}
-                    </div>
+                      </form>
+                    )}
+                    
+                    {/* Bulk upload form */}
+                    {activeTab === 'bulk' && (
+                      <div>
+                        <div className="mb-6 bg-blue-50 p-4 rounded-md">
+                          <div className="flex">
+                            <div className="flex-shrink-0">
+                              <svg className="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                              </svg>
+                            </div>
+                            <div className="ml-3 flex-1 md:flex md:justify-between">
+                              <p className="text-sm text-blue-700">
+                                Upload a CSV file with personnel data. The file should have a header row with the following columns: name, email, rank, company, serviceNumber, phoneNumber, status.
+                              </p>
+                              <p className="mt-3 text-sm md:mt-0 md:ml-6">
+                                <button
+                                  onClick={downloadTemplate}
+                                  className="whitespace-nowrap font-medium text-blue-700 hover:text-blue-600"
+                                >
+                                  Download Template
+                                </button>
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <form onSubmit={handleBulkUpload}>
+                          <div className="mb-6">
+                            <label htmlFor="bulk-file" className="block text-sm font-medium text-gray-700 mb-1">
+                              Personnel CSV File*
+                            </label>
+                            <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                              <div className="space-y-1 text-center">
+                                <svg className="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                                  <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
+                                <div className="flex text-sm text-gray-600">
+                                  <label
+                                    htmlFor="bulk-file"
+                                    className="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500"
+                                  >
+                                    <span>Upload a file</span>
+                                    <input id="bulk-file" name="bulk-file" type="file" accept=".csv" className="sr-only" onChange={handleFileChange} />
+                                  </label>
+                                  <p className="pl-1">or drag and drop</p>
+                                </div>
+                                <p className="text-xs text-gray-500">CSV file up to 10MB</p>
+                              </div>
+                            </div>
+                            {bulkFile && (
+                              <p className="mt-2 text-sm text-gray-600">
+                                Selected file: {bulkFile.name}
+                              </p>
+                            )}
+                          </div>
+                          
+                          <div className="mt-6 flex justify-end space-x-3">
+                            <Button
+                              variant="secondary"
+                              onClick={onClose}
+                              className="text-sm"
+                            >
+                              Cancel
+                            </Button>
+                            <Button
+                              type="submit"
+                              variant="primary"
+                              disabled={!bulkFile || isUploading}
+                              className="text-sm"
+                            >
+                              {isUploading ? 'Uploading...' : 'Upload Personnel'}
+                            </Button>
+                          </div>
+                        </form>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className="mt-6 flex justify-end">
+                    <Button
+                      variant="secondary"
+                      onClick={onClose}
+                      className="text-sm"
+                    >
+                      Close
+                    </Button>
                   </div>
-                </div>
-              </Dialog.Panel>
-            </Transition.Child>
+                )}
+              </div>
+            </div>
           </div>
         </div>
-      </Dialog>
-    </Transition.Root>
+      </div>
+    </div>
   );
 };
 
@@ -721,7 +706,7 @@ export default function PersonnelPage() {
   
   // Create separate state variables for input and filters
   const [searchValue, setSearchValue] = useState("");
-  const [filterStatus, setFilterStatus] = useState<PersonnelStatus | 'All'>('All');
+  const [filterStatus, setFilterStatus] = useState<PersonnelStatus | 'All'>('ready');
   const [filterCompany, setFilterCompany] = useState<CompanyType | 'All'>('All');
   
   const [currentPage, setCurrentPage] = useState(1);
@@ -749,6 +734,58 @@ export default function PersonnelPage() {
   // Track selected personnel for status update
   const [selectedPersonnelForStatus, setSelectedPersonnelForStatus] = useState<Personnel | null>(null);
   
+  // Function to fetch all personnel data
+  const fetchAllPersonnel = async () => {
+    setIsLoading(true);
+    try {
+      console.log('Fetching all personnel data...');
+      
+      // Increase pageSize to ensure we get all personnel
+      const response = await fetch(`/api/personnel?pageSize=1000`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      if (data.success) {
+        // Process the data
+        let personnelData = data.data.personnel || [];
+        
+        console.log(`Loaded ${personnelData.length} personnel records from API`);
+        
+        // Map MongoDB _id to id for frontend compatibility and normalize status values
+        personnelData = personnelData.map((person: any) => {
+          // Normalize status to match our allowed values
+          const normalizedStatus = normalizeStatus(person.status);
+          
+          return {
+            ...person,
+            id: person._id || person.id,
+            status: normalizedStatus,
+            lastUpdated: person.lastUpdated ? new Date(person.lastUpdated).toLocaleDateString() : new Date().toLocaleDateString()
+          };
+        });
+        
+        setAllPersonnel(personnelData);
+        setFilteredPersonnel(personnelData);
+        
+        // Set pagination data
+        const totalPagesCount = Math.ceil(personnelData.length / ITEMS_PER_PAGE);
+        setTotalPages(totalPagesCount);
+        console.log(`Setting total pages to ${totalPagesCount} (${personnelData.length} items at ${ITEMS_PER_PAGE} per page)`);
+        setInitialLoadComplete(true);
+      } else {
+        throw new Error(data.error || 'Failed to fetch personnel');
+      }
+    } catch (error) {
+      console.error('Failed to fetch personnel:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Function to apply filters to personnel data
   const applyFilters = (personnelData: Personnel[]) => {
     const filtered = personnelData.filter(person => {
@@ -776,58 +813,6 @@ export default function PersonnelPage() {
 
   // Load all personnel data once
   useEffect(() => {
-    const fetchAllPersonnel = async () => {
-      setIsLoading(true);
-      try {
-        // Only fetch once at the beginning
-        console.log('Fetching all personnel data...');
-        
-        // Increase pageSize to ensure we get all personnel
-        const response = await fetch(`/api/personnel?pageSize=1000`);
-        
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        
-        if (data.success) {
-          // Process the data
-          let personnelData = data.data.personnel || [];
-          
-          console.log(`Loaded ${personnelData.length} personnel records from API`);
-          
-          // Map MongoDB _id to id for frontend compatibility and normalize status values
-          personnelData = personnelData.map((person: any) => {
-            // Normalize status to match our allowed values
-            const normalizedStatus = normalizeStatus(person.status);
-            
-            return {
-              ...person,
-              id: person._id || person.id,
-              status: normalizedStatus,
-              lastUpdated: person.lastUpdated ? new Date(person.lastUpdated).toLocaleDateString() : new Date().toLocaleDateString()
-            };
-          });
-          
-          setAllPersonnel(personnelData);
-          setFilteredPersonnel(personnelData);
-          
-          // Set pagination data
-          const totalPagesCount = Math.ceil(personnelData.length / ITEMS_PER_PAGE);
-          setTotalPages(totalPagesCount);
-          console.log(`Setting total pages to ${totalPagesCount} (${personnelData.length} items at ${ITEMS_PER_PAGE} per page)`);
-          setInitialLoadComplete(true);
-        } else {
-          throw new Error(data.error || 'Failed to fetch personnel');
-        }
-      } catch (error) {
-        console.error('Failed to fetch personnel:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
     fetchAllPersonnel();
   }, []);
 
@@ -1066,6 +1051,21 @@ export default function PersonnelPage() {
     }
   };
 
+  // Helper function to ensure role is a valid enum value
+  const getNormalizedRole = (role: any): UserRole => {
+    // If 'user' is provided, convert to 'reservist'
+    if (role === 'user') return 'reservist';
+    
+    // Check if the role is one of the valid enum values
+    const validRoles: UserRole[] = ['staff', 'administrator', 'director', 'reservist', 'enlisted'];
+    if (role && validRoles.includes(role as UserRole)) {
+      return role as UserRole;
+    }
+    
+    // Default to 'reservist' if no valid role is provided
+    return 'reservist';
+  };
+
   // Handle save (for edit/create modal)
   const handleSave = async (updatedData: Partial<Personnel>) => {
     if (!selectedPersonnel || !user || !user._id) return;
@@ -1075,16 +1075,46 @@ export default function PersonnelPage() {
       const token = localStorage.getItem('token');
       // Check for a string 'new' not a numerical comparison
       const isNewPersonnel = selectedPersonnel.id.toString() === 'new';
-      const url = `/api/personnel${isNewPersonnel ? '' : `?id=${selectedPersonnel.id}`}`;
+      const url = `/api/personnel`;
       const method = isNewPersonnel ? 'POST' : 'PUT';
       
       // Prepare the data
-      const personnelData = isNewPersonnel
-        ? { ...updatedData }
-        : { ...selectedPersonnel, ...updatedData };
+      let requestBody;
       
-      // Set last updated timestamp as string
-      personnelData.lastUpdated = new Date().toISOString();
+      // Handle the companyName field that comes from PersonnelModal
+      const { companyName, ...otherData } = updatedData;
+      
+      // Normalize the role field to ensure it's a valid enum value
+      if (otherData.role) {
+        otherData.role = getNormalizedRole(otherData.role);
+      }
+      
+      if (isNewPersonnel) {
+        // For new personnel, use companyName if provided as the company field
+        requestBody = { 
+          ...otherData,
+          // If companyName is provided, use it for the company field
+          ...(companyName ? { company: companyName } : {}),
+          // Ensure a valid role is set
+          role: otherData.role || 'reservist'
+        };
+      } else {
+        // For updating existing personnel, format according to the API's expected structure
+        requestBody = {
+          id: selectedPersonnel.id,
+          data: { 
+            ...otherData,
+            // Use companyName if provided for the company field
+            ...(companyName ? { company: companyName } : {}),
+            // Ensure a valid role is set
+            role: otherData.role || 'reservist',
+            lastUpdated: new Date().toISOString()
+          }
+        };
+      }
+      
+      console.log('Sending request:', method, url);
+      console.log('Request body:', requestBody);
       
       const response = await fetch(url, {
         method,
@@ -1092,10 +1122,14 @@ export default function PersonnelPage() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(personnelData)
+        body: JSON.stringify(requestBody)
       });
       
+      // Log HTTP status for debugging
+      console.log('API response status:', response.status);
+      
       const result = await response.json();
+      console.log('API response details:', JSON.stringify(result, null, 2));
       
       if (result.success) {
         // Update was successful
@@ -1103,7 +1137,7 @@ export default function PersonnelPage() {
         
         // Show success message
         setToast({
-          message: `${personnelData.name} has been ${isNewPersonnel ? 'created' : 'updated'} successfully`,
+          message: `${updatedData.name || selectedPersonnel.name} has been ${isNewPersonnel ? 'created' : 'updated'} successfully`,
           type: 'success'
         });
         
@@ -1119,56 +1153,85 @@ export default function PersonnelPage() {
           user.role,
           action,
           isNewPersonnel && result.data?.id ? result.data.id : selectedPersonnel.id,
-          personnelData.name || ''
+          updatedData.name || ''
         ).catch(error => console.error(`Failed to log personnel ${action}:`, error));
         
         // Refresh the personnel list
-        const refreshPersonnel = async () => {
-          try {
-            const response = await fetch(`/api/personnel?pageSize=100`);
-            
-            if (!response.ok) {
-              throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-
-            const data = await response.json();
-            
-            if (data.success) {
-              // Process the data
-              let personnelData = data.data.personnel || [];
-              
-              // Map MongoDB _id to id for frontend compatibility and normalize statuses
-              personnelData = personnelData.map((person: any) => ({
-                ...person,
-                id: person._id || person.id,
-                status: normalizeStatus(person.status),
-                lastUpdated: person.lastUpdated ? new Date(person.lastUpdated).toLocaleDateString() : new Date().toLocaleDateString()
-              }));
-              
-              setAllPersonnel(personnelData);
-              
-              // Apply existing filters
-              applyFilters(personnelData);
-            } else {
-              throw new Error(data.error || 'Failed to fetch personnel');
-            }
-          } catch (error) {
-            console.error('Failed to fetch personnel:', error);
-          }
-        };
-        
         refreshPersonnel();
       } else {
-        throw new Error(result.error || 'Failed to save personnel');
+        // Handle specific error messages from the API
+        if (result.errors && Array.isArray(result.errors) && result.errors.length > 0) {
+          // Format all validation errors into a single message
+          const errorMessage = `Validation failed: ${result.errors.join(', ')}`;
+          throw new Error(errorMessage);
+        } else {
+          throw new Error(result.error || result.message || 'Failed to save personnel');
+        }
       }
     } catch (error) {
       console.error('Failed to save personnel:', error);
+      
+      let errorMessage = 'Failed to save personnel. Please try again.';
+      
+      if (error instanceof Error) {
+        if (error.message.includes('Validation failed:')) {
+          // This is a validation error from our API
+          errorMessage = error.message;
+        } else if (error.message.includes('duplicate key')) {
+          // MongoDB duplicate key error
+          if (error.message.includes('email')) {
+            errorMessage = 'A personnel record with this email already exists';
+          } else if (error.message.includes('serviceNumber')) {
+            errorMessage = 'A personnel record with this service number already exists';
+          } else {
+            errorMessage = 'A duplicate record already exists';
+          }
+        } else {
+          errorMessage = `Failed to save personnel: ${error.message}`;
+        }
+      }
+      
       setToast({
-        message: 'Failed to save personnel. Please try again.',
+        message: errorMessage,
         type: 'error'
       });
     } finally {
       setIsLoading(false);
+    }
+  };
+  
+  // Function to refresh personnel data after updates
+  const refreshPersonnel = async () => {
+    try {
+      const response = await fetch(`/api/personnel?pageSize=100`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      if (data.success) {
+        // Process the data
+        let personnelData = data.data.personnel || [];
+        
+        // Map MongoDB _id to id for frontend compatibility and normalize statuses
+        personnelData = personnelData.map((person: any) => ({
+          ...person,
+          id: person._id || person.id,
+          status: normalizeStatus(person.status),
+          lastUpdated: person.lastUpdated ? new Date(person.lastUpdated).toLocaleDateString() : new Date().toLocaleDateString()
+        }));
+        
+        setAllPersonnel(personnelData);
+        
+        // Apply existing filters
+        applyFilters(personnelData);
+      } else {
+        throw new Error(data.error || 'Failed to fetch personnel');
+      }
+    } catch (error) {
+      console.error('Failed to fetch personnel:', error);
     }
   };
 
@@ -1320,9 +1383,9 @@ export default function PersonnelPage() {
 
   // Main content for users with permission
   const PersonnelContent = () => (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="w-full px-0 py-4">
       {/* Header section with icon and title */}
-      <div className="bg-white rounded-lg shadow-sm mb-4 p-4">
+      <div className="bg-white rounded-lg shadow-sm mb-4 p-4 mx-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center flex-grow">
             <div className="bg-indigo-100 rounded-full p-2 mr-3">
@@ -1347,6 +1410,11 @@ export default function PersonnelPage() {
               </Button>
             )}
             
+            <SyncStatusButton 
+              onSyncComplete={() => fetchAllPersonnel()} 
+              className="whitespace-nowrap text-sm py-1.5"
+            />
+            
             <Button
               variant="primary"
               onClick={handleOpenApproveAccountsModal}
@@ -1360,39 +1428,59 @@ export default function PersonnelPage() {
       </div>
       
       {/* Filter section */}
-      <div className="bg-white rounded-lg shadow-sm mb-4 p-3">
+      <div className="bg-white rounded-lg shadow-sm mb-4 p-3 mx-2">
         <div className="flex flex-row items-center justify-between">
           <div className="flex items-center">
             <span className="text-xs font-medium text-gray-700 mr-2">Search</span>
             <SearchInput value={searchValue} onChange={handleSearchChange} />
           </div>
           
-          <div className="flex space-x-2">
-            <div className="flex items-center">
-              <span className="text-xs font-medium text-gray-700 mr-1">Company</span>
-              <FilterDropdown 
-                value={filterCompany} 
-                onChange={(e) => setFilterCompany(e.target.value as CompanyType | 'All')} 
-                options={companyOptions}
-                label="Filter by company"
-              />
-            </div>
-            
-            <div className="flex items-center">
-              <span className="text-xs font-medium text-gray-700 mr-1">Status</span>
-              <FilterDropdown 
-                value={filterStatus} 
-                onChange={(e) => setFilterStatus(e.target.value as PersonnelStatus | 'All')} 
-                options={statusOptions}
-                label="Filter by status"
-              />
-            </div>
+          <div className="flex items-center">
+            <span className="text-xs font-medium text-gray-700 mr-1">Company</span>
+            <FilterDropdown 
+              value={filterCompany} 
+              onChange={(e) => setFilterCompany(e.target.value as CompanyType | 'All')} 
+              options={companyOptions}
+              label="Filter by company"
+            />
           </div>
+        </div>
+      </div>
+
+      {/* Status filter tabs */}
+      <div className="bg-white rounded-lg shadow-sm mb-4 overflow-hidden mx-2">
+        <div className="border-b border-gray-200">
+          <nav className="flex -mb-px">
+            {['Ready', 'Standby', 'Retired', 'All'].map((status) => (
+              <button
+                key={status}
+                onClick={() => setFilterStatus(status === 'All' ? 'All' : status.toLowerCase() as PersonnelStatus)}
+                className={`py-3 px-4 text-sm font-medium border-b-2 ${
+                  (status === 'All' ? filterStatus === 'All' : filterStatus === status.toLowerCase())
+                    ? 'border-indigo-500 text-indigo-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                <span className="flex items-center">
+                  {status === 'Ready' && (
+                    <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                  )}
+                  {status === 'Standby' && (
+                    <span className="w-2 h-2 bg-yellow-500 rounded-full mr-2"></span>
+                  )}
+                  {status === 'Retired' && (
+                    <span className="w-2 h-2 bg-gray-500 rounded-full mr-2"></span>
+                  )}
+                  {status}
+                </span>
+              </button>
+            ))}
+          </nav>
         </div>
       </div>
       
       {/* Personnel table with modern design */}
-      <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+      <div className="bg-white rounded-lg shadow-sm overflow-hidden mx-2">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
@@ -1470,27 +1558,25 @@ export default function PersonnelPage() {
                     {person.lastUpdated}
                   </td>
                   <td className="px-4 py-1.5 whitespace-nowrap text-right text-sm font-medium">
-                    <div className="flex justify-end space-x-1">
+                    <div className="flex justify-end space-x-2">
                       <button
-                        className="p-1 rounded-full text-indigo-600 hover:bg-indigo-50"
-                        title="View details"
+                        className="px-2 py-1 text-xs font-medium rounded border border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleView(person);
                         }}
                       >
-                        <EyeIcon className="h-4 w-4" />
+                        View
                       </button>
                       
                       <button
-                        className="p-1 rounded-full text-blue-600 hover:bg-blue-50"
-                        title="Edit personnel"
+                        className="px-2 py-1 text-xs font-medium rounded border border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleEdit(person);
                         }}
                       >
-                        <PencilSquareIcon className="h-4 w-4" />
+                        Edit
                       </button>
                       
                       {hasPermission('admin') && (
@@ -1521,7 +1607,7 @@ export default function PersonnelPage() {
       </div>
       
       {/* Pagination with updated design */}
-      <div className="mt-3 flex justify-between items-center bg-white p-2 rounded-lg shadow-sm">
+      <div className="mt-3 flex justify-between items-center bg-white p-2 rounded-lg shadow-sm mx-2">
         <div className="text-xs text-gray-700">
           Showing <span className="font-medium">
             {currentPage === 1 ? "1" : `${(currentPage - 1) * ITEMS_PER_PAGE + 1}`} to {Math.min(currentPage * ITEMS_PER_PAGE, filteredPersonnel.length)}
@@ -1591,10 +1677,10 @@ export default function PersonnelPage() {
         </div>
       </div>
 
-      {/* Personnel Statistics - Added at arrow location */}
-      <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* Personnel Statistics - Using flex instead of grid for better horizontal layout */}
+      <div className="mt-3 flex flex-col lg:flex-row gap-4 mx-2 mb-4">
         {/* Summary Statistics Card */}
-        <div className="bg-white rounded-lg shadow-sm p-3">
+        <div className="bg-white rounded-lg shadow-sm p-3 flex-1">
           <h3 className="text-xs font-semibold text-gray-700 mb-2 flex items-center">
             <ChartBarIcon className="h-3 w-3 mr-1 text-indigo-600" /> Personnel Statistics
           </h3>
@@ -1621,17 +1707,32 @@ export default function PersonnelPage() {
         </div>
 
         {/* Company Distribution Card */}
-        <div className="bg-white rounded-lg shadow-sm p-3">
+        <div className="bg-white rounded-lg shadow-sm p-3 flex-1">
           <h3 className="text-xs font-semibold text-gray-700 mb-2 flex items-center">
             <BuildingOfficeIcon className="h-3 w-3 mr-1 text-indigo-600" /> Company Distribution
           </h3>
-          <div className="grid grid-cols-2 gap-2">
-            {COMPANIES.slice(0, 4).map(company => {
-              const count = allPersonnel.filter(p => p.company === company).length;
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-6 gap-2">
+            {COMPANIES.map(company => {
+              // Case-insensitive matching and normalize company names for better matching
+              const count = allPersonnel.filter(p => {
+                const normalizedPersonnelCompany = p.company?.toLowerCase().trim() || '';
+                const normalizedCompany = company.toLowerCase().trim();
+                
+                // Handle special case for companies with parentheses
+                if (normalizedCompany.includes('(')) {
+                  const shortName = normalizedCompany.split('(')[0].trim();
+                  return normalizedPersonnelCompany === normalizedCompany || 
+                         normalizedPersonnelCompany === shortName || 
+                         normalizedPersonnelCompany.startsWith(shortName);
+                }
+                
+                return normalizedPersonnelCompany === normalizedCompany;
+              }).length;
+              
               return (
                 <div key={company} className="flex justify-between items-center text-xs px-2 py-1 bg-indigo-50 rounded break-words">
                   <span className="font-medium text-indigo-700 pr-1 overflow-hidden">
-                    {company}
+                    {company.includes('(') ? company.split('(')[0].trim() : company}
                   </span>
                   <span className="font-bold text-indigo-800 flex-shrink-0">{count}</span>
                 </div>
@@ -1678,13 +1779,12 @@ export default function PersonnelPage() {
 
   // Main render
   return (
-    <div className="min-h-screen bg-gray-100 pb-10">
+    <div className="min-h-screen bg-gray-100 pb-6 w-full">
       {isLoading ? (
         <div className="flex justify-center items-center h-64">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
         </div>
       ) : (
-        // Always show the PersonnelContent for now
         <PersonnelContent />
       )}
 

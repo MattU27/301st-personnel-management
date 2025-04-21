@@ -97,7 +97,32 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  // Log API requests for debugging
+  if (pathname.startsWith('/api/')) {
+    console.log(`API Request: ${request.method} ${pathname}`);
+  }
+
   return NextResponse.next();
+}
+
+// Error handling for API routes
+export function handleAPIError(error: any) {
+  console.error('API Error:', error);
+  
+  // Return a structured error response
+  return new Response(
+    JSON.stringify({
+      success: false,
+      error: error.message || 'An unexpected error occurred',
+      details: error.stack,
+    }),
+    {
+      status: 500,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+  );
 }
 
 export const config = {

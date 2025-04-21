@@ -2,17 +2,31 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
 
-const Footer = () => {
+interface FooterProps {
+  className?: string;
+}
+
+const Footer = ({ className = '' }: FooterProps) => {
   const pathname = usePathname();
+  const { isAuthenticated } = useAuth();
 
-  // Hide footer on login, register and homepage pages
-  if (pathname === '/' || pathname === '/login' || pathname === '/register') {
+  // Check if current page is a public page (login, register, home, password recovery)
+  const isPublicPage = pathname === '/' || 
+                     pathname === '/login' || 
+                     pathname === '/register' || 
+                     pathname.includes('/password-recovery') || 
+                     pathname.includes('/reset-password');
+
+  // If we're on a public page OR user is authenticated, don't show the footer
+  if (isPublicPage || isAuthenticated) {
+    // Return null to completely hide the footer
     return null;
   }
 
   return (
-    <footer className="bg-gray-800 text-white">
+    <footer className={`bg-gray-800 text-white ${className}`}>
       <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
         <div className="flex flex-wrap justify-between items-start gap-4">
           <div className="flex-1 min-w-[200px] max-w-xs">
@@ -34,7 +48,7 @@ const Footer = () => {
           </div>
         </div>
         <div className="mt-4 pt-4 border-t border-gray-700">
-          <p className="text-xs text-center text-gray-400">&copy; {new Date().getFullYear()} AFP Personnel Management System</p>
+          {/* Copyright text removed */}
         </div>
       </div>
     </footer>

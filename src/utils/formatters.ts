@@ -76,8 +76,30 @@ export const getRankDisplayName = (rankCode: string): RankType => {
 
 /**
  * Maps company codes to full company names from the dropdown
+ * Handles both string-based company names and MongoDB ObjectId references
  */
-export const getCompanyDisplayName = (companyCode: string): CompanyType => {
+export const getCompanyDisplayName = (companyValue: any): CompanyType => {
+  // If it's not defined, return default
+  if (!companyValue) {
+    return 'Alpha';
+  }
+  
+  // If it's an object with an _id field (MongoDB document), handle based on name field
+  if (typeof companyValue === 'object' && companyValue !== null) {
+    // If it's a company object with a name field, use that
+    if (companyValue.name) {
+      return getCompanyDisplayName(companyValue.name);
+    }
+    
+    // If it has an _id but not a name, use the default
+    if (companyValue._id) {
+      return 'Alpha';
+    }
+  }
+  
+  // Convert to string for consistent handling
+  const companyCode = String(companyValue);
+  
   // Map of company codes to full company names
   const companyMapping: Record<string, CompanyType> = {
     'HQ': 'Headquarters',
@@ -108,8 +130,11 @@ export const getCompanyDisplayName = (companyCode: string): CompanyType => {
     'NERRFAB (NERR-Field Artillery Battery)'
   ];
   
-  if (validCompanies.includes(companyCode as CompanyType)) {
-    return companyCode as CompanyType;
+  // Case-insensitive check for valid company names
+  for (const validCompany of validCompanies) {
+    if (companyCode.toLowerCase() === validCompany.toLowerCase()) {
+      return validCompany;
+    }
   }
   
   // Default fallback

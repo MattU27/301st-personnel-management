@@ -35,6 +35,9 @@ export enum Company {
   NERRFAB_FULL = 'NERRFAB (NERR-Field Artillery Battery)'
 }
 
+// Maximum number of previous passwords to store for password history
+export const MAX_PASSWORD_HISTORY = 5;
+
 // Define the user document interface
 export interface IUser extends mongoose.Document {
   firstName: string;
@@ -42,6 +45,7 @@ export interface IUser extends mongoose.Document {
   email: string;
   alternativeEmail?: string;
   password: string;
+  passwordHistory: string[]; // Array to store previous password hashes
   role: UserRole;
   status: UserStatus;
   rank?: MilitaryRank;
@@ -68,6 +72,7 @@ export interface IUser extends mongoose.Document {
   createdAt: Date;
   updatedAt: Date;
   comparePassword(candidatePassword: string): Promise<boolean>;
+  isPasswordInHistory(candidatePassword: string): Promise<boolean>;
   getFullName(): string;
 }
 
@@ -103,6 +108,11 @@ const UserSchema = new mongoose.Schema({
     required: [true, 'Please provide a password'],
     minlength: [8, 'Password should be at least 8 characters long'],
     select: false, // Don't return password in queries by default
+  },
+  passwordHistory: {
+    type: [String],
+    default: [],
+    select: false, // Don't return password history in queries by default
   },
   serviceId: {
     type: String,
@@ -200,6 +210,22 @@ UserSchema.pre('save', async function(next) {
   }
 
   try {
+    // Add the current password to password history before changing it
+    if (this.password && this.isModified('password') && !this.isNew) {
+      // Only push to history if this is a password update, not a new user
+      if (!this.passwordHistory) {
+        this.passwordHistory = [];
+      }
+      
+      // Add current password to history
+      this.passwordHistory.unshift(this.password);
+      
+      // Limit the history size
+      if (this.passwordHistory.length > MAX_PASSWORD_HISTORY) {
+        this.passwordHistory = this.passwordHistory.slice(0, MAX_PASSWORD_HISTORY);
+      }
+    }
+
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
     next();
@@ -214,6 +240,28 @@ UserSchema.methods.comparePassword = async function(candidatePassword: string): 
     return await bcrypt.compare(candidatePassword, this.password);
   } catch (error) {
     throw new Error('Password comparison failed');
+  }
+};
+
+// Check if password exists in password history
+UserSchema.methods.isPasswordInHistory = async function(candidatePassword: string): Promise<boolean> {
+  try {
+    // If no password history, return false
+    if (!this.passwordHistory || this.passwordHistory.length === 0) {
+      return false;
+    }
+    
+    // Check if the candidate password matches any of the stored historical passwords
+    for (const historicalPassword of this.passwordHistory) {
+      if (await bcrypt.compare(candidatePassword, historicalPassword)) {
+        return true;
+      }
+    }
+    
+    return false;
+  } catch (error) {
+    console.error('Error checking password history:', error);
+    return false;
   }
 };
 

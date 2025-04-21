@@ -5,8 +5,117 @@ import { validateToken } from '@/lib/auth';
 import User from '@/models/User';
 import AuditLog from '@/models/AuditLog';
 import mongoose from 'mongoose';
+import Company from '@/models/Company';
 
 export const dynamic = 'force-dynamic';
+
+// Define the valid companies to match the UI options
+const VALID_COMPANIES = [
+  'Alpha',
+  'Bravo',
+  'Charlie', 
+  'Headquarters',
+  'NERRSC (NERR-Signal Company)',
+  'NERRFAB (NERR-Field Artillery Battery)'
+];
+
+// Helper to find company ID from company name
+async function getCompanyIdByName(companyName: string): Promise<string | null> {
+  try {
+    console.log(`Searching for company: "${companyName}"`);
+    
+    // Create a mapping of UI display names to actual database names and codes
+    const companyMappings: Record<string, { name: string, code: string }> = {
+      'Alpha': { name: 'Alpha Company', code: 'ALPHA' },
+      'Bravo': { name: 'Bravo Company', code: 'BRAVO' },
+      'Charlie': { name: 'Charlie Company', code: 'CHARLIE' },
+      'Headquarters': { name: 'Headquarters', code: 'HEADQUARTERS' },
+      'HQ': { name: 'Headquarters', code: 'HEADQUARTERS' },
+      'NERRSC': { name: 'NERRSC (NERR-Signal Company)', code: 'NERRSC' },
+      'NERR-Signal Company': { name: 'NERRSC (NERR-Signal Company)', code: 'NERRSC' },
+      'NERRSC (NERR-Signal Company)': { name: 'NERRSC (NERR-Signal Company)', code: 'NERRSC' },
+      'NERRFAB': { name: 'NERRFAB (NERR-Field Artillery Battery)', code: 'NERRFAB' },
+      'NERR-Field Artillery Battery': { name: 'NERRFAB (NERR-Field Artillery Battery)', code: 'NERRFAB' },
+      'NERRFAB (NERR-Field Artillery Battery)': { name: 'NERRFAB (NERR-Field Artillery Battery)', code: 'NERRFAB' }
+    };
+    
+    // Get the mapping for this company name if it exists
+    const mapping = companyMappings[companyName];
+    
+    // Try to find company by exact name or code match first using the mapping
+    let company = null;
+    
+    if (mapping) {
+      console.log(`Using mapping: name="${mapping.name}", code="${mapping.code}"`);
+      company = await Company.findOne({ 
+        $or: [
+          { name: mapping.name },
+          { code: mapping.code }
+        ]
+      });
+    }
+    
+    // If no mapping or company not found with mapping, try the original name
+    if (!company) {
+      company = await Company.findOne({ 
+        $or: [
+          { name: companyName },
+          { code: companyName }
+        ]
+      });
+    }
+    
+    // If still not found, try case-insensitive regex search
+    if (!company) {
+      console.log('No exact match found, trying regex search');
+      company = await Company.findOne({ 
+        $or: [
+          { name: new RegExp('^' + companyName.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&') + '$', 'i') },
+          { code: new RegExp('^' + companyName.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&') + '$', 'i') }
+        ]
+      });
+    }
+    
+    if (company) {
+      console.log(`Found company: ${company.name} with ID: ${company._id}`);
+      return company._id.toString();
+    }
+    
+    console.log(`No company found for "${companyName}"`);
+    
+    // If still not found, create a fallback approach
+    // For the specific company names in the UI dropdown, we'll create a new company
+    if (VALID_COMPANIES.includes(companyName as any) || mapping) {
+      console.log(`Company "${companyName}" is in valid list, but not found in DB. Using fallback approach`);
+      
+      // Get the company details from the mapping or use defaults
+      const companyDetails = mapping || { 
+        name: companyName, 
+        code: companyName.split(' ')[0].toUpperCase() 
+      };
+      
+      // Create the company if it doesn't exist
+      const newCompany = new Company({
+        name: companyDetails.name,
+        code: companyDetails.code, 
+        description: `${companyDetails.name} Company`,
+      });
+      
+      try {
+        const savedCompany = await newCompany.save();
+        console.log(`Created new company: ${savedCompany.name} with ID: ${savedCompany._id}`);
+        return savedCompany._id.toString();
+      } catch (error) {
+        console.error(`Failed to create company: ${error instanceof Error ? error.message : String(error)}`);
+      }
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('Error finding company by name:', error);
+    return null;
+  }
+}
 
 // Simple in-memory rate limiter
 const searches = new Map<string, { count: number, timestamp: number }>();
@@ -47,21 +156,68 @@ async function logAdminAction(
 
 // Normalize status values to ensure only valid statuses are saved
 function normalizeStatus(status: string) {
-  const validStatuses = ['active', 'pending', 'inactive', 'retired', 'standby', 'ready'];
+  // Convert to lowercase for consistent comparison
+  const statusLower = status?.toLowerCase();
   
   // If status is already valid, return it lowercase
-  if (validStatuses.includes(status?.toLowerCase())) {
-    return status.toLowerCase();
+  if (statusLower === 'ready' || statusLower === 'standby' || statusLower === 'retired') {
+    return statusLower;
   }
   
   // Map specific statuses to valid ones
-  if (status?.toLowerCase() === 'medical' || status?.toLowerCase() === 'leave') {
-    return 'inactive';
+  if (statusLower === 'active') {
+    return 'ready';
+  }
+  
+  if (statusLower === 'inactive' || statusLower === 'medical' || statusLower === 'leave') {
+    return 'retired';
+  }
+  
+  if (statusLower === 'pending' || statusLower === 'deployed') {
+    return 'standby';
   }
   
   // Default fallback
-  return 'inactive';
+  return 'standby';
 }
+
+// Add this section near the top of the file, with other data validation functions
+const validatePersonnelData = (data: any) => {
+  const errors = [];
+  
+  // Check required fields
+  const requiredFields = ['name', 'email', 'rank', 'status'];
+  for (const field of requiredFields) {
+    if (!data[field]) {
+      errors.push(`${field} is required`);
+    }
+  }
+  
+  // Check company field - either company or companyName should be provided
+  if (!data.company && !data.companyName) {
+    errors.push(`Company is required`);
+  }
+  
+  // Validate email format if provided
+  if (data.email && !data.email.match(/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/)) {
+    errors.push("Email address is not valid");
+  }
+  
+  // Validate dateJoined if provided
+  if (data.dateJoined) {
+    try {
+      // Check if it's a valid date
+      const date = new Date(data.dateJoined);
+      if (isNaN(date.getTime())) {
+        errors.push("dateJoined must be a valid date");
+      }
+    } catch (error) {
+      errors.push("dateJoined must be a valid date");
+    }
+  }
+  
+  return errors;
+};
 
 /**
  * GET handler to retrieve personnel data
@@ -200,6 +356,41 @@ export async function POST(request: Request) {
     // Normalize status if present
     if (newPersonnelData.status) {
       newPersonnelData.status = normalizeStatus(newPersonnelData.status);
+    }
+    
+    // Handle special company name field (added to avoid ObjectId issues)
+    if (newPersonnelData.companyName && typeof newPersonnelData.companyName === 'string') {
+      console.log('Using companyName field instead of company:', newPersonnelData.companyName);
+      // Use companyName to set the company field if needed
+      if (!newPersonnelData.company) {
+        newPersonnelData.company = newPersonnelData.companyName;
+      }
+      // Remove companyName to avoid confusion with the database
+      delete newPersonnelData.companyName;
+    }
+    
+    // Handle company names vs IDs
+    if (newPersonnelData.company && typeof newPersonnelData.company === 'string') {
+      if (mongoose.isValidObjectId(newPersonnelData.company)) {
+        console.log('Company is already a valid ObjectId:', newPersonnelData.company);
+      } else {
+        // Look up the company ID from the name
+        console.log('Converting company name to ID:', newPersonnelData.company);
+        try {
+          const companyId = await getCompanyIdByName(newPersonnelData.company);
+          if (companyId) {
+            console.log(`Successfully converted company "${newPersonnelData.company}" to ID: ${companyId}`);
+            newPersonnelData.company = companyId;
+          } else {
+            // If company can't be found, log this but don't remove the field
+            // This will let MongoDB's validation handle it
+            console.log(`Company "${newPersonnelData.company}" not found, but keeping original value`);
+          }
+        } catch (error) {
+          console.error('Error converting company name to ID:', error);
+          // Don't remove the field - let MongoDB validation handle it
+        }
+      }
     }
     
     // Create new personnel
@@ -370,9 +561,18 @@ export async function PUT(request: Request) {
     
     // Check if user is admin
     const user = await User.findById(decoded.userId);
-    if (!user || (user.role !== 'administrator' && user.role !== 'admin' && user.role !== 'director')) {
+    if (!user) {
       return NextResponse.json(
-        { success: false, message: 'Unauthorized: Admin access required' }, 
+        { success: false, message: 'User not found' }, 
+        { status: 404 }
+      );
+    }
+    
+    // Allow staff, admin, and director roles to update personnel
+    const allowedRoles = ['staff', 'administrator', 'admin', 'director'];
+    if (!allowedRoles.includes(user.role)) {
+      return NextResponse.json(
+        { success: false, message: 'Unauthorized: You do not have permission to update personnel records' }, 
         { status: 403 }
       );
     }
@@ -387,9 +587,57 @@ export async function PUT(request: Request) {
       );
     }
     
-    // Normalize status if present in the update data
+    // Validate the data
+    const validationErrors = validatePersonnelData(data);
+    if (validationErrors.length > 0) {
+      return NextResponse.json(
+        { 
+          success: false, 
+          message: 'Validation error', 
+          errors: validationErrors 
+        }, 
+        { status: 400 }
+      );
+    }
+    
+    // Normalize status if present
     if (data.status) {
       data.status = normalizeStatus(data.status);
+    }
+    
+    // Handle special company name field (added to avoid ObjectId issues)
+    if (data.companyName && typeof data.companyName === 'string') {
+      console.log('Using companyName field instead of company:', data.companyName);
+      // Use companyName to set the company field if needed
+      if (!data.company) {
+        data.company = data.companyName;
+      }
+      // Remove companyName to avoid confusion with the database
+      delete data.companyName;
+    }
+    
+    // Handle company names vs IDs
+    if (data.company && typeof data.company === 'string') {
+      if (mongoose.isValidObjectId(data.company)) {
+        console.log('Company is already a valid ObjectId:', data.company);
+      } else {
+        // Look up the company ID from the name
+        console.log('Converting company name to ID:', data.company);
+        try {
+          const companyId = await getCompanyIdByName(data.company);
+          if (companyId) {
+            console.log(`Successfully converted company "${data.company}" to ID: ${companyId}`);
+            data.company = companyId;
+          } else {
+            // If company can't be found, log this but don't remove the field
+            // This will let MongoDB's validation handle it
+            console.log(`Company "${data.company}" not found, but keeping original value`);
+          }
+        } catch (error) {
+          console.error('Error converting company name to ID:', error);
+          // Don't remove the field - let MongoDB validation handle it
+        }
+      }
     }
     
     // Find personnel by ID
@@ -434,6 +682,18 @@ export async function PUT(request: Request) {
           success: false, 
           message: 'Validation error', 
           errors: validationErrors 
+        }, 
+        { status: 400 }
+      );
+    }
+    
+    // Better error message for specific fields
+    if (error.message.includes('dateJoined')) {
+      return NextResponse.json(
+        { 
+          success: false, 
+          message: 'Invalid date format for Date Joined field', 
+          error: 'Please enter a valid date in the format YYYY-MM-DD' 
         }, 
         { status: 400 }
       );

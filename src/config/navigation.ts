@@ -24,6 +24,11 @@ export const navigationConfig: NavItem[] = [
     roles: [UserRole.ADMIN], // Admin can control policies
   },
   {
+    label: 'Policy',
+    href: '/policies',
+    roles: [UserRole.STAFF], // Staff can view and upload policies
+  },
+  {
     label: 'Trainings',
     href: '/trainings?tab=upcoming',
     roles: [UserRole.STAFF, UserRole.ADMIN, UserRole.DIRECTOR], // Staff can manage trainings, Admin and Director can oversee
@@ -36,7 +41,12 @@ export const navigationConfig: NavItem[] = [
   {
     label: 'Companies',
     href: '/companies',
-    roles: [UserRole.ADMIN], // Admin can manage all companies
+    roles: [UserRole.STAFF, UserRole.ADMIN], // Both Staff and Admin can manage companies
+  },
+  {
+    label: 'Announcements',
+    href: '/announcements',
+    roles: [UserRole.STAFF], // Only Staff can access announcements
   },
   {
     label: 'Analytics',

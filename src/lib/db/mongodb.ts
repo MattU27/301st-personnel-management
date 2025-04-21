@@ -1,5 +1,9 @@
 import mongoose from 'mongoose';
 
+// Import models to ensure they are registered before any usage
+import '@/models/User';
+import '@/models/Announcement';
+
 // Connection strings
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/afp_personnel_db';
 

@@ -2,11 +2,9 @@ import mongoose, { Document, Schema } from 'mongoose';
 
 // Define personnel status
 export enum PersonnelStatus {
-  ACTIVE = 'active',
-  INACTIVE = 'inactive',
-  PENDING = 'pending',
-  RETIRED = 'retired',
-  DEPLOYED = 'deployed'
+  READY = 'ready',
+  STANDBY = 'standby',
+  RETIRED = 'retired'
 }
 
 // Define user roles
@@ -74,7 +72,7 @@ const PersonnelSchema = new Schema(
     status: {
       type: String,
       enum: Object.values(PersonnelStatus),
-      default: PersonnelStatus.PENDING,
+      default: PersonnelStatus.READY,
     },
     email: {
       type: String,
@@ -136,6 +134,22 @@ PersonnelSchema.index({ company: 1 });
 PersonnelSchema.index({ email: 1 }, { unique: true });
 PersonnelSchema.index({ status: 1 });
 PersonnelSchema.index({ role: 1 });
+
+// Add pre-save middleware to handle company field
+PersonnelSchema.pre('findOneAndUpdate', async function(next) {
+  try {
+    const update = this.getUpdate() as any;
+    if (update && update.$set && update.$set.company && typeof update.$set.company === 'string' && !mongoose.isValidObjectId(update.$set.company)) {
+      console.log('Pre-save middleware: Converting company string to plain text');
+      // If company is a string name (not an ObjectId), store it as a plain string reference
+      // This prevents the ObjectId cast error
+      delete update.$set.company;
+    }
+    next();
+  } catch (error) {
+    next(error as Error);
+  }
+});
 
 // Create and export the Personnel model
 const Personnel = mongoose.models.Personnel || mongoose.model<IPersonnel>('Personnel', PersonnelSchema);

@@ -30,7 +30,7 @@ export async function PATCH(req: NextRequest) {
     const data = await req.json();
     const { personnelId, status, reason } = data;
     
-    const validStatuses = ['Ready', 'Standby', 'Active', 'Pending', 'Inactive', 'Retired'];
+    const validStatuses = ['Ready', 'Standby', 'Retired'];
     if (!personnelId || !status || !validStatuses.includes(status)) {
       return NextResponse.json(
         { error: `Invalid request. Status must be one of: ${validStatuses.join(', ')}` },

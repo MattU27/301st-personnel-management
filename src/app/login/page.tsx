@@ -55,26 +55,38 @@ function LoginContent() {
 
     try {
       // Check account status first
-      const statusResponse = await axios.post('/api/auth/check-status', { email });
-      
-      // If account exists, check its status
-      if (statusResponse.data.success && statusResponse.data.user) {
-        const userStatus = statusResponse.data.user.status;
+      try {
+        console.log('Checking account status for:', email);
+        const statusResponse = await axios.post('/api/auth/check-status', { email });
         
-        if (userStatus === UserStatus.PENDING) {
-          setPendingAccount(true);
-          setIsLoading(false);
-          return;
+        // If account exists, check its status
+        if (statusResponse.data.success && statusResponse.data.user) {
+          const userStatus = statusResponse.data.user.status;
+          console.log('Account status response:', statusResponse.data);
+          
+          if (userStatus === UserStatus.PENDING) {
+            setPendingAccount(true);
+            setIsLoading(false);
+            return;
+          }
+          
+          if (userStatus === UserStatus.INACTIVE) {
+            setInactiveAccount(true);
+            setIsLoading(false);
+            return;
+          }
         }
-        
-        if (userStatus === UserStatus.INACTIVE) {
-          setInactiveAccount(true);
-          setIsLoading(false);
-          return;
+      } catch (statusError: any) {
+        console.log('Error checking account status:', statusError);
+        // If we get a 401, that could mean the user doesn't exist
+        // but we'll continue with the login attempt to get the proper error message
+        if (statusError.response?.status !== 401) {
+          throw statusError;
         }
       }
       
-      // Proceed with login if account is active
+      // Proceed with login 
+      console.log('Proceeding with login attempt');
       await login(email, password);
       console.log('Login successful, redirecting...');
     } catch (err: any) {
@@ -222,11 +234,12 @@ function LoginContent() {
                         autoComplete="email"
                         required
                         className="appearance-none relative block w-full pl-10 px-4 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-[#092140] focus:border-[#092140] focus:z-10 sm:text-sm transition-all duration-300"
-                        placeholder="Email address"
+                        placeholder="Primary or alternative email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                       />
                     </div>
+                    <p className="mt-1 text-xs text-gray-500">You can use either your AFP email or alternative email</p>
                   </div>
                   <div className="group">
                     <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1 group-focus-within:text-[#092140] transition-colors duration-300">
